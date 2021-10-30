@@ -1,0 +1,11 @@
+{
+  "name": "ifccostestimator",
+  "version": "0.0.1",
+  "description": "App for estimating cost from ifc files",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,44 @@
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  } */
+  
+  /* html,
+  body {
+    overflow: hidden;
+  } */
+
+  
+   #MainContainer {
+    position: fixed;
+    top: 500;
+    left: 0;
+    display: flex;
+    height:100%;
+    width: 100%;
+    outline: 1px; 
+  }
+  
+
+  #example-table{
+    flex: 1;  
+    overflow:scroll;
+    height: 100vh;
+    outline: 1px;  
+  }
+  
+  
+  #viewer-container{
+     flex: 1.5;
+    position: relative;
+   outline: 1px; 
+     
+  } 
+/* 
+
+  #file-input {
+    z-index: 1;
+    height:150px;
+    position: absolute;
+  } */

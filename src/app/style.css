@@ -15,7 +15,7 @@ h2 { font-size: 15px; font-weight: 500; margin: 0 0 20px; }
 .viewport { position: relative; overflow: hidden; background: #eaf0ed; }
 .viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .viewer-overlay { position: absolute; inset: 0; pointer-events: none; }
-.feature-dock { position: absolute; z-index: 1; top: 16px; right: 16px; bottom: 16px; width: var(--dock-width); max-width: calc(100% - 32px); display: flex; flex-direction: column; gap: 12px; overflow: auto; pointer-events: none; }
+.feature-dock { position: absolute; z-index: 1; top: 72px; right: 16px; bottom: 16px; width: var(--dock-width); max-width: calc(100% - 32px); display: flex; flex-direction: column; gap: 12px; overflow: auto; pointer-events: none; }
 .feature-dock:empty { display: none; }
 .feature-dock > * { pointer-events: auto; }
 .viewer-toolbar { position: absolute; z-index: 1; top: 16px; right: 16px; display: flex; align-items: center; gap: 12px; background: #ffffffed; padding: 6px; border: 1px solid #c8d6cd; border-radius: 4px; }

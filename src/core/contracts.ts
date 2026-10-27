@@ -20,6 +20,7 @@ export interface ModelSummary {
 
 export interface ModelSession {
   getModels(): readonly ModelSummary[];
+  getAsset(id: number): ModelAsset | undefined;
   subscribe(listener: () => void): () => void;
   enqueue(files: File[]): Promise<void>;
   toggle(id: number): void;
@@ -141,6 +142,11 @@ export interface SelectionCapability {
   set(identity: ElementIdentity | null): void;
   clear(): void;
   subscribe(listener: (identity: ElementIdentity | null) => void): () => void;
+}
+
+export interface ViewerPicking {
+  pick(clientX: number, clientY: number): ElementIdentity | null;
+  highlight(identity: ElementIdentity | null): void;
 }
 
 /**

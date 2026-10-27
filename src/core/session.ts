@@ -18,6 +18,10 @@ export class ModelRegistry implements ModelSession {
     }));
   }
 
+  getAsset(id: number): ModelAsset | undefined {
+    return this.records.get(id)?.asset;
+  }
+
   subscribe(listener: () => void): () => void {
     if (this.disposed) return () => {};
     this.listeners.add(listener);

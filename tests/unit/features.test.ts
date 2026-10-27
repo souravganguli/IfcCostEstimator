@@ -12,6 +12,7 @@ function sessionStub() {
   const listeners = new Set<() => void>();
   const session: ModelSession = {
     getModels: () => models,
+    getAsset: () => undefined,
     subscribe: (listener) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
     enqueue: vi.fn(async () => {}), toggle: vi.fn(), remove: vi.fn(),
   };

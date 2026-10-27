@@ -1,8 +1,9 @@
-import { AmbientLight, Color, DirectionalLight, GridHelper, Group, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { AmbientLight, Color, DirectionalLight, GridHelper, Group, Mesh, MeshStandardMaterial, PerspectiveCamera, Raycaster, Scene, Vector2, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { frameModels } from './framing';
+import type { ElementIdentity, ViewerPicking } from '../../core/contracts';
 
-export class Viewer {
+export class Viewer implements ViewerPicking {
   readonly scene = new Scene();
   readonly camera = new PerspectiveCamera(45, 1, 0.01, 1000000);
   readonly renderer: WebGLRenderer;
@@ -10,6 +11,8 @@ export class Viewer {
   readonly grid = new GridHelper(100, 100, 0x9caea3, 0xcdd8d0);
   private readonly resize: ResizeObserver;
   private readonly models = new Set<Group>();
+  private readonly raycaster = new Raycaster();
+  private highlighted?: { mesh: Mesh; emissive: Color; intensity: number };
   private disposed = false;
   private readonly onContextLost = (event: Event) => {
     event.preventDefault();
@@ -52,12 +55,56 @@ export class Viewer {
   add(group: Group): void {
     if (this.disposed) throw new Error('Viewer has been disposed.');
     this.models.add(group);
+    group.traverse((object) => {
+      if (object instanceof Mesh) object.userData.modelId = group.userData.modelId;
+    });
     this.scene.add(group);
   }
 
   remove(group: Group): void {
+    if (this.highlighted && group.getObjectById(this.highlighted.mesh.id)) this.highlight(null);
     this.models.delete(group);
     group.removeFromParent();
+  }
+
+  pick(clientX: number, clientY: number): ElementIdentity | null {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    this.raycaster.setFromCamera(new Vector2(
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1,
+    ), this.camera);
+    const hits = this.raycaster.intersectObjects([...this.models], true);
+    const hit = hits.find((item) => item.object instanceof Mesh && Number.isInteger(item.object.userData.expressId));
+    if (!hit) return null;
+    return { modelId: hit.object.userData.modelId, expressId: hit.object.userData.expressId };
+  }
+
+  highlight(identity: ElementIdentity | null): void {
+    if (this.highlighted) {
+      const material = this.highlighted.mesh.material;
+      if (material instanceof MeshStandardMaterial) {
+        material.emissive.copy(this.highlighted.emissive);
+        material.emissiveIntensity = this.highlighted.intensity;
+      }
+      this.highlighted = undefined;
+    }
+    if (!identity) return;
+    for (const group of this.models) {
+      if (group.userData.modelId !== identity.modelId) continue;
+      let found: Mesh | undefined;
+      group.traverse((object) => {
+        if (object instanceof Mesh && object.userData.expressId === identity.expressId) found = object;
+      });
+      if (!found) continue;
+      const material = found.material;
+      if (material instanceof MeshStandardMaterial) {
+        this.highlighted = { mesh: found, emissive: material.emissive.clone(), intensity: material.emissiveIntensity };
+        material.emissive.set(0x2d8cff);
+        material.emissiveIntensity = 0.8;
+      }
+      return;
+    }
   }
 
   fit(): void {

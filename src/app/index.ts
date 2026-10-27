@@ -5,6 +5,10 @@ import { ModelRegistry } from '../core/session';
 import { ViewerAvailability } from '../core/availability';
 import { deploymentStorage } from '../core/settings';
 import type { FeatureHandle, ViewerControls } from '../core/contracts';
+import { SelectionStore } from '../core/selection';
+import { mountElementSelection } from '../features/element-selection';
+import { mountElementProperties } from '../features/element-properties';
+import { mountModelHierarchy } from '../features/model-hierarchy';
 import { mountIfcLoading } from '../features/ifc-loading';
 import { mountModelControls } from '../features/model-controls';
 import { mountNavigation } from '../features/viewer-navigation';
@@ -27,6 +31,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   const availability = new ViewerAvailability();
   const adapter = new IfcAdapter();
   let viewer: Viewer | undefined;
+  const selection = new SelectionStore();
   let disposed = false;
   const session = new ModelRegistry(async (bytes, modelId) => {
     if (!availability.available || disposed) throw new Error('Viewer unavailable. Reload to start a new session.');
@@ -35,6 +40,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       disposeModel(result.group);
       throw new Error('Viewer session ended.');
     }
+    result.group.userData.modelId = modelId;
     try { viewer.add(result.group); } catch (error) { disposeModel(result.group); throw error; }
     return {
       schema: result.schema,
@@ -64,6 +70,9 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     }),
     mountNavigation(slot('navigation'), session, availability, controls),
     mountSettings(slot('settings'), deploymentStorage(import.meta.env.BASE_URL), controls, feedback.notice),
+    mountElementSelection(viewport, selection, { pick: (x, y) => viewer?.pick(x, y) ?? null, highlight: (identity) => viewer?.highlight(identity) }),
+    mountElementProperties(slot('feature-dock'), selection, session),
+    mountModelHierarchy(slot('feature-dock'), session, selection),
   ];
   let loadedCount = 0;
   const unsubscribe = session.subscribe(() => {

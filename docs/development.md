@@ -57,37 +57,22 @@ The three user-supplied IFC2x3 models are saved locally in Git-ignored `tests/fi
 npm run test:e2e -- --grep "Duplex IFC2x3 models" --workers=1
 ```
 
-On 2026-10-27, all eight supplied-model production-preview checks passed after feature isolation: individual loading/rendering, hide/show/removal for architecture, MEP, and electrical, plus combined loading, sidebar collapse, independent visibility/removal, reopening, no model persistence, and no external requests/uploads, in both Chrome and Edge. Pixel checks operate in memory; these tests disable screenshot, video, and trace artifacts. The full suite runs these checks when the local files are available, alongside the synthetic tests. See [fixture provenance](test-fixtures.md) for the local-only file policy.
+On 2026-10-27, all eight supplied-model production-preview checks passed after feature isolation in Chrome: individual loading/rendering, hide/show/removal for architecture, MEP, and electrical, plus combined loading, sidebar collapse, independent visibility/removal, reopening, no model persistence, and no external requests/uploads. Pixel checks operate in memory; these tests disable screenshot, video, and trace artifacts. The full suite runs these checks when the local files are available, alongside the synthetic tests. See [fixture provenance](test-fixtures.md) for the local-only file policy.
 
 ## Deployment
 
-Follow the [development/review/production contract](release-policy.md): feature branches integrate into `dev` and are tested without publishing; `dev` has the stable review URL. Tested work pushed to remote `dev` with required checks passing closes a phase for development. Only the human user promotes from `dev` to production with explicit business approval; deployment success or passing CI does not supply that approval.
+Phase 0 uses the [default-branch Pages workflow](../.github/workflows/pages.yml). The workflow accepts pushes to `main` and `master`, but runs tests and deploys only for whichever is configured as the repository default (currently `master`). On Ubuntu it installs Chrome, runs unit tests and a production build, tests the built preview in Chrome, then deploys only `dist/` to `https://souravganguli.github.io/IfcCostEstimator/`. Other branches and pull requests are checked locally; they do not run cloud tests or deploy.
 
-The default base is `/IfcCostEstimator/`. Set `VITE_BASE_PATH` before starting or building to use another same-origin deployment path. Browser tests use that same base. Do not add a root-path-only asset reference. For a nested review build:
+The default base is `/IfcCostEstimator/`. Set `VITE_BASE_PATH` before starting or building only when testing another same-origin deployment path. Do not add root-path-only asset references. See [release-policy.md](release-policy.md) for the one-time GitHub Pages Actions-source setup and post-deployment Chrome smoke test. The workflow's HTTP check is not proof of browser rendering or IFC/WASM loading. Local files must not be uploaded.
 
-```powershell
-$env:VITE_BASE_PATH = '/IfcCostEstimator/dev/'
-$env:TEST_SERVER = 'preview'
-try {
-	npm run build
-	if ($LASTEXITCODE -eq 0) { npm run test:e2e -- --grep-invert 'Duplex IFC2x3 models' }
-} finally {
-	Remove-Item Env:VITE_BASE_PATH, Env:TEST_SERVER
-}
-```
+The single-threaded engine emits same-origin WASM through Vite; no worker, external CDN, or `SharedArrayBuffer` is used. Static asset requests still reach the hosting origin, but local model contents must not be uploaded.
 
-The selected layout is production at the project root and development at `/dev/`. The [validation workflow](../.github/workflows/pages.yml) tests feature branches and PRs without publishing privileges or creating branch artifacts. Only successful remote `dev` pushes publish a review build. The [trusted publisher](../.github/workflows/pages-publish.yml) stores that tested application build on `pages-artifacts` and deploys the latest combined site, preserving production. Per-path `_deployment.json` and the Actions run summary identify the reviewed commit. Production publication is manual and approval-protected; automatic dev publication cannot promote source branches or rebuild production.
+### Previously recorded local browser verification
 
-The [owner setup and bootstrap instructions](release-policy.md#human-owner-setup) are required before these URLs work. In particular, preserve the existing approved production artifact when initializing the store; do not enable an empty production destination for an existing live site. Settings are non-sensitive and isolated by review base path, but same-origin subpages are not security boundaries. GitHub settings, remote runs, and live URLs have not been changed or verified locally.
-
-Live URL verification remains required before advertising preview or production hosting as working, but production business approval and deployment are separate from development phase closure. The single-threaded engine emits a same-origin WASM asset through Vite; no worker, external CDN, or `SharedArrayBuffer` is used. Static asset requests still reach the hosting origin, but local files must not be uploaded.
-
-### Local Subpath Verification
-
-- 53 unit/contract/integration tests passed across 10 files. Publisher-specific checks were rerun after final path guards; strict TypeScript checking passed.
-- The stable `/IfcCostEstimator/dev/` base passed 14 synthetic Chrome/Edge checks. The production root passed 22 checks, including all eight local-only Duplex checks with none skipped. Feature branches use the ordinary local project base for CI tests and do not produce Pages URLs or uploadable build artifacts.
-- Canvas-pixel assertions verify geometry and navigation; desktop and narrow-screen screenshots were inspected. The original production settings key and scoped dev settings pass persistence checks. The existing large-bundle warning remains.
-- These 36 local browser checks are not live Pages evidence. Workflow parsing and mocked GitHub responses verify local contracts; actual Actions triggers, protected-environment permissions, artifact-store pushes, and remote deployment remain unverified. No remote content or settings were changed.
+- 53 unit/contract/integration tests passed across 10 files; legacy publisher checks passed before the old shared-subpath publisher was removed.
+- Historical local Chrome runs passed 14 synthetic checks at the `/dev/` base and 22 at the production root, including all eight local-only Duplex checks with none skipped. `/dev/` is no longer a deployed Phase 0 destination.
+- Canvas-pixel assertions verify geometry and navigation; desktop and narrow-screen screenshots were inspected. The original settings key and scoped-subpath settings passed persistence checks. The existing large-bundle warning remains.
+- These local browser checks are not live Pages evidence. GitHub Actions execution, deployment settings, and live browser rendering still require verification. No remote content or settings were changed as part of those local checks.
 
 ## Validation Limits
 
@@ -99,7 +84,6 @@ One sequential local production-preview run of the three supplied files (approxi
 
 | Browser | Combined Load | Fit Interaction | JS Heap Before | JS Heap Loaded | JS Heap After Removal and Forced GC | Longest Observed Main-Thread Task |
 | --- | --- | --- | --- | --- | --- | --- |
-| Edge | 2,352 ms | 141 ms | 13.32 MB | 50.64 MB | 13.82 MB | 698 ms |
 | Chrome | 2,409 ms | 160 ms | 13.30 MB | 50.91 MB | 13.79 MB | 647 ms |
 
 Values are decimal megabytes from CDP's `JSHeapUsedSize`, not total process, WASM-heap, or GPU memory. Fit timing includes test-driver overhead; long-task observations include the buffered page workload. Results are one-run observations on the local machine, not a benchmark distribution, production latency guarantee, or maximum supported input size. Numeric-only measurement attachments are kept in ignored test output; no model content, geometry, property data, or model screenshots are attached.

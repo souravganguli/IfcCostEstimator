@@ -1,6 +1,6 @@
 # Feature: IFC Loading
 
-Status: Locally verified with synthetic IFC4 coverage and eight supplied-model production-preview checks in Chrome/Edge. Broader schema/geometry claims are not made. Live GitHub Pages acceptance remains pending.
+Status: Locally verified with synthetic IFC4 coverage and eight supplied-model production-preview checks in Chrome. Broader schema/geometry claims are not made. Live GitHub Pages acceptance remains pending.
 
 ## Goal
 

@@ -14,7 +14,7 @@ Release-specific scope, delivery steps, browser targets, and acceptance criteria
 
 Each delivery phase corresponds to a major version: Phase 0 is POC Viewer (`0.00.00` baseline), Phase 1 is MVP (`1.00.00` baseline), and subsequent phases advance the major number. Versions follow **major.minor.fix**. Plan naming, increment rules, and the equivalent npm version format are defined in [docs/versioning.md](docs/versioning.md).
 
-Feature branches integrate into `dev` and are tested locally and by CI without publication. Only `dev` and production have published URLs on the same GitHub Pages site: `/dev/` and the project root, respectively. Verified work pushed to remote `dev` with required checks passing closes the development gate. Promotion to production is performed only by the human user with explicit business approval. Development closure is not production approval. See [docs/release-policy.md](docs/release-policy.md) for publishing and owner setup; the workflows are implemented locally, but live URLs are not yet provisioned or verified.
+Phase 0 is developed directly on the default branch (`main`, currently named `master` in GitHub). Only pushes to that default branch run Ubuntu/Chrome cloud checks and deploy the tested build to the GitHub Pages project URL; changes on other branches are checked locally. See [docs/release-policy.md](docs/release-policy.md) for the deployment contract and setup; the live workflow and deployed app still require verification.
 
 ## Feature Specifications
 

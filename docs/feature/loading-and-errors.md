@@ -1,6 +1,6 @@
 # Feature: Loading and Error Feedback
 
-Status: Locally verified with isolated feature tests, simulated recoverable allocation/initialization failures, and Chrome/Edge initialization/context-loss browser checks. Real process-level memory exhaustion is not claimed recoverable. Live deployment verification remains pending.
+Status: Locally verified with isolated feature tests, simulated recoverable allocation/initialization failures, and Chrome initialization/context-loss browser checks. Real process-level memory exhaustion is not claimed recoverable. Live deployment verification remains pending.
 
 ## Goal
 

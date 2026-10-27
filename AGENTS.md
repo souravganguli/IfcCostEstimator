@@ -18,7 +18,7 @@ This file governs agent workflow and behavior. It is not the source of product r
 - Update the relevant specification and documentation when behavior changes. Repair links when files move.
 - Follow the local-only fixture policy in [docs/test-fixtures.md](docs/test-fixtures.md). Preserve ignored model files and never force-add them or include their contents in published diagnostics or artifacts.
 - Before deleting obsolete files, confirm they have no maintained references or user edits. Do not commit, push, publish, or change repository settings unless requested.
-- Follow [docs/release-policy.md](docs/release-policy.md) for integration and review. Target feature work at `dev`, never production. Never perform production promotion; it belongs to the human user with explicit business approval. Record development closure only after the verified work reaches remote `dev` and required checks pass.
+- Follow [docs/release-policy.md](docs/release-policy.md) for integration and review. Use the branch specified for the task; direct work on the default branch (`main` or the repository's current `master`) is permitted when requested. Only pushes to the configured default branch run cloud checks and deploy; other branches are checked locally. Record Phase 0 closure only after the default-branch workflow and deployed-site verification pass.
 
 ## Validation and Reporting
 
@@ -27,4 +27,4 @@ This file governs agent workflow and behavior. It is not the source of product r
 - Scale checks to the change. Verify browser rendering and interactions for viewer changes, not only DOM state or a successful build.
 - For documentation-only changes, validate links, specification structure, and consistency instead of running unrelated application tests. For cleanup affecting runtime assets or configuration, also verify build and relevant runtime tests.
 - Report checks actually run, their results, and skipped or blocked requirements. Missing local-only fixtures must be reported as skips, not passing model qualification.
-- Do not mark a gate complete without its required evidence or imply local preview establishes deployed compatibility. Distinguish development closure, preview deployment, and human-approved production release.
+- Do not mark a gate complete without its required evidence or imply local preview establishes deployed compatibility. Distinguish local checks, a successful master workflow, and verified live-site behavior.

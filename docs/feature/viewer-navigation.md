@@ -1,6 +1,6 @@
 # Feature: 3D Navigation
 
-Status: Implemented locally; Chrome/Edge browser tests and canvas-pixel comparisons exercise rendering and camera movement. Live deployment verification remains pending.
+Status: Implemented locally; Chrome browser tests and canvas-pixel comparisons exercise rendering and camera movement. Live deployment verification remains pending.
 
 ## Goal
 

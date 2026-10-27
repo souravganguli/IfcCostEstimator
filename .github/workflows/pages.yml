@@ -1,18 +1,27 @@
-name: Validate Pages branch
+name: Test and deploy Phase 0
 
 on:
   push:
-    branches-ignore: [pages-artifacts, gh-pages]
-  pull_request:
-    branches: [dev]
-  workflow_dispatch:
+    branches: [main, master]
 
 permissions:
   contents: read
 
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
 jobs:
-  build:
+  deploy:
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,22 +33,33 @@ jobs:
       - run: npm ci
       - name: Install Chrome
         run: npx playwright install --with-deps chrome
-      - name: Choose branch deployment base
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
-          PRODUCTION_BRANCH: ${{ vars.PRODUCTION_BRANCH || github.event.repository.default_branch }}
-        run: node --experimental-strip-types scripts/pages-publish.ts plan
       - run: npm run test
       - run: npm run build
-      - run: npm run test:e2e
-      - name: Test production preview
+      - name: Test built site in Chrome
         env:
           TEST_SERVER: preview
         run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: (github.event_name == 'push' && github.ref_name == 'dev') || (github.event_name == 'workflow_dispatch' && github.ref_name == (vars.PRODUCTION_BRANCH || github.event.repository.default_branch))
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          name: site
           path: dist
-          if-no-files-found: error
+      - uses: actions/deploy-pages@v4
+        id: deployment
+      - name: Verify deployed entry point and application asset
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          node --input-type=module <<'JS'
+          const siteUrl = process.env.SITE_URL;
+          if (!siteUrl) throw new Error('GitHub Pages did not provide a deployment URL.');
+
+          const response = await fetch(siteUrl, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Deployed entry point returned HTTP ${response.status}.`);
+          const html = await response.text();
+          const assetPath = html.match(/(?:src|href)="([^"]+\/assets\/[^"]+\.(?:js|css))"/)?.[1];
+          if (!assetPath) throw new Error('Deployed entry point does not reference a built application asset.');
+
+          const asset = await fetch(new URL(assetPath, siteUrl), { cache: 'no-store' });
+          if (!asset.ok) throw new Error(`Deployed application asset returned HTTP ${asset.status}.`);
+          console.log(`Verified deployed entry point and asset: ${siteUrl}`);
+          JS

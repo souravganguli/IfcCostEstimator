@@ -1,6 +1,6 @@
 # Feature: Viewer Settings
 
-Status: Implemented locally with unit and Chrome/Edge browser coverage. Live deployment verification remains pending.
+Status: Implemented locally with unit and Chrome browser coverage. Live deployment verification remains pending.
 
 ## Goal
 
@@ -16,7 +16,7 @@ Include preference validation, versioning, namespaced Web Storage, and graceful 
 
 Use the key `ifccostestimator:settings:v1` with a JSON object containing only `version: 1` and `showGrid: boolean`. The default is `showGrid: true`. A labeled checkbox toggles the scene grid. Invalid or incompatible records use defaults; writes include only these approved fields. No camera, model, or filename state is saved.
 
-Production retains this existing key. The development review build at `/dev/`, beneath the configured project root, appends `:<deployment-base>` to the key. Production and dev therefore restore independent grid preferences. Feature branches are not published and use the local/default preference behavior during tests. This separates ordinary preferences, not origin security or sensitive data access.
+The production project path retains this existing key. A build served at a different deployment subpath appends `:<deployment-base>` to the key, keeping preferences separate across paths. Feature branches are not published and use the local/default preference behavior during tests. This separates ordinary preferences, not origin security or sensitive data access.
 
 1. Store only explicitly defined, small viewer preferences in application-namespaced, versioned `localStorage` entries. Use `sessionStorage` only if a preference explicitly requires tab-scoped behavior.
 2. Validate stored values and version compatibility before use. Missing, invalid, or incompatible values must use safe defaults.
@@ -24,7 +24,7 @@ Production retains this existing key. The development review build at `/dev/`, b
 4. Do not persist IFC binaries, geometry, properties, quantities, filenames, local paths, file handles, or project/model records.
 5. Reloading may restore valid preferences but must not restore models. Do not use IndexedDB, OPFS, filesystem-backed persistence, or application-managed Cache Storage.
 6. Storage operations must affect only this application's keys, not other GitHub Pages applications sharing the origin.
-7. Production and development must not overwrite one another's preferences. Keep compatibility with existing production preferences and do not migrate or copy model state between paths.
+7. Builds served from distinct deployment subpaths must not overwrite one another's preferences. Keep compatibility with existing production preferences and do not migrate or copy model state between paths.
 
 ## Dependencies
 

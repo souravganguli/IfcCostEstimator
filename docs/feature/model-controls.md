@@ -1,6 +1,6 @@
 # Feature: Model Controls
 
-Status: Implemented locally; unit and Chrome/Edge browser tests cover model identity, visibility, removal, cleanup ownership, and reopening. Live deployment verification remains pending.
+Status: Implemented locally; unit and Chrome browser tests cover model identity, visibility, removal, cleanup ownership, and reopening. Live deployment verification remains pending.
 
 ## Goal
 

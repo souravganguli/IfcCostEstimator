@@ -142,6 +142,14 @@ Do not treat an unmapped, mismatched or missing-quantity result as zero cost, or
 
 ## Completion Evidence
 
+### Gate 1A_01 (contracts, fixtures, layout)
+
+- Shared predicate contract ([src/core/predicate.ts](../../src/core/predicate.ts)) and metric normalization ([src/core/units.ts](../../src/core/units.ts)) added as pure core modules; both respected by the architecture-boundary test.
+- Coordinate convention verified empirically: `web-ifc` emits Y-up geometry (an authored Z-extruded solid measures its height on scene Y), so the IFC adapter needs no added rotation. Contract wording in [cross-cutting-contracts.md](../feature/cross-cutting-contracts.md) corrected to match.
+- Eight committed synthetic fixtures under `tests/fixtures/1a/` (duplicate express IDs across two models, multi-storey IFC4, multi-storey IFC2x3 with BaseQuantities and an empty Pset, millimetre and unknown units, malformed spatial relations, aggregate parent/child). Provenance in [test-fixtures.md](../test-fixtures.md). All load through `web-ifc`.
+- Dockable layout scaffold: a right-side `feature-dock` region added to the app shell and a hard 1280x720 desktop minimum (no reflow/stacking below it; viewport scrolls). Two former 390px mobile e2e assertions retargeted to the supported 1280x720 minimum.
+- Checks (Chrome via Playwright, Node 22.23.4 on Windows): `npm run typecheck` clean; `npm run test` 52 passed (12 files); `npm run build` succeeded with the known pre-existing bundle-size warning; `npm run test:e2e` 7 passed, 4 Duplex skipped (local-only fixtures absent). Committed on `dev`; not pushed. Live-site verification deferred per the Unattended Execution Policy.
+
 Phase 1A remains planned until each step's evidence is recorded. Record the source commit, focused/unit/build/browser test outcomes, tested browser, fixture schema and provenance, manual rendering checks, privacy/storage observations, performance/resource limits, failures/skips, and known limitations. Do not change the package version, publish, or mark Phase 1 complete without separate release authorization and its required gates.
 
 Phase 1B completion additionally requires the committed performance baseline and a working regression guard (no optimization); drawing feasibility decisions and, for each approved drawing feature, implementation and rendering evidence; integrated Phase 1B browser results; fixture availability/provenance and skips; and known limitations. A no-go decision is evidence for changing scope, not evidence that an unimplemented feature passed.

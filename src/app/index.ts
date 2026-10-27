@@ -16,7 +16,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     <header class="topbar"><span data-slot="models-toggle"></span><h1>IFC <span>Viewer</span></h1><span data-slot="loading" class="loading-slot"></span></header>
     <main class="workspace">
       <aside id="models-sidebar" class="sidebar" aria-label="Models"></aside>
-      <section class="viewport" aria-label="3D viewer"><div class="viewer-toolbar"><span data-slot="navigation"></span><span data-slot="settings"></span></div><div class="viewer-overlay" data-slot="feedback"></div></section>
+      <section class="viewport" aria-label="3D viewer"><div class="viewer-toolbar"><span data-slot="navigation"></span><span data-slot="settings"></span></div><div class="feature-dock" data-slot="feature-dock" aria-label="Tools"></div><div class="viewer-overlay" data-slot="feedback"></div></section>
     </main>
     <footer></footer>
   `;

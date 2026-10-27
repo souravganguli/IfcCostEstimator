@@ -25,14 +25,14 @@ One typed contract is shared by [Model filtering](model-filtering.md), [Model se
 
 ## 4. Layout and Accessibility
 
-- Minimum supported desktop viewport 1280x720 on desktop Chrome.
-- Feature UIs live in a dockable side-panel region, with overlays (view cube, minimap) in reserved viewport corners; the layout spec is produced in gate 1A_01 before feature UI is added.
+- Minimum supported desktop viewport 1280x720 on desktop Chrome. This is a hard minimum: below it the layout does not reflow or stack and the viewport scrolls instead. Mobile and narrow layouts are not supported.
+- Feature UIs live in the left models sidebar and a right-side `feature-dock` region, with overlays (view cube, minimap) in reserved viewport corners; the layout scaffold is produced in gate 1A_01 before feature UI is added.
 - Every control is keyboard reachable, has an accessible name, and has a visible focus state; text from IFC files is rendered as text only.
 
 ## 5. Coordinate and View Conventions
 
-- IFC is Z-up; the viewer scene is Y-up. The conversion lives only in the IFC/viewer adapters and is covered by a test.
-- Standard views are project-north based: Front looks toward +Y (IFC) from -Y, Top looks down -Z. Models without a project north use IFC world axes.
+- IFC is Z-up; the viewer scene is Y-up. The `web-ifc` geometry extraction already emits Y-up geometry (the IFC Z height becomes scene Y), so the IFC adapter performs no additional rotation; a test asserts this (an authored Z-extruded solid measures its height on scene Y). Any future axis handling stays inside the IFC/viewer adapters.
+- Standard views are project-north based and expressed in scene (Y-up) axes: Top looks down -Y, Front looks along +Z toward -Z, Side looks along +X. Models without a project north use the scene world axes. The adapter maps these to the IFC source orientation.
 - Display and takeoff units are metric. Source units that are not metric are converted (section 7).
 
 ## 6. Fixtures

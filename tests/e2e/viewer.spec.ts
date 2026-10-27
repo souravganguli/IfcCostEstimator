@@ -86,10 +86,10 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await page.getByRole('button', { name: 'Fit visible models' }).click();
   await page.getByRole('button', { name: 'Show model 1', exact: true }).click();
   await page.screenshot({ path: test.info().outputPath('models-desktop.png') });
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Fit visible models' }).click();
-  await page.screenshot({ path: test.info().outputPath('models-mobile.png') });
+  await page.screenshot({ path: test.info().outputPath('models-min-desktop.png') });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Remove model 1', exact: true }).click();
   await expect(page.locator('[data-model-id="3"]')).toContainText('Visible');
@@ -152,7 +152,7 @@ test('compact chrome and collapsible models panel preserve models and resize the
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
 
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }]) {
     await page.setViewportSize(viewport);
     expect((await page.locator('header').boundingBox())!.height).toBe(44);
     expect((await page.locator('footer').boundingBox())!.height).toBe(24);

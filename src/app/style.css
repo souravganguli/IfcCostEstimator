@@ -1,7 +1,8 @@
-:root { --header-height: 44px; --footer-height: 24px; font-family: 'Bahnschrift', 'Trebuchet MS', sans-serif; color: #23332d; background: #f5f7f6; font-synthesis: none; letter-spacing: 0; }
+:root { --header-height: 44px; --footer-height: 24px; --min-app-width: 1280px; --min-app-height: 720px; --dock-width: 320px; font-family: 'Bahnschrift', 'Trebuchet MS', sans-serif; color: #23332d; background: #f5f7f6; font-synthesis: none; letter-spacing: 0; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-#app { height: 100dvh; display: grid; grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height); overflow: hidden; }
+html, body { min-width: var(--min-app-width); }
+#app { height: 100dvh; min-width: var(--min-app-width); min-height: var(--min-app-height); display: grid; grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height); overflow: hidden; }
 button, input { font: inherit; }
 .topbar { height: var(--header-height); display: flex; align-items: center; gap: 10px; padding: 0 12px; background: white; border-bottom: 1px solid #d6dfda; }
 h1 { margin: 0; font-size: 18px; color: #176951; white-space: nowrap; }
@@ -14,6 +15,9 @@ h2 { font-size: 15px; font-weight: 500; margin: 0 0 20px; }
 .viewport { position: relative; overflow: hidden; background: #eaf0ed; }
 .viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .viewer-overlay { position: absolute; inset: 0; pointer-events: none; }
+.feature-dock { position: absolute; z-index: 1; top: 16px; right: 16px; bottom: 16px; width: var(--dock-width); max-width: calc(100% - 32px); display: flex; flex-direction: column; gap: 12px; overflow: auto; pointer-events: none; }
+.feature-dock:empty { display: none; }
+.feature-dock > * { pointer-events: auto; }
 .viewer-toolbar { position: absolute; z-index: 1; top: 16px; right: 16px; display: flex; align-items: center; gap: 12px; background: #ffffffed; padding: 6px; border: 1px solid #c8d6cd; border-radius: 4px; }
 footer { height: var(--footer-height); min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; border-top: 1px solid #d6dfda; background: white; color: #687b70; font-size: 11px; }
 footer span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -29,4 +33,4 @@ button svg { width: 18px; height: 18px; flex-shrink: 0; }
 .icon-button { width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; }
 .topbar .icon-button { border-color: transparent; background: transparent; }
 .topbar .icon-button:hover { background: #edf2ef; }
-@media (max-width: 640px) { .workspace { grid-template-columns: 190px minmax(0, 1fr); } .sidebar { padding: 14px 10px; } .viewer-toolbar { top: 10px; right: 10px; } }
+/* Desktop Chrome is the only supported target. 1280x720 is a hard minimum: below it the layout does not reflow or stack; the viewport scrolls instead. Mobile and narrow layouts are not supported. */

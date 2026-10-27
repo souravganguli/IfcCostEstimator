@@ -53,11 +53,17 @@ jobs:
           const siteUrl = process.env.SITE_URL;
           if (!siteUrl) throw new Error('GitHub Pages did not provide a deployment URL.');
 
-          const response = await fetch(siteUrl, { cache: 'no-store' });
-          if (!response.ok) throw new Error(`Deployed entry point returned HTTP ${response.status}.`);
-          const html = await response.text();
-          const assetPath = html.match(/(?:src|href)="([^"]+\/assets\/[^"]+\.(?:js|css))"/)?.[1];
-          if (!assetPath) throw new Error('Deployed entry point does not reference a built application asset.');
+          // Pages and its CDN can lag briefly behind a completed deployment.
+          let assetPath;
+          for (let attempt = 1; attempt <= 12 && !assetPath; attempt++) {
+            const response = await fetch(siteUrl, { cache: 'no-store' });
+            if (response.ok) {
+              const html = await response.text();
+              assetPath = html.match(/(?:src|href)="([^"]+\/assets\/[^"]+\.(?:js|css))"/)?.[1];
+            }
+            if (!assetPath) await new Promise((resolve) => setTimeout(resolve, 10000));
+          }
+          if (!assetPath) throw new Error('Deployed entry point did not serve a built application asset reference.');
 
           const asset = await fetch(new URL(assetPath, siteUrl), { cache: 'no-store' });
           if (!asset.ok) throw new Error(`Deployed application asset returned HTTP ${asset.status}.`);

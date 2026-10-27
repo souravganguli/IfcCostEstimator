@@ -59,7 +59,7 @@ Prefer injected services, typed callbacks, and narrow commands/read-only state v
 - The shell supplies mounting locations and dependencies; feature modules expose a mount/initialization operation and cleanup when they own resources or subscriptions. Use simple functions where a larger lifecycle abstraction is unnecessary.
 - Cleanup must remove feature-owned listeners, subscriptions, timers, DOM, and other resources. Shared model/GPU resources remain governed by their owning service so disabling a feature cannot invalidate another feature's resources.
 - Keep feature-local state private. Shared state must have a single owner and be changed through explicit operations, not direct mutation from multiple features.
-- Persist only the small settings permitted by the overall architecture. Modularization does not authorize new storage systems or persistence of models and derived data.
+- Persist only the small settings permitted by the overall architecture. Modularization does not authorize new storage systems or persistence of models and derived data. Phase 1C estimate data is exchanged only through explicit user file import and download, not stored by the app.
 - Removing a feature's registration must not break unrelated features; any genuine dependency must be declared in its specification and supplied explicitly.
 
 ## Feature Specifications

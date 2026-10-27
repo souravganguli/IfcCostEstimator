@@ -9,7 +9,7 @@ All delivery plans belong in `docs/plans/`. Use the filename pattern `Phase_<num
 | 0 | POC Viewer | [Phase_0_POC_Viewer.md](plans/Phase_0_POC_Viewer.md) | `0.00.00` |
 | 1 | MVP | `Phase_1_MVP.md` | `1.00.00` |
 
-Phase 1 is the naming/version example for the next phase; its scope and plan have not been defined. Subsequent phase numbers map to the corresponding major version. Do not invent requirements or mark a phase complete from its name or version alone.
+Phase 1A and Phase 1B are delivery tranches within Phase 1, not separate major phases; both remain within major version `1`. Subsequent phase numbers map to the corresponding major version. Do not invent requirements or mark a phase complete from its name or version alone.
 
 Each phase plan must identify its phase number, title, major version, and baseline version, and define its scope, exclusions, delivery steps, test gates, acceptance criteria, and completion evidence. Feature details stay in their individual specifications under `docs/feature/` and are referenced by the plan.
 

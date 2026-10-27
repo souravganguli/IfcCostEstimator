@@ -24,6 +24,8 @@ Each specification must state its planned or implemented status, goal, scope and
 
 The viewing features are [IFC loading](docs/feature/ifc-loading.md), [3D navigation](docs/feature/viewer-navigation.md), [model controls](docs/feature/model-controls.md), [loading and error feedback](docs/feature/loading-and-errors.md), and [viewer settings](docs/feature/viewer-settings.md). These specifications inherit the architectural boundaries below; they do not override them.
 
+The selected Phase 1A feature requirements are linked from the [Phase 1 MVP plan](docs/plans/Phase_1_MVP.md). They are planned capabilities, not claims of implementation.
+
 ## Local Development
 
 Use Node.js 22.12 or newer; Node 22.23.4 and npm 10.9.9 were verified locally.
@@ -90,7 +92,7 @@ The registry, adapter, and rendering controller must have explicit cleanup owner
 
 - Use `localStorage` for small, versioned viewer preferences. `sessionStorage` is permitted for tab-scoped settings if needed.
 - Namespace storage keys to this application because GitHub Pages projects on the same origin share Web Storage. Isolate non-sensitive review preferences by deployment subpath; this is not a security boundary.
-- Do not persist IFC binaries, geometry, model properties, quantities, filenames, local paths, file handles, or project records.
+- Do not persist IFC binaries, geometry, model properties, quantities, filenames, local paths, file handles, or project records in application-managed storage. Phase 1C estimate data (CBS, rules, rates, workbooks) leaves the app only as user-initiated local file downloads and re-enters only through user-selected file imports; there is no upload and no app persistence.
 - Do not introduce IndexedDB, OPFS, filesystem-backed persistence, or application-managed Cache Storage. Ordinary browser HTTP caching of static assets is separate from application data storage.
 - Treat storage as optional: denied access, corrupt values, incompatible versions, or quota errors must fall back to safe in-memory defaults without preventing viewing.
 

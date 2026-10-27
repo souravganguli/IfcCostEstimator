@@ -98,6 +98,10 @@ All Phase 0 boundaries remain in force: local IFC processing in the browser, sam
 
 Every step starts from its feature specification, adds focused unit/contract tests, and includes relevant browser verification before advancing. Shared contracts require impact review across consumers. Do not mark a feature complete from a successful build or DOM-only assertion; verify actual rendering where geometry or camera behavior changes.
 
+### 1A_02 implementation evidence
+
+The semantic foundation is implemented locally in commits `21aa7bd` and `6ab54fd`. The IFC adapter now exposes model-scoped metadata, occurrence/type property sets, source quantity sets, and a bounded spatial hierarchy; rendered meshes retain their express IDs for adapter-owned picking. Shared selection state, highlight cleanup, property inspection, and hierarchy browsing are wired into the application. Validation completed: 53 unit tests, typecheck, production build, and the focused Chrome workflows for model loading, settings, layout, and context-loss recovery. Full hierarchy visibility actions and the remaining cross-feature acceptance coverage remain to be completed before the gate is closed.
+
 ## Phase 1B Delivery Sequence and Gates
 
 Phase 1B begins after Phase 1A's delivery gates are complete. Its assigned workstreams have independent gates: drawing implementation is conditional on feasibility approval, and the performance workstream records a baseline and a regression guard only, with no optimization in this tranche.

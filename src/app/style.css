@@ -1,0 +1,32 @@
+:root { --header-height: 44px; --footer-height: 24px; font-family: 'Bahnschrift', 'Trebuchet MS', sans-serif; color: #23332d; background: #f5f7f6; font-synthesis: none; letter-spacing: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+#app { height: 100dvh; display: grid; grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height); overflow: hidden; }
+button, input { font: inherit; }
+.topbar { height: var(--header-height); display: flex; align-items: center; gap: 10px; padding: 0 12px; background: white; border-bottom: 1px solid #d6dfda; }
+h1 { margin: 0; font-size: 18px; color: #176951; white-space: nowrap; }
+h1 span { color: #23332d; font-weight: 400; }
+.loading-slot { margin-left: auto; }
+.workspace { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 0; }
+.workspace.sidebar-collapsed { grid-template-columns: minmax(0, 1fr); }
+.sidebar { background: white; border-right: 1px solid #d6dfda; padding: 16px; overflow: auto; }
+h2 { font-size: 15px; font-weight: 500; margin: 0 0 20px; }
+.viewport { position: relative; overflow: hidden; background: #eaf0ed; }
+.viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.viewer-overlay { position: absolute; inset: 0; pointer-events: none; }
+.viewer-toolbar { position: absolute; z-index: 1; top: 16px; right: 16px; display: flex; align-items: center; gap: 12px; background: #ffffffed; padding: 6px; border: 1px solid #c8d6cd; border-radius: 4px; }
+footer { height: var(--footer-height); min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; border-top: 1px solid #d6dfda; background: white; color: #687b70; font-size: 11px; }
+footer span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+footer span:last-child { flex-shrink: 0; }
+[hidden] { display: none !important; }
+button { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #c8d6cd; background: white; color: #23332d; border-radius: 4px; min-height: 36px; }
+button:hover { background: #e7f2eb; }
+button:focus-visible, input:focus-visible { outline: 2px solid #176951; outline-offset: 3px; }
+button:disabled { opacity: 0.45; cursor: default; }
+button svg { width: 18px; height: 18px; flex-shrink: 0; }
+.primary { background: #176951; color: white; border-color: #176951; padding: 0 14px; }
+.primary:hover { background: #10513d; }
+.icon-button { width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; }
+.topbar .icon-button { border-color: transparent; background: transparent; }
+.topbar .icon-button:hover { background: #edf2ef; }
+@media (max-width: 640px) { .workspace { grid-template-columns: 190px minmax(0, 1fr); } .sidebar { padding: 14px 10px; } .viewer-toolbar { top: 10px; right: 10px; } }

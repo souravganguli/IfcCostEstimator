@@ -1,0 +1,45 @@
+name: Validate Pages branch
+
+on:
+  push:
+    branches-ignore: [pages-artifacts, gh-pages]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Install Chrome
+        run: npx playwright install --with-deps chrome
+      - name: Choose branch deployment base
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+          PRODUCTION_BRANCH: ${{ vars.PRODUCTION_BRANCH || github.event.repository.default_branch }}
+        run: node --experimental-strip-types scripts/pages-publish.ts plan
+      - run: npm run test
+      - run: npm run build
+      - run: npm run test:e2e
+      - name: Test production preview
+        env:
+          TEST_SERVER: preview
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: (github.event_name == 'push' && github.ref_name == 'dev') || (github.event_name == 'workflow_dispatch' && github.ref_name == (vars.PRODUCTION_BRANCH || github.event.repository.default_branch))
+        with:
+          name: site
+          path: dist
+          if-no-files-found: error

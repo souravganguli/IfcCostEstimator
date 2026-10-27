@@ -1,20 +1,37 @@
 {
   "name": "ifccostestimator",
   "version": "0.0.0",
-  "description": "cost estimation from ifc model",
-  "main": "bundle.js",
+  "description": "Browser-only IFC viewing",
+  "private": true,
   "type": "module",
   "scripts": {
-    "build": "rollup -c ./rollup.config.js",
-    "watch": "rollup -w -c ./rollup.config.js"
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --config tests/vitest.config.ts",
+    "test:e2e": "playwright test --config tests/playwright.config.ts"
   },
   "author": "Sourav ganguli",
   "license": "ISC",
   "dependencies": {
-    "web-ifc-viewer": "^1.0.213"
+    "lucide": "^1.61.0",
+    "three": "^0.186.1",
+    "web-ifc": "0.0.78"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "rollup": "^3.9.0"
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^22.0.0",
+    "@types/pngjs": "^6.0.5",
+    "@types/three": "^0.183.0",
+    "happy-dom": "^21.0.4",
+    "pngjs": "^7.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.0",
+    "vitest": "^5.0.5",
+    "yaml": "^2.9.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

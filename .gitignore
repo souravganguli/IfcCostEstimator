@@ -1,0 +1,8 @@
+node_modules/
+dist/
+/tests/results/
+/tests/reports/
+/tests/coverage/
+/tests/artifacts/
+*.local
+/tests/fixtures/duplex/

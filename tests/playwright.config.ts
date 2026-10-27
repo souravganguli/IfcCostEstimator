@@ -15,7 +15,6 @@ export default defineConfig({
   ],
   fullyParallel: false,
   projects: [
-    { name: 'edge', use: { channel: 'msedge', launchOptions } },
     { name: 'chrome', use: { channel: 'chrome', launchOptions } },
   ],
   use: {

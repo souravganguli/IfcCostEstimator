@@ -2,7 +2,7 @@
 
 Phase: **0**. Major version: **0**. Baseline release: **0.00.00** (npm: `0.0.0`). Further releases within this phase use `0.<minor>.<fix>`, following [versioning.md](../versioning.md). Phase acceptance remains governed by the evidence and open gates below.
 
-Status: **Local implementation and checks verified; the default-branch cloud workflow and deployed Chrome smoke test remain pending. The intended default branch name is `main`; GitHub currently names the default `master`. On 2026-10-27, the public project URL returned source `index.html` referencing `/src/main.ts`, rather than the built application.** Phase 0 closes after the default-branch workflow passes and the deployed viewer is verified at the project URL.
+Status: **Deployed and verified for the synthetic fixture; closure pending the live check of the local-only Duplex models.** On 2026-10-27, Pages Source was switched to GitHub Actions, workflow run [40483356308](https://github.com/souravganguli/IfcCostEstimator/actions/runs/40483356308) (commit `f304edf`, Ubuntu/Chrome) passed, and a manual Chrome session at the project URL loaded `tests/fixtures/box.ifc`, rendered it, and showed it in the model list. The only console error was a 404 for `/favicon.ico`. The intended default branch name is `main`; GitHub currently names the default `master`.
 
 ## Goal
 
@@ -19,7 +19,7 @@ This is a delivery plan, not a statement that these capabilities are already imp
 | Viewing features | Additive/repeated-name loading, navigation, visibility/removal/reopening, collapse, invalid-file recovery, context-loss teardown, and reload recovery pass production-browser checks. Isolated camera tests verify exact combined/visible bounds and finite clipping planes. Bounded timings and JS-heap measurements for the supplied three-model workload are recorded in the development guide; no universal file-size or process/GPU-memory ceiling is claimed. |
 | Settings | Grid visibility is specified and implemented with namespaced Web Storage, validation, and in-memory fallback. Unit/browser tests cover corruption, denied storage, unrelated-key preservation, and reload without model restoration; unit tests also cover quota failures. |
 | Feature isolation | Implemented: five feature modules with public mount/dispose APIs and scoped styles; engine-independent session summaries/commands; separate adapters and application composition. Isolated feature/lifecycle tests and compiler-API import checks verify dependency direction, public entrypoints, and absence of cycles. |
-| Default-branch deployment | The tested root build is deployed by GitHub Actions only from the configured default branch (`master` today; `main` when renamed). The live URL currently serves source HTML rather than the built application. Record the successful hosted checks and verify the deployed viewer in Chrome before closing Phase 0. No other branch is tested in cloud CI or published. |
+| Default-branch deployment | The tested root build is deployed by GitHub Actions only from the configured default branch (`master` today; `main` when renamed). Hosted workflow passed and the live viewer was verified in Chrome with `box.ifc` (see Status). Remaining before closure: live-URL check of the three local-only Duplex IFC2x3 models, and a decision on the `/favicon.ico` 404. No other branch is tested in cloud CI or published. |
 
 ## Feature Scope
 

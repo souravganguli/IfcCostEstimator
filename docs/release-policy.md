@@ -14,7 +14,7 @@ The expected project URL is `https://souravganguli.github.io/IfcCostEstimator/`.
 
 In repository settings, configure **Pages → Build and deployment → Source** to **GitHub Actions** and allow Actions to deploy Pages. The workflow requests `pages: write` and `id-token: write` only for its deployment job. No deployment token or additional publishing branch is required.
 
-Root cause of the missing app (observed 2026-10-27): Pages was set to **Deploy from a branch** (`master` / root), which publishes repository source files rather than the Vite build. Change **Settings → Pages → Build and deployment → Source** to **GitHub Actions**; the branch-based source must not be used. As of that date, the public URL still serves a source `index.html` that references `/src/main.ts`, not the built application. The new workflow has not yet been confirmed against GitHub-hosted Actions or a deployed browser session. Its deployment smoke check verifies HTTP availability and an application asset, not viewer rendering or IFC/WASM loading. After the first successful workflow, open the URL in Chrome, load the authored fixture, verify rendering and controls, and check the browser console/network for asset failures.
+The **Deploy from a branch** source must not be used: it publishes repository source files instead of the Vite build (this caused the missing app on 2026-10-27). The source was switched to GitHub Actions and the first hosted run passed. The deployment smoke check verifies HTTP availability and an application asset, not viewer rendering or IFC/WASM loading, so after notable changes open the URL in Chrome, load the authored fixture, verify rendering and controls, and check the console/network for asset failures.
 
 ## Scope and safeguards
 

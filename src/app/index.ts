@@ -28,9 +28,9 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   const adapter = new IfcAdapter();
   let viewer: Viewer | undefined;
   let disposed = false;
-  const session = new ModelRegistry(async (bytes) => {
+  const session = new ModelRegistry(async (bytes, modelId) => {
     if (!availability.available || disposed) throw new Error('Viewer unavailable. Reload to start a new session.');
-    const result = await adapter.load(bytes);
+    const result = await adapter.load(bytes, modelId);
     if (disposed || !availability.available || !viewer) {
       disposeModel(result.group);
       throw new Error('Viewer session ended.');
@@ -38,6 +38,8 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     try { viewer.add(result.group); } catch (error) { disposeModel(result.group); throw error; }
     return {
       schema: result.schema,
+      properties: result.properties,
+      hierarchy: result.hierarchy,
       get visible() { return result.group.visible; },
       setVisible(value) { result.group.visible = value; },
       dispose() { viewer?.remove(result.group); disposeModel(result.group); },

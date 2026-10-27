@@ -9,7 +9,7 @@ export class ModelRegistry implements ModelSession {
   private queue = Promise.resolve();
   private disposed = false;
 
-  constructor(private readonly load: (bytes: Uint8Array) => Promise<ModelAsset>) {}
+  constructor(private readonly load: (bytes: Uint8Array, modelId: number) => Promise<ModelAsset>) {}
 
   getModels(): readonly ModelSummary[] {
     return [...this.records.values()].map((record) => ({
@@ -45,7 +45,7 @@ export class ModelRegistry implements ModelSession {
         try {
           const bytes = new Uint8Array(await file.arrayBuffer());
           if (this.disposed) break;
-          const asset = await this.load(bytes);
+          const asset = await this.load(bytes, record.id);
           if (this.disposed) {
             asset.dispose();
             break;

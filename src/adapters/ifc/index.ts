@@ -1,6 +1,8 @@
 import { IfcAPI } from 'web-ifc';
 import wasmUrl from 'web-ifc/web-ifc.wasm?url';
 import { BufferAttribute, BufferGeometry, Color, DoubleSide, Group, Matrix4, Mesh, MeshStandardMaterial } from 'three';
+import { extractModel } from './extract';
+import type { HierarchyQuery, PropertyQuery } from '../../core/contracts';
 
 export function disposeModel(group: Group): void {
   group.traverse((object) => {
@@ -27,7 +29,7 @@ export class IfcAdapter {
     await this.initialization;
   }
 
-  async load(bytes: Uint8Array): Promise<{ group: Group; schema: string }> {
+  async load(bytes: Uint8Array, modelId = 0): Promise<{ group: Group; schema: string; properties: PropertyQuery; hierarchy: HierarchyQuery; elementIds: readonly number[] }> {
     const header = new TextDecoder().decode(bytes.subarray(0, 65536));
     if (!/^\s*ISO-10303-21;/i.test(header) || !/FILE_SCHEMA\s*\(/i.test(header)) {
       throw new Error('Invalid IFC file. Choose an uncompressed STEP .ifc file.');
@@ -39,6 +41,7 @@ export class IfcAdapter {
       handle = this.api.OpenModel(bytes, { COORDINATE_TO_ORIGIN: false, ALLOW_INCOMPATIBLE_SCHEMA_ALIASES: false });
       if (handle < 0) throw new Error('Unsupported or invalid IFC schema.');
       const schema = this.api.GetModelSchema(handle);
+      const extracted = extractModel(this.api, handle, modelId);
       this.api.StreamAllMeshes(handle, (mesh) => {
         for (let index = 0; index < mesh.geometries.size(); index++) {
           const placed = mesh.geometries.get(index);
@@ -65,14 +68,16 @@ export class IfcAdapter {
               side: DoubleSide,
               roughness: 0.75,
             });
-            group.add(new Mesh(geometry, material));
+            const object = new Mesh(geometry, material);
+            object.userData.expressId = mesh.expressID;
+            group.add(object);
           } finally {
             raw.delete();
           }
         }
       });
       if (!group.children.length) throw new Error('No supported 3D geometry found in this IFC file.');
-      return { group, schema };
+      return { group, schema, properties: extracted.properties, hierarchy: extracted.hierarchy, elementIds: extracted.elementIds };
     } catch (error) {
       disposeModel(group);
       throw error;

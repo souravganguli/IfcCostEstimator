@@ -42,6 +42,15 @@ describe('Phase 1A_01 synthetic fixtures', () => {
     expect(ifc4.group.children.length).toBeGreaterThanOrEqual(2);
     expect(ifc2x3.schema).toBe('IFC2X3');
     expect(ifc2x3.group.children.length).toBeGreaterThanOrEqual(1);
+    const wall = ifc4.properties.getProperties({ modelId: 0, expressId: 57 });
+    expect(wall?.metadata.name).toBe('Wall L0');
+    expect(wall?.metadata.storeyName).toBe('Level 0');
+    expect(wall?.groups.map((group) => group.name)).toEqual(expect.arrayContaining(['Pset_WallCommon', 'Qto_WallBaseQuantities']));
+    expect(wall?.groups.find((group) => group.kind === 'qto')?.entries.find((entry) => entry.name === 'Length')?.value)
+      .toEqual({ kind: 'number', value: 4 });
+    const hierarchy = ifc4.hierarchy.getHierarchy(0);
+    expect(hierarchy?.elementIds).toEqual(expect.arrayContaining([57, 67]));
+    expect(hierarchy?.root.children.some((node) => node.label === 'Multi-storey project')).toBe(true);
     disposeModel(ifc4.group);
     disposeModel(ifc2x3.group);
   });

@@ -14,7 +14,7 @@ Release-specific scope, delivery steps, browser targets, and acceptance criteria
 
 Each delivery phase corresponds to a major version: Phase 0 is POC Viewer (`0.00.00` baseline), Phase 1 is MVP (`1.00.00` baseline), and subsequent phases advance the major number. Versions follow **major.minor.fix**. Plan naming, increment rules, and the equivalent npm version format are defined in [docs/versioning.md](docs/versioning.md).
 
-Phase 0 is developed directly on the default branch (`main`, currently named `master` in GitHub). Only pushes to that default branch run Ubuntu/Chrome cloud checks and deploy the tested build to the GitHub Pages project URL; changes on other branches are checked locally. See [docs/release-policy.md](docs/release-policy.md) for the deployment contract and setup; the live workflow and deployed app still require verification.
+Phase 0 is developed directly on `master`, the default branch (it will not be renamed). Only pushes to `master` run Ubuntu/Chrome cloud checks and deploy the tested build to the GitHub Pages project URL; changes on other branches are checked locally. See [docs/release-policy.md](docs/release-policy.md) for the deployment contract and setup.
 
 ## Feature Specifications
 

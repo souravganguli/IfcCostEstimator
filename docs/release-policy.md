@@ -2,8 +2,8 @@
 
 ## Branch and validation contract
 
-- Phase 0 changes are made directly on the repository's default branch when requested. The intended branch name is `main`; the repository currently names its default branch `master`.
-- The GitHub Actions workflow accepts pushes to `main` and `master`, but runs its job only when the pushed branch is the repository's configured default branch. Pull requests and other branches do not run cloud CI; validate those changes locally with the commands in [development.md](development.md).
+- Phase 0 changes are made directly on `master`, the repository's default branch. It will not be renamed.
+- The GitHub Actions workflow runs on pushes to `master` only, and its job is also guarded by the repository's configured default branch. Pull requests and other branches do not run cloud CI; validate those changes locally with the commands in [development.md](development.md).
 - The default-branch workflow runs on `ubuntu-latest`, installs Chrome, runs unit tests, builds the site, runs Playwright against the built preview, then deploys the tested `dist/` output to GitHub Pages.
 - A failed test or build prevents deployment. After deployment, the workflow checks that the public entry point and at least one built application asset respond successfully.
 - GitHub Actions is the sole publisher. No `dev` or generated artifact branch is needed for Phase 0.

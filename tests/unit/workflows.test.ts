@@ -5,10 +5,10 @@ import { parse } from 'yaml';
 const readYaml = (path: string) => parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
 
 describe('default-branch GitHub Pages delivery', () => {
-  it('accepts main/master pushes but runs the job only for the configured default branch', () => {
+  it('runs the job only for pushes to master', () => {
     const workflow = readYaml('../../.github/workflows/pages.yml');
 
-    expect(workflow.on.push.branches).toEqual(['main', 'master']);
+    expect(workflow.on.push.branches).toEqual(['master']);
     expect(workflow.on.pull_request).toBeUndefined();
     expect(workflow.on.workflow_run).toBeUndefined();
     expect(workflow.jobs.deploy.if).toBe('github.ref_name == github.event.repository.default_branch');

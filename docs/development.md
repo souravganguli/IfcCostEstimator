@@ -61,7 +61,7 @@ On 2026-10-27, all eight supplied-model production-preview checks passed after f
 
 ## Deployment
 
-Phase 0 uses the [default-branch Pages workflow](../.github/workflows/pages.yml). The workflow accepts pushes to `main` and `master`, but runs tests and deploys only for whichever is configured as the repository default (currently `master`). On Ubuntu it installs Chrome, runs unit tests and a production build, tests the built preview in Chrome, then deploys only `dist/` to `https://souravganguli.github.io/IfcCostEstimator/`. Other branches and pull requests are checked locally; they do not run cloud tests or deploy.
+Phase 0 uses the [default-branch Pages workflow](../.github/workflows/pages.yml). The workflow runs on pushes to `master` (the default branch, which is not renamed). On Ubuntu it installs Chrome, runs unit tests and a production build, tests the built preview in Chrome, then deploys only `dist/` to `https://souravganguli.github.io/IfcCostEstimator/`. Other branches and pull requests are checked locally; they do not run cloud tests or deploy.
 
 The default base is `/IfcCostEstimator/`. Set `VITE_BASE_PATH` before starting or building only when testing another same-origin deployment path. Do not add root-path-only asset references. See [release-policy.md](release-policy.md) for the one-time GitHub Pages Actions-source setup and post-deployment Chrome smoke test. The workflow's HTTP check is not proof of browser rendering or IFC/WASM loading. Local files must not be uploaded.
 

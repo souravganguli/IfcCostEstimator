@@ -2,7 +2,7 @@ name: Test and deploy Phase 0
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
 
 permissions:
   contents: read

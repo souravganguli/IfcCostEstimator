@@ -18,7 +18,7 @@ This file governs agent workflow and behavior. It is not the source of product r
 - Update the relevant specification and documentation when behavior changes. Repair links when files move.
 - Follow the local-only fixture policy in [docs/test-fixtures.md](docs/test-fixtures.md). Preserve ignored model files and never force-add them or include their contents in published diagnostics or artifacts.
 - Before deleting obsolete files, confirm they have no maintained references or user edits. Do not commit, push, publish, or change repository settings unless requested.
-- Follow [docs/release-policy.md](docs/release-policy.md) for integration and review. Use the branch specified for the task; direct work on the default branch (`main` or the repository's current `master`) is permitted when requested. Only pushes to the configured default branch run cloud checks and deploy; other branches are checked locally. Record Phase 0 closure only after the default-branch workflow and deployed-site verification pass.
+- Follow [docs/release-policy.md](docs/release-policy.md) for integration and review. Use the branch specified for the task; direct work on `master`, the default branch, is permitted when requested. Only pushes to `master` run cloud checks and deploy; other branches are checked locally. Record Phase 0 closure only after the workflow and deployed-site verification pass.
 
 ## Validation and Reporting
 

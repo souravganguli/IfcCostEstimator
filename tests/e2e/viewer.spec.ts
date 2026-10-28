@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
@@ -26,6 +26,11 @@ function pixelDifference(first: Buffer, second: Buffer): number {
 test.setTimeout(60000);
 test.use({ screenshot: 'off', trace: 'off', video: 'off' });
 
+async function openSettings(page: Page): Promise<void> {
+  const menu = page.locator('[data-ribbon-menu="settings"]');
+  if ((await menu.getAttribute('open')) === null) await menu.locator('summary').click();
+}
+
 test('shell renders under the project subpath without startup errors or external requests', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -37,6 +42,104 @@ test('shell renders under the project subpath without startup errors or external
   await expect(page.getByRole('heading', { name: 'IFC Viewer' })).toBeVisible();
   await expect(page.getByRole('region', { name: '3D viewer' })).toBeVisible();
   await expect(page.getByRole('status')).toHaveText('Ready');
+  await expect(page.getByRole('navigation', { name: 'Application ribbon' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeVisible();
+  expect((await page.getByRole('button', { name: 'Open IFC', exact: true }).boundingBox())!.height).toBe(20);
+  expect(await page.locator('body').evaluate((element) => getComputedStyle(element).fontFamily)).toContain('Segoe UI');
+  expect(await page.getByRole('button', { name: 'Open IFC', exact: true }).evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(15, 108, 189)');
+  await expect(page.getByRole('navigation', { name: 'Viewer tools' })).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'Model browser and tools' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Collapse models panel' })).toHaveAttribute('aria-controls', 'tool-sidebar');
+  const settingsMenu = page.locator('[data-ribbon-menu="settings"]');
+  await settingsMenu.locator('summary').click();
+  await expect(page.getByLabel('Grid', { exact: true })).toBeVisible();
+  await expect(settingsMenu).toHaveAttribute('open', '');
+  await settingsMenu.locator('summary').click();
+  const viewMenu = page.locator('[data-ribbon-menu="view"]');
+  await viewMenu.locator('summary').click();
+  await page.getByRole('button', { name: 'Properties', exact: true }).click();
+  const ribbonPropertyDock = page.getByRole('complementary', { name: 'Element properties' });
+  await expect(ribbonPropertyDock).toBeVisible();
+  await expect(viewMenu).not.toHaveAttribute('open', '');
+  await page.getByRole('button', { name: 'Close property pane' }).click();
+  await expect(ribbonPropertyDock).toBeHidden();
+  const toolResize = page.getByRole('separator', { name: 'Resize tool pane' });
+  const toolWidth = Number(await toolResize.getAttribute('aria-valuenow'));
+  await toolResize.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(toolResize).toHaveAttribute('aria-valuenow', String(toolWidth + 16));
+  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await expect(page.getByRole('heading', { name: 'Search and filter' })).toBeVisible();
+  await expect(page.getByLabel('Search loaded models')).toBeVisible();
+  expect(await page.getByLabel('Search loaded models').evaluate((element) => getComputedStyle(element).minHeight)).toBe('32px');
+  expect(await page.getByLabel('Search loaded models').evaluate((element) => getComputedStyle(element).borderRadius)).toBe('4px');
+  await expect.poll(() => page.getByRole('button', { name: 'Search and filter' }).evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(235, 243, 252)');
+  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Cost estimate' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Cost estimate' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('heading', { name: 'Cost estimate' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close side pane' }).click();
+  await expect(page.getByRole('complementary', { name: 'Model browser and tools' })).toBeHidden();
+  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await expect(page.getByRole('heading', { name: 'Search and filter' })).toBeVisible();
+  const propertyRail = page.getByRole('button', { name: 'Element properties' });
+  await propertyRail.click();
+  const propertyDock = page.getByRole('complementary', { name: 'Element properties' });
+  await expect(propertyDock).toBeVisible();
+  await expect(page.locator('#tool-sidebar #property-dock')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('Select an element to inspect its properties.')).toBeVisible();
+  const propertyResize = page.getByRole('separator', { name: 'Resize property pane' });
+  const originalWidth = Number(await propertyResize.getAttribute('aria-valuenow'));
+  await propertyResize.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', String(originalWidth + 16));
+  const keyboardWidth = Number(await propertyResize.getAttribute('aria-valuenow'));
+  const resizeBounds = (await propertyResize.boundingBox())!;
+  await page.mouse.move(resizeBounds.x + resizeBounds.width / 2, resizeBounds.y + 100);
+  await page.mouse.down();
+  await page.mouse.move(resizeBounds.x + resizeBounds.width / 2 - 28, resizeBounds.y + 100, { steps: 4 });
+  await page.mouse.up();
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', String(keyboardWidth + 28));
+  for (let step = 0; step < 12; step++) await page.keyboard.press('Shift+ArrowRight');
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', '260');
+  await page.keyboard.press('Shift+ArrowRight');
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', '260');
+  for (let step = 0; step < 8; step++) await page.keyboard.press('Shift+ArrowLeft');
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', '560');
+  await page.keyboard.press('Shift+ArrowLeft');
+  await expect(propertyResize).toHaveAttribute('aria-valuenow', '560');
+  const openPropertyBounds = await propertyDock.boundingBox();
+  const viewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
+  expect(openPropertyBounds).not.toBeNull();
+  expect(openPropertyBounds!.x).toBeGreaterThan(viewportBounds!.x + viewportBounds!.width - 1);
+  expect(Math.abs(openPropertyBounds!.y - viewportBounds!.y)).toBeLessThan(1);
+  expect(Math.abs(openPropertyBounds!.height - viewportBounds!.height)).toBeLessThan(1);
+  expect(await page.getByRole('button', { name: 'Dock property pane left' }).count()).toBe(0);
+  const toolSidebar = page.getByRole('complementary', { name: 'Model browser and tools' });
+  const closePropertyButton = page.getByRole('button', { name: 'Close property pane' });
+  const openViewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
+  await closePropertyButton.click();
+  await expect(propertyDock).toBeHidden();
+  await expect(toolSidebar).toBeVisible();
+  const closedPropertyViewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
+  expect(closedPropertyViewportBounds!.width).toBeGreaterThan(openViewportBounds!.width);
+  await propertyRail.click();
+  await expect(propertyDock).toBeVisible();
+  const reopenedPropertyBounds = await propertyDock.boundingBox();
+  const reopenedViewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
+  expect(reopenedPropertyBounds!.x).toBeGreaterThan(reopenedViewportBounds!.x + reopenedViewportBounds!.width - 1);
+  await page.getByRole('button', { name: 'Close side pane' }).click();
+  await expect(toolSidebar).toBeHidden();
+  await expect(propertyDock).toBeVisible();
+  await closePropertyButton.click();
+  await expect(propertyDock).toBeHidden();
+  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await expect(toolSidebar).toBeVisible();
+  await expect(propertyRail).toHaveAttribute('aria-pressed', 'false');
+  await expect(propertyRail).toHaveAttribute('aria-expanded', 'false');
   expect(errors).toEqual([]);
   expect(failed).toEqual([]);
   expect(external).toEqual([]);
@@ -55,6 +158,7 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   });
   page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
   await page.goto('./');
+  await openSettings(page);
   await page.getByLabel('Grid', { exact: true }).uncheck();
   const canvas = page.locator('canvas');
   const emptyImage = await canvas.screenshot();
@@ -106,6 +210,7 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   expect(storage).toEqual({ local: { [settingsKey]: '{"version":1,"showGrid":false}' }, session: {} });
   await page.reload();
   await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
+  await openSettings(page);
   await expect(page.getByLabel('Grid', { exact: true })).not.toBeChecked();
 });
 
@@ -114,6 +219,7 @@ test('storage denial does not prevent rendering and in-memory preferences', asyn
     Object.defineProperty(window, 'localStorage', { get: () => { throw new Error('Storage denied'); } });
   });
   await page.goto('./');
+  await openSettings(page);
   await expect(page.getByLabel('Grid', { exact: true })).toBeChecked();
   await page.getByLabel('Grid', { exact: true }).uncheck();
   await expect(page.getByRole('status')).toHaveText('Settings kept for this session');
@@ -127,6 +233,7 @@ test('corrupt preferences use defaults and writes preserve unrelated keys', asyn
     localStorage.setItem(key, '{invalid');
   }, settingsKey);
   await page.goto('./');
+  await openSettings(page);
   await expect(page.getByLabel('Grid', { exact: true })).toBeChecked();
   await page.getByLabel('Grid', { exact: true }).uncheck();
   expect(await page.evaluate(() => localStorage.getItem('unrelated'))).toBe('preserve');
@@ -148,18 +255,19 @@ test('graphics initialization failure produces a clear unavailable-viewer state'
 
 test('compact chrome and collapsible models panel preserve models and resize the canvas', async ({ page }) => {
   await page.goto('./');
+  await openSettings(page);
   await page.getByLabel('Grid', { exact: true }).uncheck();
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
 
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }]) {
     await page.setViewportSize(viewport);
-    expect((await page.locator('header').boundingBox())!.height).toBe(44);
+    expect((await page.locator('header').boundingBox())!.height).toBe(22);
     expect((await page.locator('footer').boundingBox())!.height).toBe(24);
     const sidebar = page.getByRole('complementary', { name: 'Models' });
     const canvas = page.locator('canvas');
     const expandedWidth = (await canvas.boundingBox())!.width;
-    const sidebarWidth = (await sidebar.boundingBox())!.width;
+    const sidebarWidth = (await page.locator('#tool-sidebar').boundingBox())!.width;
     const collapse = page.getByRole('button', { name: 'Collapse models panel' });
     await expect(collapse).toHaveAttribute('aria-expanded', 'true');
     await collapse.click();
@@ -209,6 +317,7 @@ test.describe('Duplex IFC2x3 models', () => {
         if (request.method() !== 'GET' || !request.url().startsWith('http://127.0.0.1:')) unexpectedRequests++;
       });
       await page.goto('./');
+      await openSettings(page);
       await page.getByLabel('Grid', { exact: true }).uncheck();
       const canvas = page.locator('canvas');
       const empty = await canvas.screenshot();
@@ -239,6 +348,7 @@ test.describe('Duplex IFC2x3 models', () => {
       if (request.method() !== 'GET' || !request.url().startsWith('http://127.0.0.1:')) unexpectedRequests++;
     });
     await page.goto('./');
+    await openSettings(page);
     await page.getByLabel('Grid', { exact: true }).uncheck();
     const diagnostics = await page.context().newCDPSession(page);
     await diagnostics.send('Performance.enable');
@@ -310,6 +420,7 @@ test.describe('Duplex IFC2x3 models', () => {
 
 test('graphics context loss clears the session, stops the renderer, and requires a fresh reload', async ({ page }) => {
   await page.goto('./');
+  await openSettings(page);
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
   await page.locator('canvas').evaluate((canvas) => canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true })));
@@ -318,6 +429,7 @@ test('graphics context loss clears the session, stops the renderer, and requires
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeDisabled();
+  await openSettings(page);
   await page.getByLabel('Grid', { exact: true }).uncheck();
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
   await page.reload();

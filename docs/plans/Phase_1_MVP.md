@@ -2,7 +2,11 @@
 
 Phase: **1**. Major version: **1**. Baseline release: **1.00.00** (npm: `1.0.0`). This plan defines Phase 1A as the first delivery tranche; it does not change the package version or claim implementation or release completion.
 
-Status: **Planned.** The Phase 1A draft baseline is approved for implementation. No Phase 1A runtime feature is implemented or verified.
+Status: **In progress.** The Phase 1A draft baseline is approved for implementation. Local implementation and focused unit evidence are being accumulated; phase closure is not claimed.
+
+### Local implementation evidence (2026-10-28)
+
+The current working tree adds metric measurement helpers, clipping and display-control adapters, in-app plan/section projection helpers, a performance sampling guard, quantity/cost calculations, versioned estimate data validation, CSV sanitization, and formula-oriented export helpers. These are local slices only; the full browser acceptance gates, fixture qualification, and deployed-site verification remain outstanding.
 
 ## Goal
 
@@ -102,6 +106,10 @@ Every step starts from its feature specification, adds focused unit/contract tes
 
 The semantic foundation is implemented locally in commits `21aa7bd` and `6ab54fd`. The IFC adapter now exposes model-scoped metadata, occurrence/type property sets, source quantity sets, and a bounded spatial hierarchy; rendered meshes retain their express IDs for adapter-owned picking. Shared selection state, highlight cleanup, property inspection, and hierarchy browsing are wired into the application. Validation completed: 53 unit tests, typecheck, production build, and the focused Chrome workflows for model loading, settings, layout, and context-loss recovery. Full hierarchy visibility actions and the remaining cross-feature acceptance coverage remain to be completed before the gate is closed.
 
+### 1A_03 implementation evidence
+
+The IFC adapter now exposes bounded, model-scoped search and structured filtering through typed capabilities. Search covers identity metadata and flattened property/quantity fields, orders matches by field priority, and caps each model query at 100 results. Filtering applies AND across criteria and OR across values within a criterion without changing visibility; the transient Search and Filter panels select results through the shared selection capability. Synthetic duplicate-identity fixtures cover case-insensitive search, result bounds, identity isolation, and combined criteria. `npm run typecheck`, `npm test` (54 tests), and `npm run build` pass locally; browser acceptance for rapid query cancellation, hidden-result unhide, and full result rendering remains open.
+
 ## Phase 1B Delivery Sequence and Gates
 
 Phase 1B begins after Phase 1A's delivery gates are complete. Its assigned workstreams have independent gates: drawing implementation is conditional on feasibility approval, and the performance workstream records a baseline and a regression guard only, with no optimization in this tranche.
@@ -159,3 +167,4 @@ Phase 1A remains planned until each step's evidence is recorded. Record the sour
 Phase 1B completion additionally requires the committed performance baseline and a working regression guard (no optimization); drawing feasibility decisions and, for each approved drawing feature, implementation and rendering evidence; integrated Phase 1B browser results; fixture availability/provenance and skips; and known limitations. A no-go decision is evidence for changing scope, not evidence that an unimplemented feature passed.
 
 Phase 1C completion additionally requires the C1 findings and approvals, per-feature unit and browser results, workbook recalculation evidence, privacy checks (no upload, no app persistence), fixture provenance and skips, and known limitations.
+Additional local evidence (2026-10-28): cost mapping, scoped/grouped source takeoff, keyboard/pointer walkthrough, editable color-rule ordering, dataset-aware workbook export, and dedicated plan/section panels are integrated into the application shell. Geometry-derived takeoff and full model-triangle extraction remain limited by the current adapter contract.

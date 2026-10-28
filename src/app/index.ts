@@ -255,14 +255,12 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       disposeModel(result.group);
       throw new Error('Viewer session ended.');
     }
-    result.group.userData.modelId = modelId;
     try { viewer.add(result.group); } catch (error) { disposeModel(result.group); throw error; }
     return {
       schema: result.schema,
       properties: result.properties,
       hierarchy: result.hierarchy,
       elements: result.elements,
-      triangles: result.triangles,
       get visible() { return result.group.visible; },
       setVisible(value) { result.group.visible = value; },
       dispose() { viewer?.remove(result.group); disposeModel(result.group); },
@@ -329,6 +327,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       features.slice().reverse().forEach((feature) => feature.dispose());
       resizeCleanups.forEach((cleanup) => cleanup());
       session.dispose();
+      adapter.dispose();
       viewer?.dispose();
       availability.dispose();
       root.replaceChildren();

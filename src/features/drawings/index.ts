@@ -1,10 +1,9 @@
 import type { FeatureHandle, ModelSession } from '../../core/contracts';
 import { projectPlan, sectionSegments, type Triangle } from '../../core/drawings';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
+import { createDrawingSurface } from '../../components/drawing-surface';
 
 const DRAWING_STROKE = 'var(--fluent-brand-primary, #0f6cbd)';
-
-const SVG_NS = 'http://www.w3.org/2000/svg';
 
 type Point = { x: number; y: number };
 type Segment = { start: Point; end: Point };
@@ -20,13 +19,10 @@ export function mountDrawings(target: HTMLElement, session: ModelSession): Featu
   const section = fluentButton('Section view', { appearance: 'outline' });
   const elevation = fluentTextInput({ type: 'number', value: '0', ariaLabel: 'Section elevation' });
 
-  const output = document.createElementNS(SVG_NS, 'svg');
-  output.setAttribute('viewBox', '0 0 240 160');
-  output.setAttribute('role', 'img');
-  output.setAttribute('aria-label', 'Drawing preview');
+  const surface = createDrawingSurface({ viewBox: '0 0 240 160', ariaLabel: 'Drawing preview' });
 
   const status = document.createElement('p');
-  panel.append(heading, plan, section, elevation, output, status);
+  panel.append(heading, plan, section, elevation, surface.element, status);
   target.append(panel);
 
   const render = (kind: 'plan' | 'section') => {
@@ -35,16 +31,16 @@ export function mountDrawings(target: HTMLElement, session: ModelSession): Featu
       session.getAsset(model.id)?.triangles?.forEach((triangle) => triangles.push(triangle));
     });
 
-    output.replaceChildren();
+    surface.clear();
     const geometry = kind === 'plan' ? projectPlan(triangles) : sectionSegments(triangles, Number(elevation.value));
     status.textContent = `${kind === 'plan' ? 'Plan' : 'Section'} preview · ${geometry.length} line/triangle records · source geometry only`;
 
     if (!geometry.length) {
-      const text = document.createElementNS(SVG_NS, 'text');
+      const text = surface.create('text');
       text.setAttribute('x', '12');
       text.setAttribute('y', '80');
       text.textContent = 'Load a model to generate drawing geometry';
-      output.append(text);
+      surface.append(text);
       return;
     }
 
@@ -66,21 +62,21 @@ export function mountDrawings(target: HTMLElement, session: ModelSession): Featu
 
     if (kind === 'plan') {
       (geometry as readonly Triangle[]).forEach((triangle) => {
-        const polygon = document.createElementNS(SVG_NS, 'polygon');
+        const polygon = surface.create('polygon');
         polygon.setAttribute('points', [triangle.a, triangle.b, triangle.c].map(project).join(' '));
         polygon.setAttribute('fill', 'none');
         polygon.setAttribute('stroke', DRAWING_STROKE);
-        output.append(polygon);
+        surface.append(polygon);
       });
     } else {
       (geometry as readonly Segment[]).forEach((segment) => {
-        const line = document.createElementNS(SVG_NS, 'line');
+        const line = surface.create('line');
         line.setAttribute('x1', String(projectX(segment.start)));
         line.setAttribute('y1', String(projectY(segment.start)));
         line.setAttribute('x2', String(projectX(segment.end)));
         line.setAttribute('y2', String(projectY(segment.end)));
         line.setAttribute('stroke', DRAWING_STROKE);
-        output.append(line);
+        surface.append(line);
       });
     }
   };

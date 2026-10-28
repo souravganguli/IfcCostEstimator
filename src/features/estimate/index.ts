@@ -3,6 +3,7 @@ import { calculateCost } from '../../core/costing';
 import { emptyEstimate, exportCsv, parseEstimate, serializeEstimate } from '../../core/estimate-data';
 import { buildEstimateWorkbook } from '../../core/estimate-xlsx';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
+import { createFilePickerButton } from '../../components/file-picker-button';
 
 export function mountEstimate(target: HTMLElement, session: ModelSession, notice: (message: string) => void): FeatureHandle {
   const panel = document.createElement('section');
@@ -23,14 +24,14 @@ export function mountEstimate(target: HTMLElement, session: ModelSession, notice
   const csv = fluentButton('Export CSV', { appearance: 'subtle' });
   const xlsx = fluentButton('Export XLSX', { appearance: 'subtle' });
 
-  // Native file input: Fluent Web Components do not provide a file picker; it
-  // inherits the shared form-control styling from the global Fluent 2 stylesheet.
-  const importer = document.createElement('input');
-  importer.type = 'file';
-  importer.accept = '.json,application/json';
-  importer.setAttribute('aria-label', 'Import estimate JSON');
+  const importer = createFilePickerButton({
+    label: 'Import JSON',
+    accept: '.json,application/json',
+    ariaLabel: 'Import estimate JSON',
+    appearance: 'subtle',
+  });
 
-  panel.append(heading, currency, rate, unit, calculate, total, json, csv, xlsx, importer);
+  panel.append(heading, currency, rate, unit, calculate, total, json, csv, xlsx, importer.element, importer.input);
   target.append(panel);
 
   const loadedModels = () => session.getModels().filter((model) => model.state === 'loaded');
@@ -86,8 +87,8 @@ export function mountEstimate(target: HTMLElement, session: ModelSession, notice
     );
   });
 
-  importer.addEventListener('change', async () => {
-    const file = importer.files?.[0];
+  importer.onFiles(async (files) => {
+    const file = files[0];
     if (!file) return;
     const result = parseEstimate(await file.text());
     if (result.definition) {
@@ -96,11 +97,11 @@ export function mountEstimate(target: HTMLElement, session: ModelSession, notice
     } else {
       notice(result.error ?? 'Estimate import failed');
     }
-    importer.value = '';
   });
 
   return {
     dispose() {
+      importer.dispose();
       panel.remove();
     },
   };

@@ -1,6 +1,7 @@
 import type { FeatureHandle, ModelSession } from '../../core/contracts';
 import { matchColorRule, type ColorRule } from '../../core/color-rules';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
+import { createColorSwatchInput } from '../../components/color-swatch-input';
 
 export interface ColorViewer {
   setElementColor(modelId: number, expressId: number, color: string | null): void;
@@ -16,19 +17,13 @@ export function mountPropertyColoring(target: HTMLElement, session: ModelSession
   const field = fluentTextInput({ placeholder: 'Field (e.g. IfcClass)', ariaLabel: 'Color rule field' });
   const value = fluentTextInput({ placeholder: 'Value', ariaLabel: 'Color rule value' });
 
-  // Native color input: Fluent Web Components do not provide a color picker; the
-  // `.color-swatch` class aligns it with the shared Fluent 2 form styling.
-  const color = document.createElement('input');
-  color.type = 'color';
-  color.value = '#ffb000';
-  color.className = 'color-swatch';
-  color.setAttribute('aria-label', 'Color rule color');
+  const color = createColorSwatchInput({ value: '#ffb000', ariaLabel: 'Color rule color' });
 
   const add = fluentButton('Add rule', { appearance: 'primary' });
   const clear = fluentButton('Clear colors', { appearance: 'subtle' });
 
   const list = document.createElement('div');
-  panel.append(heading, field, value, color, add, clear, list);
+  panel.append(heading, field, value, color.element, add, clear, list);
   target.append(panel);
 
   let rules: ColorRule[] = [];

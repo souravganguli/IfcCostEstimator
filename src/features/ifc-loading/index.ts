@@ -1,36 +1,30 @@
 import { createElement, FolderOpen } from 'lucide';
 import type { Availability, FeatureHandle, ModelSession } from '../../core/contracts';
-import { fluentButton } from '../../core/fluent';
+import { createFilePickerButton } from '../../components/file-picker-button';
 import './style.css';
 
 export function mountIfcLoading(host: HTMLElement, session: ModelSession, availability: Availability): FeatureHandle {
-  const events = new AbortController();
   host.classList.add('ifc-loading');
-  const button = fluentButton('Open IFC', { appearance: 'primary' });
+
+  const picker = createFilePickerButton({
+    label: 'Open IFC',
+    accept: '.ifc',
+    multiple: true,
+    ariaLabel: 'Open IFC files',
+    appearance: 'primary',
+    icon: createElement(FolderOpen),
+  });
+  const { element: button, input } = picker;
   button.id = 'open';
   button.className = 'primary';
-  button.prepend(createElement(FolderOpen));
-  const input = document.createElement('input');
   input.id = 'file-input';
-  input.type = 'file';
-  input.accept = '.ifc';
-  input.multiple = true;
-  input.hidden = true;
-  input.setAttribute('aria-label', 'Open IFC files');
+
   const refresh = () => {
     button.toggleAttribute('disabled', !availability.available);
   };
-
-  button.addEventListener('click', () => input.click(), { signal: events.signal });
-  input.addEventListener(
-    'change',
-    () => {
-      const files = Array.from(input.files ?? []);
-      input.value = '';
-      if (availability.available) void session.enqueue(files);
-    },
-    { signal: events.signal },
-  );
+  picker.onFiles((files) => {
+    if (availability.available) void session.enqueue(files);
+  });
 
   const unsubscribe = availability.subscribe(refresh);
   host.replaceChildren(button, input);
@@ -38,7 +32,7 @@ export function mountIfcLoading(host: HTMLElement, session: ModelSession, availa
 
   return {
     dispose() {
-      events.abort();
+      picker.dispose();
       unsubscribe();
       host.replaceChildren();
       host.classList.remove('ifc-loading');

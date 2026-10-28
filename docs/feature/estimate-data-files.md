@@ -1,6 +1,6 @@
 # Estimate Data Files (Import and Export)
 
-Status: Draft. Assigned to Phase 1C in [Phase 1 MVP](../plans/Phase_1_MVP.md). Market basis: [Phase 1C research](../research/phase-1c-cost-estimation-market-research.md).
+Status: In progress (local implementation; acceptance and deployed verification outstanding). Assigned to Phase 1C in [Phase 1 MVP](../plans/Phase_1_MVP.md). Market basis: [Phase 1C research](../research/phase-1c-cost-estimation-market-research.md).
 
 ## Goal
 

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page, type Locator } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
@@ -31,6 +31,29 @@ async function openSettings(page: Page): Promise<void> {
   if ((await menu.getAttribute('open')) === null) await menu.locator('summary').click();
 }
 
+async function openFile(page: Page): Promise<void> {
+  const menu = page.locator('[data-ribbon-menu="file"]');
+  if ((await menu.getAttribute('open')) === null) await menu.locator('summary').click();
+}
+
+// The Grid control is a Fluent checkbox whose state lives on its `checked`
+// property; Playwright's role-based checkbox helpers do not resolve it.
+function gridCheckbox(page: Page): Locator {
+  return page.locator('[data-ribbon-menu="settings"] fluent-checkbox');
+}
+
+async function uncheckGrid(page: Page): Promise<void> {
+  const grid = gridCheckbox(page);
+  if (await grid.evaluate((el: Element) => (el as unknown as { checked: boolean }).checked)) await grid.click();
+  // Close the Settings menu so its dropdown panel does not overlap other controls.
+  const menu = page.locator('[data-ribbon-menu="settings"]');
+  if ((await menu.getAttribute('open')) !== null) await menu.locator('summary').click();
+}
+
+async function expectGridChecked(page: Page, checked: boolean): Promise<void> {
+  await expect(gridCheckbox(page)).toHaveJSProperty('checked', checked);
+}
+
 test('shell renders under the project subpath without startup errors or external requests', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -43,53 +66,54 @@ test('shell renders under the project subpath without startup errors or external
   await expect(page.getByRole('region', { name: '3D viewer' })).toBeVisible();
   await expect(page.getByRole('status')).toHaveText('Ready');
   await expect(page.getByRole('navigation', { name: 'Application ribbon' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeVisible();
-  expect((await page.getByRole('button', { name: 'Open IFC', exact: true }).boundingBox())!.height).toBe(20);
+  await openFile(page);
+  const openButton = page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' });
+  await expect(openButton).toBeVisible();
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).fontFamily)).toContain('Segoe UI');
-  expect(await page.getByRole('button', { name: 'Open IFC', exact: true }).evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(15, 108, 189)');
+  expect(await openButton.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(15, 108, 189)');
+  await page.locator('[data-ribbon-menu="file"] summary').click();
   await expect(page.getByRole('navigation', { name: 'Viewer tools' })).toBeVisible();
   await expect(page.getByRole('complementary', { name: 'Model browser and tools' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Collapse models panel' })).toHaveAttribute('aria-controls', 'tool-sidebar');
+  await expect(page.getByLabel('Collapse models panel')).toHaveAttribute('aria-controls', 'tool-sidebar');
   const settingsMenu = page.locator('[data-ribbon-menu="settings"]');
   await settingsMenu.locator('summary').click();
-  await expect(page.getByLabel('Grid', { exact: true })).toBeVisible();
+  await expect(gridCheckbox(page)).toBeVisible();
   await expect(settingsMenu).toHaveAttribute('open', '');
   await settingsMenu.locator('summary').click();
   const viewMenu = page.locator('[data-ribbon-menu="view"]');
   await viewMenu.locator('summary').click();
-  await page.getByRole('button', { name: 'Properties', exact: true }).click();
+  await viewMenu.locator('fluent-button', { hasText: 'Properties' }).click();
   const ribbonPropertyDock = page.getByRole('complementary', { name: 'Element properties' });
   await expect(ribbonPropertyDock).toBeVisible();
   await expect(viewMenu).not.toHaveAttribute('open', '');
-  await page.getByRole('button', { name: 'Close property pane' }).click();
+  await page.getByLabel('Close property pane').click();
   await expect(ribbonPropertyDock).toBeHidden();
   const toolResize = page.getByRole('separator', { name: 'Resize tool pane' });
   const toolWidth = Number(await toolResize.getAttribute('aria-valuenow'));
   await toolResize.focus();
   await page.keyboard.press('ArrowRight');
   await expect(toolResize).toHaveAttribute('aria-valuenow', String(toolWidth + 16));
-  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await page.getByLabel('Search and filter').click();
   await expect(page.getByRole('heading', { name: 'Search and filter' })).toBeVisible();
   await expect(page.getByLabel('Search loaded models')).toBeVisible();
-  expect(await page.getByLabel('Search loaded models').evaluate((element) => getComputedStyle(element).minHeight)).toBe('32px');
-  expect(await page.getByLabel('Search loaded models').evaluate((element) => getComputedStyle(element).borderRadius)).toBe('4px');
-  await expect.poll(() => page.getByRole('button', { name: 'Search and filter' }).evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(235, 243, 252)');
-  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Cost estimate' }).focus();
+  expect(await page.getByLabel('Search loaded models').evaluate((element) => element.tagName.toLowerCase())).toBe('fluent-text-input');
+  await expect.poll(() => page.getByLabel('Search and filter').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(235, 243, 252)');
+  await expect(page.getByLabel('Search and filter')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByLabel('Cost estimate').focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('button', { name: 'Cost estimate' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByLabel('Cost estimate')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByLabel('Search and filter')).toHaveAttribute('aria-pressed', 'false');
   await expect(page.getByRole('heading', { name: 'Cost estimate' })).toBeVisible();
-  await page.getByRole('button', { name: 'Close side pane' }).click();
+  await page.getByLabel('Close side pane').click();
   await expect(page.getByRole('complementary', { name: 'Model browser and tools' })).toBeHidden();
-  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await page.getByLabel('Search and filter').click();
   await expect(page.getByRole('heading', { name: 'Search and filter' })).toBeVisible();
-  const propertyRail = page.getByRole('button', { name: 'Element properties' });
+  const propertyRail = page.locator('[data-floating="properties"]');
   await propertyRail.click();
   const propertyDock = page.getByRole('complementary', { name: 'Element properties' });
   await expect(propertyDock).toBeVisible();
   await expect(page.locator('#tool-sidebar #property-dock')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Search and filter' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByLabel('Search and filter')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByText('Select an element to inspect its properties.')).toBeVisible();
   const propertyResize = page.getByRole('separator', { name: 'Resize property pane' });
   const originalWidth = Number(await propertyResize.getAttribute('aria-valuenow'));
@@ -117,9 +141,9 @@ test('shell renders under the project subpath without startup errors or external
   expect(openPropertyBounds!.x).toBeGreaterThan(viewportBounds!.x + viewportBounds!.width - 1);
   expect(Math.abs(openPropertyBounds!.y - viewportBounds!.y)).toBeLessThan(1);
   expect(Math.abs(openPropertyBounds!.height - viewportBounds!.height)).toBeLessThan(1);
-  expect(await page.getByRole('button', { name: 'Dock property pane left' }).count()).toBe(0);
+  expect(await page.getByLabel('Dock property pane left').count()).toBe(0);
   const toolSidebar = page.getByRole('complementary', { name: 'Model browser and tools' });
-  const closePropertyButton = page.getByRole('button', { name: 'Close property pane' });
+  const closePropertyButton = page.getByLabel('Close property pane');
   const openViewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
   await closePropertyButton.click();
   await expect(propertyDock).toBeHidden();
@@ -131,12 +155,12 @@ test('shell renders under the project subpath without startup errors or external
   const reopenedPropertyBounds = await propertyDock.boundingBox();
   const reopenedViewportBounds = await page.getByRole('region', { name: '3D viewer' }).boundingBox();
   expect(reopenedPropertyBounds!.x).toBeGreaterThan(reopenedViewportBounds!.x + reopenedViewportBounds!.width - 1);
-  await page.getByRole('button', { name: 'Close side pane' }).click();
+  await page.getByLabel('Close side pane').click();
   await expect(toolSidebar).toBeHidden();
   await expect(propertyDock).toBeVisible();
   await closePropertyButton.click();
   await expect(propertyDock).toBeHidden();
-  await page.getByRole('button', { name: 'Search and filter' }).click();
+  await page.getByLabel('Search and filter').click();
   await expect(toolSidebar).toBeVisible();
   await expect(propertyRail).toHaveAttribute('aria-pressed', 'false');
   await expect(propertyRail).toHaveAttribute('aria-expanded', 'false');
@@ -159,7 +183,7 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
   await page.goto('./');
   await openSettings(page);
-  await page.getByLabel('Grid', { exact: true }).uncheck();
+  await uncheckGrid(page);
   const canvas = page.locator('canvas');
   const emptyImage = await canvas.screenshot();
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
@@ -176,7 +200,7 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await page.mouse.down({ button: 'right' });
   await page.mouse.move(bounds.x + bounds.width / 2 + 100, bounds.y + bounds.height / 2 + 40, { steps: 10 });
   await page.mouse.up({ button: 'right' });
-  await page.getByRole('button', { name: 'Fit visible models' }).click();
+  await page.getByLabel('Fit visible models').click();
 
   await page.getByLabel('Open IFC files').setInputFiles([
     { name: 'broken.ifc', mimeType: 'application/octet-stream', buffer: Buffer.from('not IFC') }, modelFile(8),
@@ -184,22 +208,24 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await expect(page.locator('[data-state=loaded]')).toHaveCount(2);
   await expect(page.locator('[data-state=failed]')).toHaveCount(1);
   await expect(page.getByRole('alert')).toContainText('Invalid IFC');
-  await page.getByRole('button', { name: 'Hide model 1', exact: true }).click();
+  await page.getByLabel('Hide model 1', { exact: true }).click();
   await expect(page.locator('[data-model-id="1"]')).toContainText('Hidden');
   await expect(page.locator('[data-model-id="3"]')).toContainText('Visible');
-  await page.getByRole('button', { name: 'Fit visible models' }).click();
-  await page.getByRole('button', { name: 'Show model 1', exact: true }).click();
+  await page.getByLabel('Fit visible models').click();
+  await page.getByLabel('Show model 1', { exact: true }).click();
   await page.screenshot({ path: test.info().outputPath('models-desktop.png') });
   await page.setViewportSize({ width: 1280, height: 720 });
-  await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Fit visible models' }).click();
+  await openFile(page);
+  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toBeVisible();
+  await page.locator('[data-ribbon-menu="file"] summary').click();
+  await page.getByLabel('Fit visible models').click();
   await page.screenshot({ path: test.info().outputPath('models-min-desktop.png') });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.getByRole('button', { name: 'Remove model 1', exact: true }).click();
+  await page.getByLabel('Remove model 1', { exact: true }).click();
   await expect(page.locator('[data-model-id="3"]')).toContainText('Visible');
-  await page.getByRole('button', { name: 'Remove model 3', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Fit visible models' })).toBeDisabled();
-  await page.getByRole('button', { name: 'Remove model 2', exact: true }).click();
+  await page.getByLabel('Remove model 3', { exact: true }).click();
+  await expect(page.getByLabel('Fit visible models')).toHaveAttribute('disabled', '');
+  await page.getByLabel('Remove model 2', { exact: true }).click();
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
   expect(errors).toEqual([]);
@@ -211,7 +237,7 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await page.reload();
   await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
   await openSettings(page);
-  await expect(page.getByLabel('Grid', { exact: true })).not.toBeChecked();
+  await expectGridChecked(page, false);
 });
 
 test('storage denial does not prevent rendering and in-memory preferences', async ({ page }) => {
@@ -220,8 +246,8 @@ test('storage denial does not prevent rendering and in-memory preferences', asyn
   });
   await page.goto('./');
   await openSettings(page);
-  await expect(page.getByLabel('Grid', { exact: true })).toBeChecked();
-  await page.getByLabel('Grid', { exact: true }).uncheck();
+  await expectGridChecked(page, true);
+  await uncheckGrid(page);
   await expect(page.getByRole('status')).toHaveText('Settings kept for this session');
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
@@ -234,8 +260,8 @@ test('corrupt preferences use defaults and writes preserve unrelated keys', asyn
   }, settingsKey);
   await page.goto('./');
   await openSettings(page);
-  await expect(page.getByLabel('Grid', { exact: true })).toBeChecked();
-  await page.getByLabel('Grid', { exact: true }).uncheck();
+  await expectGridChecked(page, true);
+  await uncheckGrid(page);
   expect(await page.evaluate(() => localStorage.getItem('unrelated'))).toBe('preserve');
 });
 
@@ -249,14 +275,15 @@ test('graphics initialization failure produces a clear unavailable-viewer state'
   });
   await page.goto('./');
   await expect(page.getByRole('alert')).toContainText('3D graphics are unavailable');
-  await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeDisabled();
+  await openFile(page);
+  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute('disabled', '');
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
 });
 
 test('compact chrome and collapsible models panel preserve models and resize the canvas', async ({ page }) => {
   await page.goto('./');
   await openSettings(page);
-  await page.getByLabel('Grid', { exact: true }).uncheck();
+  await uncheckGrid(page);
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
 
@@ -268,16 +295,16 @@ test('compact chrome and collapsible models panel preserve models and resize the
     const canvas = page.locator('canvas');
     const expandedWidth = (await canvas.boundingBox())!.width;
     const sidebarWidth = (await page.locator('#tool-sidebar').boundingBox())!.width;
-    const collapse = page.getByRole('button', { name: 'Collapse models panel' });
+    const collapse = page.getByLabel('Collapse models panel');
     await expect(collapse).toHaveAttribute('aria-expanded', 'true');
     await collapse.click();
-    const expand = page.getByRole('button', { name: 'Expand models panel' });
+    const expand = page.getByLabel('Expand models panel');
     await expect(expand).toHaveAttribute('aria-expanded', 'false');
     await expect(sidebar).toBeHidden();
-    await expect(page.getByRole('button', { name: 'Hide model 1', exact: true })).toBeHidden();
+    await expect(page.getByLabel('Hide model 1', { exact: true })).toBeHidden();
     await expect.poll(async () => (await canvas.boundingBox())!.width).toBeCloseTo(expandedWidth + sidebarWidth, 0);
     await expect.poll(async () => canvas.evaluate((element) => (element as HTMLCanvasElement).width / element.clientWidth)).toBeCloseTo(Math.min(await page.evaluate(() => devicePixelRatio), 2), 1);
-    await page.getByRole('button', { name: 'Fit visible models' }).click();
+    await page.getByLabel('Fit visible models').click();
     const image = PNG.sync.read(await canvas.screenshot());
     let nonBackground = 0;
     for (let index = 0; index < image.data.length; index += 4) {
@@ -288,18 +315,18 @@ test('compact chrome and collapsible models panel preserve models and resize the
     await expand.focus();
     await page.keyboard.press('Enter');
     await expect(sidebar).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Collapse models panel' })).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByLabel('Collapse models panel')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
     await expect(page.locator('[data-model-id="1"]')).toContainText('Visible');
     await expect.poll(async () => (await canvas.boundingBox())!.width).toBeCloseTo(expandedWidth, 0);
-    await page.getByRole('button', { name: 'Fit visible models' }).click();
+    await page.getByLabel('Fit visible models').click();
     await page.screenshot({ path: test.info().outputPath(`compact-expanded-${viewport.width}.png`) });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect((await page.locator('footer').boundingBox())!.y + 24).toBeCloseTo(viewport.height, 0);
   }
-  await page.getByRole('button', { name: 'Collapse models panel' }).click();
+  await page.getByLabel('Collapse models panel').click();
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Collapse models panel' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByLabel('Collapse models panel')).toHaveAttribute('aria-expanded', 'true');
 });
 
 test.describe('Duplex IFC2x3 models', () => {
@@ -318,7 +345,7 @@ test.describe('Duplex IFC2x3 models', () => {
       });
       await page.goto('./');
       await openSettings(page);
-      await page.getByLabel('Grid', { exact: true }).uncheck();
+      await uncheckGrid(page);
       const canvas = page.locator('canvas');
       const empty = await canvas.screenshot();
       await page.getByLabel('Open IFC files').setInputFiles(paths[index]);
@@ -326,12 +353,12 @@ test.describe('Duplex IFC2x3 models', () => {
       await expect(page.locator('[data-state=failed]')).toHaveCount(0);
       await expect(page.locator('[data-model-id="1"]')).toContainText('IFC2X3');
       expect(pixelDifference(empty, await canvas.screenshot())).toBeGreaterThan(500);
-      await page.getByRole('button', { name: 'Hide model 1', exact: true }).click();
-      await expect(page.getByRole('button', { name: 'Fit visible models' })).toBeDisabled();
-      await page.getByRole('button', { name: 'Show model 1', exact: true }).click();
-      await page.getByRole('button', { name: 'Fit visible models' }).click();
+      await page.getByLabel('Hide model 1', { exact: true }).click();
+      await expect(page.getByLabel('Fit visible models')).toHaveAttribute('disabled', '');
+      await page.getByLabel('Show model 1', { exact: true }).click();
+      await page.getByLabel('Fit visible models').click();
       expect(pixelDifference(empty, await canvas.screenshot())).toBeGreaterThan(500);
-      await page.getByRole('button', { name: 'Remove model 1', exact: true }).click();
+      await page.getByLabel('Remove model 1', { exact: true }).click();
       await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
       await expect(page.getByRole('heading', { name: 'No models loaded' })).toBeVisible();
       expect(pageErrors).toBe(0);
@@ -349,7 +376,7 @@ test.describe('Duplex IFC2x3 models', () => {
     });
     await page.goto('./');
     await openSettings(page);
-    await page.getByLabel('Grid', { exact: true }).uncheck();
+    await uncheckGrid(page);
     const diagnostics = await page.context().newCDPSession(page);
     await diagnostics.send('Performance.enable');
     const heapBytes = async () => {
@@ -376,17 +403,17 @@ test.describe('Duplex IFC2x3 models', () => {
     const loadedHeap = await heapBytes();
     await expect(page.locator('[data-state=failed]')).toHaveCount(0);
     expect(pixelDifference(empty, await page.locator('canvas').screenshot())).toBeGreaterThan(500);
-    await page.getByRole('button', { name: 'Collapse models panel' }).click();
+    await page.getByLabel('Collapse models panel').click();
     await expect(page.getByRole('complementary', { name: 'Models' })).toBeHidden();
-    await page.getByRole('button', { name: 'Expand models panel' }).click();
+    await page.getByLabel('Expand models panel').click();
     await expect(page.locator('[data-state=loaded]')).toHaveCount(3);
-    await page.getByRole('button', { name: 'Hide model 1', exact: true }).click();
+    await page.getByLabel('Hide model 1', { exact: true }).click();
     await expect(page.locator('[data-model-id="2"]')).toContainText('Visible');
     await expect(page.locator('[data-model-id="3"]')).toContainText('Visible');
     const fitStart = Date.now();
-    await page.getByRole('button', { name: 'Fit visible models' }).click();
+    await page.getByLabel('Fit visible models').click();
     const fitInteractionMs = Date.now() - fitStart;
-    await page.getByRole('button', { name: 'Remove model 2', exact: true }).click();
+    await page.getByLabel('Remove model 2', { exact: true }).click();
     await expect(page.locator('[data-state=loaded]')).toHaveCount(2);
     await page.getByLabel('Open IFC files').setInputFiles(paths[1]);
     await expect(page.locator('[data-state=loaded]')).toHaveCount(3, { timeout: 120000 });
@@ -396,7 +423,7 @@ test.describe('Duplex IFC2x3 models', () => {
     expect(pageErrors).toBe(0);
     expect(unexpectedRequests).toBe(0);
     for (const id of [1, 3, 4]) {
-      await page.getByRole('button', { name: `Remove model ${id}`, exact: true }).click();
+      await page.getByLabel(`Remove model ${id}`, { exact: true }).click();
     }
     await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
     await diagnostics.send('HeapProfiler.collectGarbage');
@@ -428,9 +455,10 @@ test('graphics context loss clears the session, stops the renderer, and requires
   await expect(page.getByRole('alert')).toContainText('Graphics context lost');
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Open IFC', exact: true })).toBeDisabled();
+  await openFile(page);
+  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute('disabled', '');
   await openSettings(page);
-  await page.getByLabel('Grid', { exact: true }).uncheck();
+  await uncheckGrid(page);
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
   await page.reload();
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());

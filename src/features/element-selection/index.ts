@@ -1,13 +1,12 @@
 import type { ElementIdentity, FeatureHandle, SelectionCapability, ViewerPicking } from '../../core/contracts';
+import { fluentButton } from '../../core/fluent';
 
 export function mountElementSelection(
   target: HTMLElement,
   selection: SelectionCapability,
   picking: ViewerPicking,
 ): FeatureHandle {
-  const clear = document.createElement('button');
-  clear.type = 'button';
-  clear.textContent = 'Clear selection';
+  const clear = fluentButton('Clear selection', { appearance: 'subtle' });
   clear.hidden = true;
   clear.addEventListener('click', () => selection.clear());
   target.append(clear);

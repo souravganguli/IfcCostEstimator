@@ -1,7 +1,8 @@
 import { IfcAPI } from 'web-ifc';
 import wasmUrl from 'web-ifc/web-ifc.wasm?url';
-import { BufferAttribute, BufferGeometry, Color, DoubleSide, Group, Matrix4, Mesh, MeshStandardMaterial } from 'three';
-import { extractModel } from './extract';
+import { BufferAttribute, BufferGeometry, Color, DoubleSide, Group, Matrix4, Mesh, MeshStandardMaterial, Vector3 } from 'three';
+import { extractModel, type ExtractedModel } from './extract';
+import type { Triangle } from '../../core/drawings';
 import type { HierarchyQuery, PropertyQuery } from '../../core/contracts';
 
 export function disposeModel(group: Group): void {
@@ -29,7 +30,7 @@ export class IfcAdapter {
     await this.initialization;
   }
 
-  async load(bytes: Uint8Array, modelId = 0): Promise<{ group: Group; schema: string; properties: PropertyQuery; hierarchy: HierarchyQuery; elementIds: readonly number[] }> {
+  async load(bytes: Uint8Array, modelId = 0): Promise<{ group: Group; schema: string; properties: PropertyQuery; hierarchy: HierarchyQuery; elements: ExtractedModel['elements']; triangles: readonly Triangle[]; elementIds: readonly number[] }> {
     const header = new TextDecoder().decode(bytes.subarray(0, 65536));
     if (!/^\s*ISO-10303-21;/i.test(header) || !/FILE_SCHEMA\s*\(/i.test(header)) {
       throw new Error('Invalid IFC file. Choose an uncompressed STEP .ifc file.');
@@ -37,6 +38,7 @@ export class IfcAdapter {
     await this.ready();
     let handle: number | undefined;
     const group = new Group();
+    const triangles: Triangle[] = [];
     try {
       handle = this.api.OpenModel(bytes, { COORDINATE_TO_ORIGIN: false, ALLOW_INCOMPATIBLE_SCHEMA_ALIASES: false });
       if (handle < 0) throw new Error('Unsupported or invalid IFC schema.');
@@ -61,6 +63,19 @@ export class IfcAdapter {
             geometry.setAttribute('normal', new BufferAttribute(normals, 3));
             geometry.setIndex(new BufferAttribute(indices, 1));
             geometry.applyMatrix4(new Matrix4().fromArray(placed.flatTransformation));
+            const transformed = new Vector3();
+            for (let triangle = 0; triangle + 2 < indices.length; triangle += 3) {
+              const points = [indices[triangle], indices[triangle + 1], indices[triangle + 2]].map((vertex) => {
+                transformed.fromArray(positions, vertex * 3);
+                return { x: transformed.x, y: transformed.y, z: transformed.z };
+              });
+              const matrix = new Matrix4().fromArray(placed.flatTransformation);
+              points.forEach((point) => {
+                const value = new Vector3(point.x, point.y, point.z).applyMatrix4(matrix);
+                point.x = value.x; point.y = value.y; point.z = value.z;
+              });
+              triangles.push({ a: points[0], b: points[1], c: points[2], elementId: mesh.expressID });
+            }
             const material = new MeshStandardMaterial({
               color: new Color(placed.color.x, placed.color.y, placed.color.z),
               opacity: placed.color.w,
@@ -77,7 +92,7 @@ export class IfcAdapter {
         }
       });
       if (!group.children.length) throw new Error('No supported 3D geometry found in this IFC file.');
-      return { group, schema, properties: extracted.properties, hierarchy: extracted.hierarchy, elementIds: extracted.elementIds };
+      return { group, schema, properties: extracted.properties, hierarchy: extracted.hierarchy, elements: extracted.elements, triangles, elementIds: extracted.elementIds };
     } catch (error) {
       disposeModel(group);
       throw error;

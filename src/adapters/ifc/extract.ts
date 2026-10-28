@@ -15,15 +15,18 @@ import {
 } from 'web-ifc';
 import type {
   ElementIdentity,
+  ElementFilterCriterion,
   ElementMetadata,
   ElementProperties,
+  ElementQuery,
+  ElementSearchResult,
   FieldEntry,
   FieldGroup,
   HierarchyNode,
   ModelHierarchy,
   PropertyQuery,
 } from '../../core/contracts';
-import type { FieldValue } from '../../core/predicate';
+import { evaluateCondition, type FieldValue } from '../../core/predicate';
 
 type Ref = { value?: number };
 type Line = Record<string, unknown> & { expressID: number; type: number };
@@ -89,6 +92,7 @@ function elementClass(api: IfcAPI, line: Line): boolean {
 
 export interface ExtractedModel {
   readonly properties: PropertyQuery;
+  readonly elements: ElementQuery;
   readonly hierarchy: { getHierarchy(modelId: number): ModelHierarchy | undefined };
   readonly elementIds: readonly number[];
 }
@@ -224,8 +228,55 @@ export function extractModel(api: IfcAPI, handle: number, modelId = 0): Extracte
       return { identity, metadata: item, groups: groups.get(identity.expressId) ?? [] };
     },
   };
+  const fieldValues = (expressId: number) => {
+    const item = properties.getProperties({ modelId, expressId });
+    const values = new Map<string, FieldValue>();
+    if (!item) return values;
+    values.set('IfcClass', { kind: 'text', value: item.metadata.ifcClass });
+    if (item.metadata.name !== undefined) values.set('Name', { kind: 'text', value: item.metadata.name });
+    if (item.metadata.globalId !== undefined) values.set('GlobalId', { kind: 'text', value: item.metadata.globalId });
+    if (item.metadata.typeName !== undefined) values.set('TypeName', { kind: 'text', value: item.metadata.typeName });
+    if (item.metadata.storeyName !== undefined) values.set('Storey', { kind: 'text', value: item.metadata.storeyName });
+    item.groups.forEach((group) => group.entries.forEach((entry) => values.set(`${group.name}.${entry.name}`, entry.value)));
+    return values;
+  };
+  const elements: ElementQuery = {
+    getAll: () => elementIds.map((expressId) => ({ modelId, expressId })),
+    search: (query, limit = 100): readonly ElementSearchResult[] => {
+      const needle = query.trim().toLocaleLowerCase();
+      if (!needle || limit <= 0) return [];
+      const results: ElementSearchResult[] = [];
+      for (const expressId of elementIds) {
+        const item = properties.getProperties({ modelId, expressId });
+        if (!item) continue;
+        const matchedFields: Array<ElementSearchResult['matchedFields'][number]> = [];
+        if (item.metadata.name?.toLocaleLowerCase().includes(needle)) matchedFields.push('name');
+        if (item.metadata.globalId?.toLocaleLowerCase().includes(needle)) matchedFields.push('globalId');
+        if (item.metadata.ifcClass.toLocaleLowerCase().includes(needle)) matchedFields.push('ifcClass');
+        if ([...fieldValues(expressId)].some(([key, value]) => {
+          if (key.toLocaleLowerCase().includes(needle)) return true;
+          if (value.kind === 'text' || value.kind === 'enum') return value.value.toLocaleLowerCase().includes(needle);
+          if (value.kind === 'number' || value.kind === 'boolean') return String(value.value).toLocaleLowerCase().includes(needle);
+          return false;
+        })) matchedFields.push('property');
+        if (matchedFields.length) results.push({ identity: { modelId, expressId }, metadata: item.metadata, matchedFields });
+        if (results.length >= limit) break;
+      }
+      const priority = { name: 0, globalId: 1, ifcClass: 2, property: 3 };
+      return results.sort((a, b) => priority[a.matchedFields[0]] - priority[b.matchedFields[0]]);
+    },
+    filter: (criteria: readonly ElementFilterCriterion[]): readonly ElementIdentity[] => elementIds
+      .map((expressId) => ({ modelId, expressId }))
+      .filter((identity) => criteria.every((criterion) => {
+        const values = fieldValues(identity.expressId);
+        const value = values.get(criterion.field);
+        return criterion.conditions.length > 0 && criterion.conditions.some((condition) =>
+          evaluateCondition(() => value, condition) === 'match');
+      })),
+  };
   return {
     properties,
+    elements,
     hierarchy: { getHierarchy: (id) => id === modelId ? { modelId, root, elementIds } : undefined },
     elementIds,
   };

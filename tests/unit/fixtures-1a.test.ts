@@ -62,4 +62,27 @@ describe('Phase 1A_01 synthetic fixtures', () => {
       disposeModel(result.group);
     }
   });
+
+  it('searches model-scoped metadata and filters with AND criteria', async () => {
+    const a = await adapter.load(fixture('duplicate-ids-a.ifc'), 11);
+    const b = await adapter.load(fixture('duplicate-ids-b.ifc'), 12);
+    const className = a.properties.getMetadata(a.elements.getAll()[0])!.ifcClass;
+    const bClassName = b.properties.getMetadata(b.elements.getAll()[0])!.ifcClass;
+    const aMatches = a.elements.search(className);
+    const bMatches = b.elements.search(bClassName);
+    expect(aMatches.length).toBeGreaterThan(0);
+    expect(aMatches[0].identity).toEqual({ modelId: 11, expressId: aMatches[0].identity.expressId });
+    expect(bMatches.length).toBeGreaterThan(0);
+    expect(bMatches[0].identity.modelId).toBe(12);
+    expect(a.elements.search(className.toUpperCase(), 1)).toHaveLength(1);
+    expect(a.elements.search('wall', 0)).toEqual([]);
+    const filtered = a.elements.filter([
+      { field: 'IfcClass', conditions: [{ field: 'IfcClass', op: 'equals', value: className }] },
+      { field: 'IfcClass', conditions: [{ field: 'IfcClass', op: 'contains', value: className }] },
+    ]);
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].modelId).toBe(11);
+    disposeModel(a.group);
+    disposeModel(b.group);
+  });
 });

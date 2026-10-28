@@ -1,10 +1,12 @@
-import type { FieldValue } from './predicate';
+import type { Condition, FieldKey, FieldValue } from './predicate';
 
 export interface ModelAsset {
   readonly schema: string;
   readonly visible: boolean;
   readonly properties?: PropertyQuery;
   readonly hierarchy?: HierarchyQuery;
+  readonly elements?: ElementQuery;
+  readonly triangles?: readonly import('./drawings').Triangle[];
   setVisible(visible: boolean): void;
   dispose(): void;
 }
@@ -107,6 +109,23 @@ export interface PropertyQuery {
   getProperties(identity: ElementIdentity): ElementProperties | undefined;
   /** Resolve only identity/class/name metadata, or undefined if unknown. */
   getMetadata(identity: ElementIdentity): ElementMetadata | undefined;
+}
+
+export interface ElementSearchResult {
+  readonly identity: ElementIdentity;
+  readonly metadata: ElementMetadata;
+  readonly matchedFields: readonly ('name' | 'globalId' | 'ifcClass' | 'property')[];
+}
+
+export interface ElementFilterCriterion {
+  readonly field: FieldKey;
+  readonly conditions: readonly Condition[];
+}
+
+export interface ElementQuery {
+  getAll(): readonly ElementIdentity[];
+  search(query: string, limit?: number): readonly ElementSearchResult[];
+  filter(criteria: readonly ElementFilterCriterion[]): readonly ElementIdentity[];
 }
 
 /** A node in a model's spatial-structure tree. */

@@ -1,26 +1,35 @@
-import type { FeatureHandle, HierarchyNode, ModelSession, SelectionCapability } from '../../core/contracts';
+import type { ElementVisibility, FeatureHandle, HierarchyNode, ModelSession, SelectionCapability } from '../../core/contracts';
+import { fluentButton } from '../../core/fluent';
 
-export function mountModelHierarchy(target: HTMLElement, session: ModelSession, selection: SelectionCapability): FeatureHandle {
+export function mountModelHierarchy(target: HTMLElement, session: ModelSession, selection: SelectionCapability, visibility?: ElementVisibility): FeatureHandle {
   const panel = document.createElement('section');
   panel.className = 'feature-panel hierarchy-panel';
   panel.setAttribute('aria-label', 'Model hierarchy');
   const heading = document.createElement('h2');
   heading.textContent = 'Hierarchy';
-  const showAll = document.createElement('button');
-  showAll.type = 'button';
-  showAll.textContent = 'Show all';
+  const showAll = fluentButton('Show all', { appearance: 'subtle' });
   panel.append(heading, showAll);
   target.append(panel);
+  const descendants = (node: HierarchyNode): number[] => [
+    ...(node.nodeKind === 'element' ? [node.expressId] : []),
+    ...node.children.flatMap(descendants),
+  ];
   const renderNode = (node: HierarchyNode, modelId: number): HTMLElement => {
     const row = document.createElement('div');
     row.className = 'hierarchy-row';
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = node.label;
+    const button = fluentButton(node.label, { appearance: 'subtle' });
     button.addEventListener('click', () => {
       if (node.nodeKind === 'element') selection.set({ modelId, expressId: node.expressId });
     });
     row.append(button);
+    const action = fluentButton(node.nodeKind === 'element' ? 'Hide' : 'Isolate', { appearance: 'subtle' });
+    action.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const ids = descendants(node);
+      if (node.nodeKind === 'element') visibility?.hide(modelId, ids);
+      else visibility?.isolate(modelId, ids);
+    });
+    row.append(action);
     if (node.children.length) {
       const children = document.createElement('div');
       children.className = 'hierarchy-children';
@@ -42,8 +51,16 @@ export function mountModelHierarchy(target: HTMLElement, session: ModelSession, 
       panel.append(section);
     });
   };
-  showAll.addEventListener('click', render);
+  showAll.addEventListener('click', () => {
+    visibility?.showAll();
+    render();
+  });
   const unsubscribe = session.subscribe(render);
   render();
-  return { dispose() { unsubscribe(); panel.remove(); } };
+  return {
+    dispose() {
+      unsubscribe();
+      panel.remove();
+    },
+  };
 }

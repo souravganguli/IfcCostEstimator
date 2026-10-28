@@ -9,7 +9,8 @@ export function mountFeedback(overlay: HTMLElement, footer: HTMLElement, session
   empty.className = 'feedback-empty';
   const heading = document.createElement('h2');
   empty.append(createElement(Box), heading);
-  const error = document.createElement('div');
+  const error = document.createElement('fluent-message-bar');
+  error.setAttribute('intent', 'error');
   error.className = 'feedback-error';
   error.setAttribute('role', 'alert');
   error.hidden = true;

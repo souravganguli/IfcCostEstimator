@@ -1,3 +1,3 @@
 .ifc-loading { margin-left: auto; }
-.ifc-loading .primary { min-height: 28px; height: 28px; font-size: 12px; padding: 0 10px; }
-.ifc-loading .primary svg { width: 16px; height: 16px; }
+.ifc-loading .primary { min-height: 20px; height: 20px; font-size: 11px; padding: 0 7px; }
+.ifc-loading .primary svg { width: 14px; height: 14px; }

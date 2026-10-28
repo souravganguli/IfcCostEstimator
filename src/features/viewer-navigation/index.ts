@@ -6,7 +6,10 @@ export function mountNavigation(host: HTMLElement, session: ModelSession, availa
   const button = iconButton('Fit visible models', Maximize);
   button.id = 'fit';
   const events = new AbortController();
-  const refresh = () => { button.disabled = !availability.available || !session.getModels().some((model) => model.state === 'loaded' && model.visible); };
+  const refresh = () => {
+    const hasVisibleModel = session.getModels().some((model) => model.state === 'loaded' && model.visible);
+    button.toggleAttribute('disabled', !availability.available || !hasVisibleModel);
+  };
   button.addEventListener('click', () => viewer.fit(), { signal: events.signal });
   const offSession = session.subscribe(refresh);
   const offAvailability = availability.subscribe(refresh);

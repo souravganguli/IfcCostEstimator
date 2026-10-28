@@ -17,10 +17,18 @@ The `tests/fixtures/1a/` folder holds small project-authored IFC fixtures create
 
 These are narrow structural fixtures, not comprehensive IFC validation.
 
-## User-Supplied Duplex Models
+## Benchmark Models
 
-The Git-ignored `tests/fixtures/duplex/` folder contains the three IFC2x3 files explicitly supplied and requested for local tests by the user on 2026-10-27: architecture, MEP, and electrical. They were copied unchanged from Downloads and verified using SHA-256 comparisons. The Downloads originals remain unchanged. These supplied files are local test inputs only: do not commit, publish, or include them in deployment artifacts.
+The `tests/fixtures/benchmarkmodels/` folder contains three committed IFC2x3 files used for performance benchmarking and E2E regression testing:
 
-These are user-supplied test inputs, not project-authored fixtures. Redistribution rights and original licensing have not been independently established. No source or license is inferred from filenames or exporter metadata. Only the synthetic box is intended to accompany a repository checkout. Browser tests explicitly skip the Duplex group when any supplied file is absent; such skips must not be reported as successful real-model qualification.
+- `Ifc2x3_Duplex_Architecture.ifc` (2.3 MB, 728 meshes, 232 elements)
+- `Ifc2x3_Duplex_MEP.ifc` (17.5 MB, 1717 meshes, 926 elements)
+- `Ifc2s3_Duplex_Electrical.ifc` (1.6 MB, 258 meshes, 103 elements)
 
-The Duplex browser tests use the real local files and disable screenshot, video, and trace artifacts. Canvas comparisons are performed in memory. Models are not served as application assets, uploaded to external services, or included in the production bundle.
+These are committed to the repository and run unconditionally in all CI and local environments. They are the authoritative IFC2X3 test surface for regression detection.
+
+**Performance baseline:** `tests/artifacts/benchmark-baseline.json` records the committed `processModel` baseline timings measured on a representative desktop (Node/vitest, warm runs). The regression guard in `tests/unit/benchmark.test.ts` fails if the median processing time for any fixture exceeds its baseline by more than the documented tolerance multiplier (×2.0). The baseline must be updated intentionally and with review; it is never auto-updated to pass a guard.
+
+**E2E tests:** The Playwright `Duplex IFC2x3 benchmark models` describe block in `tests/e2e/viewer.spec.ts` loads each model in a real Chrome instance and asserts geometry renders, model controls work, and no JS errors or external requests occur. The federation test also measures combined load time, JS heap delta, and long-task count, attaching the result as a JSON artifact.
+
+These files are not served as application assets, uploaded to external services, or included in the production bundle. IFC data remains in browser memory only during the test run.

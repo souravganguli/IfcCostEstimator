@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Locator } from '@playwright/test';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 import { deploymentSettingsKey } from '../../src/core/settings';
@@ -329,10 +329,9 @@ test('compact chrome and collapsible models panel preserve models and resize the
   await expect(page.getByLabel('Collapse models panel')).toHaveAttribute('aria-expanded', 'true');
 });
 
-test.describe('Duplex IFC2x3 models', () => {
+test.describe('Duplex IFC2x3 benchmark models', () => {
   const names = ['Ifc2x3_Duplex_Architecture.ifc', 'Ifc2x3_Duplex_MEP.ifc', 'Ifc2s3_Duplex_Electrical.ifc'];
-  const paths = names.map((name) => fileURLToPath(new URL(`../fixtures/duplex/${name}`, import.meta.url)));
-  test.skip(!paths.every((path) => existsSync(path)), 'Supplied Duplex fixtures are local-only; place all three files in tests/fixtures/duplex to run these checks.');
+  const paths = names.map((name) => fileURLToPath(new URL(`../fixtures/benchmarkmodels/${name}`, import.meta.url)));
 
   for (const [index, name] of names.entries()) {
     test(`renders ${name} and releases it through model controls`, async ({ page }) => {

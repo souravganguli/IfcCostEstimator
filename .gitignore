@@ -3,6 +3,6 @@ dist/
 /tests/results/
 /tests/reports/
 /tests/coverage/
-/tests/artifacts/
+/tests/artifacts/*
+!/tests/artifacts/benchmark-baseline.json
 *.local
-/tests/fixtures/duplex/

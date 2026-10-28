@@ -1,0 +1,32 @@
+{
+  "_comment": "Committed baseline for IFC processor benchmark (processModel: geometry stream + metadata extract). Measured on Windows 22H2, Node 22, AMD Ryzen 7, 3 warm runs per file. Tolerance multiplier 2.0 absorbs CI noise and cold-run variance. Refresh this file intentionally when the processing path improves; never update it silently to pass a regression.",
+  "version": 1,
+  "toleranceMultiplier": 2.0,
+  "environment": "node-vitest",
+  "fixtures": [
+    {
+      "name": "Ifc2s3_Duplex_Electrical.ifc",
+      "schema": "IFC2X3",
+      "fileSizeKb": 1565,
+      "meshCount": 258,
+      "elementCount": 103,
+      "baselineMs": 234
+    },
+    {
+      "name": "Ifc2x3_Duplex_Architecture.ifc",
+      "schema": "IFC2X3",
+      "fileSizeKb": 2325,
+      "meshCount": 728,
+      "elementCount": 232,
+      "baselineMs": 250
+    },
+    {
+      "name": "Ifc2x3_Duplex_MEP.ifc",
+      "schema": "IFC2X3",
+      "fileSizeKb": 17453,
+      "meshCount": 1717,
+      "elementCount": 926,
+      "baselineMs": 1059
+    }
+  ]
+}

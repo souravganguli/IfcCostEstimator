@@ -1,6 +1,6 @@
 # Feature: Large-Model Loading and Interaction Performance Benchmark
 
-Status: Assigned to Phase 1B; benchmark and regression guard only. No optimization is in scope for this tranche. Not implemented.
+Status: Implemented. Benchmark and regression guard are in place using the committed benchmark models in `tests/fixtures/benchmarkmodels/`.
 
 ## Goal
 
@@ -8,7 +8,7 @@ Establish a repeatable baseline of load-to-usable-view and interaction responsiv
 
 ## Scope
 
-Benchmark the existing local IFC loading and viewing path against the repository's existing fixtures and record a baseline. Use the authored synthetic box for repeatability and any available local user-supplied Duplex IFC fixtures as larger representative inputs. Keep all models local to the browser. Do not introduce new fixture files, broaden IFC schema or format support, change the loading/viewing implementation to improve a metric, or make generalized compatibility claims. Optimization is explicitly out of scope and, if needed later, is a separate future tranche requiring its own approved targets.
+Benchmark the IFC loading path against the committed benchmark models in `tests/fixtures/benchmarkmodels/` (three IFC2X3 Duplex files: architecture, MEP, electrical). The unit benchmark measures `processModel` (geometry streaming + metadata extraction) directly in Node/vitest. The E2E benchmark measures browser load-to-rendered using Playwright + Chrome. Keep all models local. Optimization is explicitly out of scope; the guard detects regressions only.
 
 ## Requirements
 

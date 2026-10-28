@@ -26,33 +26,37 @@ import { mountQuantityTakeoff } from '../features/quantity-takeoff';
 import { mountEstimate } from '../features/estimate';
 import { mountCostBreakdown } from '../features/cost-breakdown';
 import { mountDrawings } from '../features/drawings';
-import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft, X } from 'lucide';
+import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft, X, Ruler, Scissors, PanelRight, Eye } from 'lucide';
 import './fluent-bootstrap';
 import './fluent2.css';
 
 export function mountApplication(root: HTMLElement): FeatureHandle {
   root.innerHTML = `
     <header class="topbar">
-      <span data-slot="models-toggle"></span>
-      <h1>IFC <span>Viewer</span></h1>
-      <nav class="application-ribbon" aria-label="Application ribbon">
-        <details class="ribbon-menu" data-ribbon-menu="file">
-          <summary aria-label="File">File</summary>
-          <div class="ribbon-menu-panel ribbon-file-panel" role="group" aria-label="File options">
-            <span data-slot="loading" class="loading-slot"></span>
-          </div>
-        </details>
-        <details class="ribbon-menu" data-ribbon-menu="view">
-          <summary aria-label="View">View</summary>
-          <div class="ribbon-menu-panel" role="group" aria-label="View options">
-            <fluent-button appearance="subtle" type="button" data-action="toggle-properties" aria-controls="property-dock" aria-pressed="false">Properties</fluent-button>
-          </div>
-        </details>
-        <details class="ribbon-menu" data-ribbon-menu="settings">
-          <summary aria-label="Settings">Settings</summary>
-          <div class="ribbon-menu-panel ribbon-settings-panel" data-slot="settings"></div>
-        </details>
-      </nav>
+      <div class="topbar-title-row">
+        <span data-slot="models-toggle"></span>
+        <h1>IFC <span>Viewer</span></h1>
+      </div>
+      <div class="topbar-ribbon-row">
+        <nav class="application-ribbon" aria-label="Application ribbon">
+          <details class="ribbon-menu" data-ribbon-menu="file">
+            <summary aria-label="File">File</summary>
+            <div class="ribbon-menu-panel ribbon-file-panel" role="group" aria-label="File options">
+              <span data-slot="loading" class="loading-slot"></span>
+            </div>
+          </details>
+          <details class="ribbon-menu" data-ribbon-menu="view">
+            <summary aria-label="View">View</summary>
+            <div class="ribbon-menu-panel" role="group" aria-label="View options">
+              <fluent-button appearance="subtle" type="button" data-action="toggle-properties" aria-controls="property-dock" aria-pressed="false">Properties</fluent-button>
+            </div>
+          </details>
+          <details class="ribbon-menu" data-ribbon-menu="settings">
+            <summary aria-label="Settings">Settings</summary>
+            <div class="ribbon-menu-panel ribbon-settings-panel" data-slot="settings"></div>
+          </details>
+        </nav>
+      </div>
     </header>
     <main class="workspace">
       <nav class="tool-rail" aria-label="Viewer tools">
@@ -120,6 +124,13 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   const viewMenu = root.querySelector<HTMLDetailsElement>('[data-ribbon-menu="view"]')!;
   const railIcons = [Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft];
   toolRailButtons.forEach((button, index) => button.append(createElement(railIcons[index])));
+
+  // Add icons to floating toolbar action buttons
+  root.querySelector<HTMLElement>('[data-floating="measure"]')!.prepend(createElement(Ruler));
+  root.querySelector<HTMLElement>('[data-floating="clipping"]')!.prepend(createElement(Scissors));
+  floatingPropertiesButton.prepend(createElement(PanelRight));
+  root.querySelector<HTMLElement>('[data-floating="show-all"]')!.prepend(createElement(Eye));
+
   const propertyDock = slot('property-dock');
   const setPropertyDockVisible = (visible: boolean) => {
     propertyDock.hidden = !visible;

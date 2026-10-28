@@ -26,7 +26,7 @@ import { mountQuantityTakeoff } from '../features/quantity-takeoff';
 import { mountEstimate } from '../features/estimate';
 import { mountCostBreakdown } from '../features/cost-breakdown';
 import { mountDrawings } from '../features/drawings';
-import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, Ruler, Scissors, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft, List, X } from 'lucide';
+import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft, X } from 'lucide';
 import './fluent-bootstrap';
 import './fluent2.css';
 
@@ -36,7 +36,12 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       <span data-slot="models-toggle"></span>
       <h1>IFC <span>Viewer</span></h1>
       <nav class="application-ribbon" aria-label="Application ribbon">
-        <span data-slot="loading" class="loading-slot"></span>
+        <details class="ribbon-menu" data-ribbon-menu="file">
+          <summary aria-label="File">File</summary>
+          <div class="ribbon-menu-panel ribbon-file-panel" role="group" aria-label="File options">
+            <span data-slot="loading" class="loading-slot"></span>
+          </div>
+        </details>
         <details class="ribbon-menu" data-ribbon-menu="view">
           <summary aria-label="View">View</summary>
           <div class="ribbon-menu-panel" role="group" aria-label="View options">
@@ -53,12 +58,9 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       <nav class="tool-rail" aria-label="Viewer tools">
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item is-active" data-pane="models" aria-label="Model browser" aria-pressed="true" title="Model browser"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="levels" aria-label="Levels and hierarchy" aria-pressed="false" title="Levels and hierarchy"></fluent-button>
-        <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-action="toggle-properties" aria-label="Element properties" aria-controls="property-dock" aria-expanded="false" aria-pressed="false" title="Element properties"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="viewpoints" aria-label="Viewpoints" aria-pressed="false" title="Viewpoints"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="search" aria-label="Search and filter" aria-pressed="false" title="Search and filter"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="appearance" aria-label="Appearance" aria-pressed="false" title="Appearance"></fluent-button>
-        <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="measure" aria-label="Measurement" aria-pressed="false" title="Measurement"></fluent-button>
-        <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="clipping" aria-label="Section clipping" aria-pressed="false" title="Section clipping"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="walkthrough" aria-label="First person" aria-pressed="false" title="First person"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="takeoff" aria-label="Quantity takeoff" aria-pressed="false" title="Quantity takeoff"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="estimate" aria-label="Cost estimate" aria-pressed="false" title="Cost estimate"></fluent-button>
@@ -79,7 +81,16 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         <div class="tool-pane" data-tool-pane="drawings" hidden><div data-slot="drawings"></div></div>
         <div class="pane-resize-handle" data-resize="tools" role="separator" aria-orientation="vertical" aria-label="Resize tool pane" aria-valuemin="240" aria-valuemax="520" aria-valuenow="310" tabindex="0"></div>
       </aside>
-      <section class="viewport" aria-label="3D viewer"><div class="viewer-toolbar"><span data-slot="navigation"></span></div><div class="viewer-overlay" data-slot="feedback"></div></section>
+      <section class="viewport" aria-label="3D viewer">
+        <div class="viewer-overlay" data-slot="feedback"></div>
+        <div class="floating-toolbar" role="toolbar" aria-label="Viewer actions">
+          <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="measure" aria-label="Measure">Measure</fluent-button>
+          <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="clipping" aria-label="Clip">Clip</fluent-button>
+          <span class="floating-action" data-slot="navigation"></span>
+          <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="properties" aria-controls="property-dock" aria-pressed="false" aria-expanded="false" aria-label="Properties">Properties</fluent-button>
+          <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="show-all" aria-label="Show all">Show all</fluent-button>
+        </div>
+      </section>
       <aside id="property-dock" class="property-dock" data-slot="property-dock" aria-label="Element properties" hidden>
         <div class="property-dock-header">
           <h2>Properties</h2>
@@ -103,22 +114,20 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     clipping: 'Section clipping', walkthrough: 'First person', takeoff: 'Quantity takeoff',
     estimate: 'Cost estimate', drawings: 'Plan and section drawings',
   };
-  const railButtons = [...root.querySelectorAll<HTMLElement>('.tool-rail-item')];
-  const propertyButton = root.querySelector<HTMLElement>('.tool-rail [data-action="toggle-properties"]')!;
+  const toolRailButtons = [...root.querySelectorAll<HTMLElement>('.tool-rail-item')];
   const ribbonPropertiesButton = root.querySelector<HTMLElement>('.ribbon-menu [data-action="toggle-properties"]')!;
+  const floatingPropertiesButton = root.querySelector<HTMLElement>('[data-floating="properties"]')!;
   const viewMenu = root.querySelector<HTMLDetailsElement>('[data-ribbon-menu="view"]')!;
-  const railIcons = [Boxes, Layers3, List, Bookmark, Search, Palette, Ruler, Scissors, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft];
-  railButtons.forEach((button, index) => { if (button !== propertyButton) button.append(createElement(railIcons[index])); });
-  const toolRailButtons = railButtons.filter((button): button is HTMLElement => button !== propertyButton);
-  propertyButton.append(createElement(List));
+  const railIcons = [Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft];
+  toolRailButtons.forEach((button, index) => button.append(createElement(railIcons[index])));
   const propertyDock = slot('property-dock');
   const setPropertyDockVisible = (visible: boolean) => {
     propertyDock.hidden = !visible;
     workspace.classList.toggle('property-open', visible);
-    propertyButton.setAttribute('aria-pressed', String(visible));
-    propertyButton.setAttribute('aria-expanded', String(visible));
     ribbonPropertiesButton.setAttribute('aria-pressed', String(visible));
-    propertyButton.classList.toggle('is-active', visible);
+    floatingPropertiesButton.setAttribute('aria-pressed', String(visible));
+    floatingPropertiesButton.setAttribute('aria-expanded', String(visible));
+    floatingPropertiesButton.classList.toggle('is-active', visible);
   };
   const toolResizeHandle = root.querySelector<HTMLElement>('[data-resize="tools"]')!;
   const propertyResizeHandle = root.querySelector<HTMLElement>('[data-resize="properties"]')!;
@@ -181,7 +190,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   };
   installResizer(toolResizeHandle, 'tools');
   installResizer(propertyResizeHandle, 'properties');
-  propertyButton.addEventListener('click', () => setPropertyDockVisible(propertyDock.hidden));
+  floatingPropertiesButton.addEventListener('click', () => setPropertyDockVisible(propertyDock.hidden));
   ribbonPropertiesButton.addEventListener('click', () => {
     setPropertyDockVisible(propertyDock.hidden);
     viewMenu.open = false;
@@ -190,7 +199,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   root.querySelector<HTMLElement>('[data-action="close-properties"]')!.append(createElement(X));
   root.querySelector<HTMLElement>('[data-action="close-properties"]')!.addEventListener('click', () => {
     setPropertyDockVisible(false);
-    propertyButton.focus();
+    floatingPropertiesButton.focus();
   });
   let sidebarToggle: HTMLElement | undefined;
   const showPaneContent = (pane: string) => {
@@ -232,6 +241,8 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     (activeButton ?? toolRailButtons[0])?.focus();
   });
   activatePane('models');
+  root.querySelector<HTMLElement>('[data-floating="measure"]')!.addEventListener('click', () => activatePane('measure'));
+  root.querySelector<HTMLElement>('[data-floating="clipping"]')!.addEventListener('click', () => activatePane('clipping'));
   const availability = new ViewerAvailability();
   const adapter = new IfcAdapter();
   let viewer: Viewer | undefined;
@@ -266,6 +277,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     fit: () => viewer?.fit(),
     setGridVisible: (visible) => { if (viewer) viewer.grid.visible = visible; },
   };
+  root.querySelector<HTMLElement>('[data-floating="show-all"]')!.addEventListener('click', () => viewer?.showAll());
   const feedback = mountFeedback(slot('feedback'), root.querySelector('footer')!, session, availability);
   const features: FeatureHandle[] = [
     feedback,

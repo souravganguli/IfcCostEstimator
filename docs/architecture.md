@@ -16,6 +16,7 @@ src/
   features/
     <feature-name>/     Public entrypoint, implementation, local UI/styles/state
   core/                Shared domain contracts and session services
+  components/          Custom (non-Fluent) reusable UI components, token-aligned
   adapters/            Engine, rendering, and browser integration implementations
 tests/
   unit/                Isolated module and contract tests
@@ -26,6 +27,8 @@ docs/
 ```
 
 A feature may contain several cohesive files, but should not require unrelated files to change. Start small: a feature does not need a package, build pipeline, service container, or plugin framework of its own. Introduce internal files or shared abstractions only when they remove real complexity or represent established reuse.
+
+Interactive UI uses the official Fluent 2 Web Components to the greatest extent possible per the [Fluent 2 design system policy](feature/fluent2-design-system.md#design-policy). A custom (non-Fluent) component requires explicit user approval with a stated reason before it is created; once approved it lives under `src/components/`, consumes the shared Fluent tokens for text sizes and spacing, and never holds feature behavior. One-off feature-private markup stays with its feature. Every deviation from the policy must be recorded in the design-system specification.
 
 ## Phase 0 Public Contracts
 

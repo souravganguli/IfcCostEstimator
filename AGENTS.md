@@ -12,6 +12,7 @@ This file governs agent workflow and behavior. It is not the source of product r
 ## File Organization
 
 - Keep maintained application code in `src/`. Do not edit generated output as implementation source.
+- Follow the [Fluent 2 design system policy](docs/feature/fluent2-design-system.md#design-policy): use Fluent 2 Web Components for interactive controls to the greatest extent possible; use the Fluent text sizes and spacing scale; and record every deviation in the design-system specification's Recorded Deviations table. Do not create a custom (non-Fluent) component without explicit user approval and a stated reason why a Fluent component does not fit; once approved, place it under `src/components/` (not inside a feature, the shell, or `src/core/`).
 - Keep tests, test configurations, fixture assets, and generated test artifacts under `tests/`.
 - Keep authored documentation under `docs/`, except the root README and this file. Keep feature requirements in one specification per feature, with the README overall and the plan delivery-focused.
 - Keep all phase plans in `docs/plans/`; follow the filename and version conventions in [docs/versioning.md](docs/versioning.md). Do not bump versions or mark a phase complete merely because its plan exists.

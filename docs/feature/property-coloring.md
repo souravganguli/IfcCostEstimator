@@ -1,6 +1,6 @@
 # Feature: Rule-Based Property Coloring
 
-Status: Planned for Phase 1A; requirements draft. Not implemented.
+Status: In progress (local implementation; acceptance and deployed verification outstanding) for Phase 1A; requirements draft. Not implemented.
 
 ## Goal
 

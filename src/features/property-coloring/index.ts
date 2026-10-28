@@ -1,5 +1,6 @@
 import type { FeatureHandle, ModelSession } from '../../core/contracts';
 import { matchColorRule, type ColorRule } from '../../core/color-rules';
+import type { FieldValue } from '../../core/predicate';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
 import { createColorSwatchInput } from '../../components/color-swatch-input';
 
@@ -33,7 +34,7 @@ export function mountPropertyColoring(target: HTMLElement, session: ModelSession
       const asset = session.getAsset(model.id);
       asset?.elements?.getAll().forEach((identity) => {
         const properties = asset.properties?.getProperties(identity);
-        const entries = new Map<string, import('../../core/predicate').FieldValue>([
+        const entries = new Map<string, FieldValue>([
           ['IfcClass', { kind: 'text', value: properties?.metadata.ifcClass ?? '' }],
           ['Name', { kind: 'text', value: properties?.metadata.name ?? '' }],
           ['GlobalId', { kind: 'text', value: properties?.metadata.globalId ?? '' }],

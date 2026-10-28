@@ -70,5 +70,14 @@ export function mountModelControls(panel: HTMLElement, toggleHost: HTMLElement, 
   };
   const unsubscribe = session.subscribe(refresh);
   refresh();
-  return { dispose() { events.abort(); rows.abort(); unsubscribe(); panel.replaceChildren(); toggleHost.replaceChildren(); setCollapsed(false); } };
+  return {
+    dispose() {
+      events.abort();
+      rows.abort();
+      unsubscribe();
+      panel.replaceChildren();
+      toggleHost.replaceChildren();
+      setCollapsed(false);
+    },
+  };
 }

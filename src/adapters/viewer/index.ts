@@ -193,6 +193,8 @@ export class Viewer implements ViewerPicking, ElementVisibility {
     return this.isolation.has(modelId);
   }
 
+  // ElementVisibility.subscribe: the viewer re-renders every frame via its
+  // animation loop, so there is no need to notify external subscribers.
   subscribe(): () => void {
     return () => {};
   }
@@ -213,8 +215,16 @@ export class Viewer implements ViewerPicking, ElementVisibility {
   getPoint(clientX: number, clientY: number): Vector3 | null {
     const rect = this.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-    this.raycaster.setFromCamera(new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1), this.camera);
-    const hit = this.raycaster.intersectObjects([...this.models], true).find((item) => item.object instanceof Mesh);
+    this.raycaster.setFromCamera(
+      new Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1,
+      ),
+      this.camera,
+    );
+    const hit = this.raycaster
+      .intersectObjects([...this.models], true)
+      .find((item) => item.object instanceof Mesh);
     return hit?.point.clone() ?? null;
   }
 

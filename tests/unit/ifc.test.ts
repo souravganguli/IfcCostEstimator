@@ -1,11 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { IfcAPI } from 'web-ifc';
-import { Box3, BufferGeometry } from 'three';
+import { BufferGeometry } from 'three';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { disposeModel } from '../../src/adapters/ifc';
-import { processModel, streamGeometry } from '../../src/adapters/ifc/ifc-processor';
-import { buildGlb } from '../../src/adapters/ifc/glb-builder';
-import { buildContracts } from '../../src/adapters/ifc/index';
+import { processModel } from '../../src/adapters/ifc/ifc-processor';
 
 const source = readFileSync(new URL('../fixtures/box.ifc', import.meta.url), 'utf8');
 const bytes = (text: string) => new TextEncoder().encode(text);

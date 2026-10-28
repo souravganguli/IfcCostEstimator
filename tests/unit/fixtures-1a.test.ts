@@ -1,8 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { IfcAPI } from 'web-ifc';
-import { Box3, Vector3 } from 'three';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { buildContracts, disposeModel } from '../../src/adapters/ifc';
+import { buildContracts } from '../../src/adapters/ifc';
 import { processModel } from '../../src/adapters/ifc/ifc-processor';
 
 const fixture = (name: string) => new Uint8Array(readFileSync(new URL(`../fixtures/1a/${name}`, import.meta.url)));

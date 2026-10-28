@@ -1,6 +1,6 @@
 # Feature: Model Search
 
-Status: Planned for Phase 1A; requirements draft. Not implemented.
+Status: Implemented locally with typed adapter search, bounded results, model-scoped identities, and transient UI. Browser acceptance and stale-model interaction coverage remain pending.
 
 ## Goal
 

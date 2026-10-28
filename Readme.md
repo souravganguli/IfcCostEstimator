@@ -24,7 +24,11 @@ Each specification must state its planned or implemented status, goal, scope and
 
 The viewing features are [IFC loading](docs/feature/ifc-loading.md), [3D navigation](docs/feature/viewer-navigation.md), [model controls](docs/feature/model-controls.md), [loading and error feedback](docs/feature/loading-and-errors.md), and [viewer settings](docs/feature/viewer-settings.md). These specifications inherit the architectural boundaries below; they do not override them.
 
-The selected Phase 1A feature requirements are linked from the [Phase 1 MVP plan](docs/plans/Phase_1_MVP.md). They are planned capabilities, not claims of implementation.
+The viewer shell also provides a 22px top ribbon for Open, View > Properties, and Settings, plus a persistent tool rail with an expandable left tool pane and a separate, resizable right-side property inspector that users can close to reclaim viewport space. Tool access includes the model browser, hierarchy, search/filter, appearance, takeoff, estimating, and drawings. See [Viewer Tool Sidebar](docs/feature/viewer-tool-sidebar.md) and [Element Properties](docs/feature/element-properties.md) for interaction and accessibility requirements.
+
+Viewer surfaces and controls use the official [Fluent 2 Web Components](docs/feature/fluent2-design-system.md) (`@fluentui/web-components`), bundled with the application and complemented by a local CSS token layer; they use system fonts and do not load external fonts, stylesheets, or other remote UI assets at runtime.
+
+The selected Phase 1A feature requirements are linked from the [Phase 1 MVP plan](docs/plans/Phase_1_MVP.md); use each specification's status and the plan's evidence gates to distinguish local implementation from phase acceptance.
 
 ## Local Development
 
@@ -35,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Open the printed localhost URL, normally `http://127.0.0.1:5173/IfcCostEstimator/`, and choose **Open IFC**. Multiple files can be opened together. Files are parsed locally, not uploaded. The authored test fixture is available at [tests/fixtures/box.ifc](tests/fixtures/box.ifc).
+Open the printed localhost URL, normally `http://127.0.0.1:5173/IfcCostEstimator/`, and choose **Open IFC** in the top ribbon. Multiple files can be opened together. Files are parsed locally, not uploaded. The authored test fixture is available at [tests/fixtures/box.ifc](tests/fixtures/box.ifc).
 
 See [docs/development.md](docs/development.md) for production preview, unit tests, browser tests, deployment configuration, and known validation limits.
 

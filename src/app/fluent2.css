@@ -1,0 +1,613 @@
+:root {
+  color-scheme: light;
+  --fluent-brand-primary: #0f6cbd;
+  --fluent-brand-hover: #115ea3;
+  --fluent-brand-pressed: #0c3b5e;
+  --fluent-brand-tint: #ebf3fc;
+  --fluent-neutral-foreground: #242424;
+  --fluent-neutral-secondary: #616161;
+  --fluent-neutral-tertiary: #707070;
+  --fluent-neutral-disabled: #bdbdbd;
+  --fluent-neutral-stroke: #d1d1d1;
+  --fluent-neutral-stroke-strong: #8a8886;
+  --fluent-neutral-background: #f5f5f5;
+  --fluent-neutral-background-hover: #f0f0f0;
+  --fluent-neutral-background-pressed: #e0e0e0;
+  --fluent-surface: #ffffff;
+  --fluent-surface-secondary: #fafafa;
+  --fluent-danger: #c50f1f;
+  --fluent-danger-background: #fdf3f4;
+  --fluent-focus: #0f6cbd;
+  --fluent-radius-small: 4px;
+  --fluent-radius-medium: 6px;
+  --fluent-font-family: "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --fluent-shadow-8: 0 4px 8px #00000014, 0 2px 4px #0000000a;
+  --fluent-shadow-16: 0 8px 16px #0000001a, 0 2px 4px #0000000a;
+  font-family: var(--fluent-font-family);
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-neutral-background);
+  accent-color: var(--fluent-brand-primary);
+}
+
+body {
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-neutral-background);
+  font-family: var(--fluent-font-family);
+  font-size: 14px;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--fluent-font-family);
+  font-size: 14px;
+}
+
+button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--fluent-neutral-stroke);
+  border-radius: var(--fluent-radius-small);
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-surface);
+  font-weight: 400;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--fluent-neutral-stroke-strong);
+  background: var(--fluent-neutral-background-hover);
+}
+
+button:active:not(:disabled) {
+  border-color: var(--fluent-neutral-stroke-strong);
+  background: var(--fluent-neutral-background-pressed);
+}
+
+button:disabled {
+  border-color: var(--fluent-neutral-stroke);
+  color: var(--fluent-neutral-disabled);
+  background: var(--fluent-neutral-background);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--fluent-focus);
+  outline-offset: 2px;
+}
+
+input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+select,
+textarea {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--fluent-neutral-stroke-strong);
+  border-radius: var(--fluent-radius-small);
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-surface);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--fluent-neutral-tertiary);
+  opacity: 1;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--fluent-brand-primary);
+}
+
+input[type="range"] {
+  accent-color: var(--fluent-brand-primary);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--fluent-neutral-foreground);
+  font-family: var(--fluent-font-family);
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.topbar {
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-surface);
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.topbar h1,
+.topbar h1 span {
+  color: var(--fluent-neutral-foreground);
+}
+
+.application-ribbon .ifc-loading .primary,
+.application-ribbon .primary {
+  border-color: var(--fluent-brand-primary);
+  color: #ffffff;
+  background: var(--fluent-brand-primary);
+}
+
+.application-ribbon .ifc-loading .primary:hover:not(:disabled),
+.application-ribbon .primary:hover:not(:disabled) {
+  border-color: var(--fluent-brand-hover);
+  background: var(--fluent-brand-hover);
+}
+
+.application-ribbon .primary:active:not(:disabled) {
+  border-color: var(--fluent-brand-pressed);
+  background: var(--fluent-brand-pressed);
+}
+
+.ribbon-menu > summary {
+  border-radius: var(--fluent-radius-small);
+  color: var(--fluent-neutral-foreground);
+}
+
+.ribbon-menu[open] > summary,
+.ribbon-menu > summary:hover {
+  border-color: transparent;
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-neutral-background-hover);
+}
+
+.ribbon-menu-panel {
+  border-color: var(--fluent-neutral-stroke);
+  border-radius: var(--fluent-radius-medium);
+  background: var(--fluent-surface);
+  box-shadow: var(--fluent-shadow-16);
+}
+
+.ribbon-menu-panel > button {
+  border-radius: var(--fluent-radius-small);
+}
+
+.ribbon-menu-panel > button:hover {
+  border-color: transparent;
+  background: var(--fluent-neutral-background-hover);
+}
+
+.tool-rail {
+  background: var(--fluent-surface);
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.tool-rail-item {
+  color: var(--fluent-neutral-secondary);
+  border-radius: var(--fluent-radius-medium);
+}
+
+.tool-rail .tool-rail-item:hover:not(:disabled),
+.tool-rail .tool-rail-item.is-active {
+  color: var(--fluent-brand-primary);
+  background: var(--fluent-brand-tint);
+}
+
+.tool-rail-item.is-active::before {
+  background: var(--fluent-brand-primary);
+}
+
+.tool-sidebar,
+.property-dock {
+  background: var(--fluent-surface);
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.tool-sidebar-header,
+.property-dock-header {
+  background: var(--fluent-surface);
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.tool-sidebar-header h2,
+.property-dock-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tool-sidebar-header .icon-button,
+.property-dock-header .icon-button {
+  border-radius: var(--fluent-radius-small);
+  color: var(--fluent-neutral-secondary);
+}
+
+.pane-resize-handle:hover,
+.pane-resize-handle:focus-visible,
+.pane-resize-handle.is-resizing,
+.property-resize-handle:hover,
+.property-resize-handle:focus-visible,
+.property-resize-handle.is-resizing {
+  background: color-mix(in srgb, var(--fluent-brand-primary) 24%, transparent);
+}
+
+.viewport {
+  background: #f0f0f0;
+}
+
+.viewer-toolbar {
+  border-color: var(--fluent-neutral-stroke);
+  border-radius: var(--fluent-radius-medium);
+  background: var(--fluent-surface);
+  box-shadow: var(--fluent-shadow-8);
+}
+
+.feature-panel {
+  border-color: var(--fluent-neutral-stroke);
+  border-radius: var(--fluent-radius-medium);
+  background: var(--fluent-surface);
+  box-shadow: none;
+}
+
+.feature-panel h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.property-category {
+  border-color: var(--fluent-neutral-stroke);
+  border-radius: var(--fluent-radius-small);
+  background: var(--fluent-surface);
+}
+
+.property-category > summary {
+  color: var(--fluent-neutral-foreground);
+  background: var(--fluent-neutral-background);
+}
+
+.properties-element-summary,
+.property-row {
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.properties-element-summary strong,
+.property-value {
+  color: var(--fluent-neutral-foreground);
+}
+
+.properties-element-summary span,
+.property-name,
+.properties-empty,
+.model-controls-count,
+.model-controls-title span {
+  color: var(--fluent-neutral-secondary);
+}
+
+.search-result {
+  min-height: 32px;
+  border-color: transparent;
+  border-radius: var(--fluent-radius-small);
+  background: transparent;
+  text-align: left;
+}
+
+.search-result:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--fluent-neutral-background-hover);
+}
+
+.model-controls-row {
+  border-color: var(--fluent-neutral-stroke);
+}
+
+.model-controls-row[data-state="loading"] .model-controls-title span {
+  color: var(--fluent-brand-primary);
+}
+
+.model-controls-row[data-state="failed"] {
+  border-left-color: var(--fluent-danger);
+}
+
+.model-controls-error,
+.feedback-error {
+  color: var(--fluent-danger);
+}
+
+.feedback-error {
+  border-color: #e8a7ae;
+  border-radius: var(--fluent-radius-medium);
+  background: var(--fluent-danger-background);
+  box-shadow: var(--fluent-shadow-8);
+}
+
+.feedback-empty {
+  color: var(--fluent-neutral-secondary);
+}
+
+.feedback-empty > svg {
+  color: var(--fluent-neutral-tertiary);
+}
+
+.first-person-minimap {
+  border-color: var(--fluent-neutral-stroke-strong);
+  border-radius: var(--fluent-radius-small);
+  background: var(--fluent-neutral-background);
+}
+
+.minimap-marker {
+  background: var(--fluent-brand-primary);
+}
+
+footer {
+  color: var(--fluent-neutral-secondary);
+  background: var(--fluent-surface);
+  border-color: var(--fluent-neutral-stroke);
+  font-family: var(--fluent-font-family);
+}
+
+::selection {
+  color: var(--fluent-neutral-foreground);
+  background: #cfe4fa;
+}
+
+/* Type ramp (size/line-height) and 4px spacing scale */
+:root {
+  --fluent-caption: 12px/16px var(--fluent-font-family);
+  --fluent-body: 14px/20px var(--fluent-font-family);
+  --fluent-subtitle: 600 14px/20px var(--fluent-font-family);
+  --fluent-space-1: 4px;
+  --fluent-space-2: 8px;
+  --fluent-space-3: 12px;
+  --fluent-space-4: 16px;
+  --fluent-control-compact: 24px;
+  --fluent-control: 32px;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  line-height: 20px;
+}
+
+h2 {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+h3,
+h4 {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--fluent-neutral-secondary);
+}
+
+.tool-sidebar-header,
+.property-dock-header {
+  min-height: 40px;
+  padding: 0 var(--fluent-space-3) 0 var(--fluent-space-4);
+}
+
+.tool-sidebar-header h2,
+.property-dock-header h2,
+.feature-panel h2,
+.sidebar h2 {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.feature-panel {
+  gap: var(--fluent-space-2);
+  padding: var(--fluent-space-3);
+  border-color: transparent;
+  border-bottom: 1px solid var(--fluent-neutral-stroke);
+  border-radius: 0;
+}
+
+.feature-panel label,
+.feature-panel p,
+.feature-panel small,
+.feature-panel dt,
+.property-name,
+.search-result span:last-child,
+.model-controls-count,
+.model-controls-title span {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.feature-panel button,
+.feature-panel input:not([type="checkbox"], [type="radio"], [type="range"]),
+.feature-panel select {
+  font-size: 14px;
+}
+
+.feature-panel button {
+  min-height: var(--fluent-control);
+}
+
+.property-category > summary {
+  min-height: var(--fluent-control);
+  padding: 0 var(--fluent-space-3);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+.property-row {
+  gap: var(--fluent-space-3);
+  padding: var(--fluent-space-1) var(--fluent-space-3);
+  min-height: var(--fluent-control);
+}
+
+.property-value {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+footer {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.tool-rail-item {
+  width: 40px;
+  height: 40px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Fluent Web Component host reconciliation
+ *
+ * The converted controls are real `<fluent-*>` custom elements. Their internal
+ * appearance comes from the Fluent theme tokens applied via `setTheme`, so the
+ * rules below only size and lay out the component *hosts* and replace the
+ * legacy green shell accents with Fluent brand tokens. They must not try to
+ * reach inside the components' shadow DOM.
+ * ------------------------------------------------------------------------- */
+
+/* Tool rail: Fluent buttons fill the 40px rail cell and carry the active mark. */
+.tool-rail .tool-rail-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.tool-rail .tool-rail-item:hover,
+.tool-rail .tool-rail-item.is-active {
+  color: var(--fluent-brand-primary);
+  background: var(--fluent-brand-tint);
+}
+
+.tool-rail .tool-rail-item.is-active::before {
+  background: var(--fluent-brand-primary);
+}
+
+/* Header / dock icon buttons keep their compact square footprint. */
+.tool-sidebar-header .icon-button,
+.property-dock-header .icon-button,
+.topbar .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Panel form controls span the panel width for a clean, aligned column. */
+.feature-panel fluent-text-input,
+.feature-panel fluent-text-area,
+.feature-panel fluent-dropdown,
+.feature-panel fluent-slider,
+.ribbon-settings-panel fluent-checkbox {
+  width: 100%;
+}
+
+.feature-panel fluent-button {
+  align-self: flex-start;
+}
+
+/* Result and list buttons read as full-width, left-aligned rows. */
+.search-result {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.search-result::part(control) {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* Filter / mapping rows align their Fluent controls on one line. */
+.filter-criterion {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  gap: var(--fluent-space-1);
+  align-items: center;
+}
+
+.mapping-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--fluent-space-1);
+  align-items: center;
+}
+
+.display-row,
+.viewpoint-row,
+.coloring-rule {
+  display: flex;
+  gap: var(--fluent-space-2);
+  align-items: center;
+  margin-top: var(--fluent-space-1);
+}
+
+.takeoff-fallback {
+  display: block;
+  margin: var(--fluent-space-1) 0;
+}
+
+/* Native color input kept for the browser swatch picker (no Fluent analog). */
+.color-swatch {
+  width: 36px;
+  height: var(--fluent-control);
+  padding: 2px;
+  border: 1px solid var(--fluent-neutral-stroke-strong);
+  border-radius: var(--fluent-radius-small);
+  background: var(--fluent-surface);
+}
+
+/* The Open button is a Fluent primary button; drop the legacy green fill and
+ * let the component's own brand styling show through. Keep only its layout. */
+.ifc-loading .primary,
+.primary {
+  background: transparent;
+  border-color: transparent;
+  color: inherit;
+}
+
+.ifc-loading .primary svg,
+.primary svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Error feedback uses a Fluent message bar; let it fill the overlay width. */
+.feedback-error {
+  display: block;
+  width: 100%;
+  border: 0;
+  box-shadow: var(--fluent-shadow-8);
+}
+
+.feedback-error[hidden] {
+  display: none;
+}
+
+/* Property categories render as Fluent accordion items. */
+.property-category {
+  display: block;
+}
+
+.property-category-heading {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,6 +1,6 @@
 # Feature: Model Filtering
 
-Status: Planned for Phase 1A; requirements draft. Not implemented.
+Status: Implemented locally with typed adapter filtering and transient criteria UI. Full browser acceptance and mixed-type interaction coverage remain pending.
 
 ## Goal
 

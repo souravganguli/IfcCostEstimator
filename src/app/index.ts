@@ -201,6 +201,38 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   };
   installResizer(toolResizeHandle, 'tools');
   installResizer(propertyResizeHandle, 'properties');
+
+  // Ribbon menus are native <details> elements, which do not close their
+  // siblings, close on an outside click, or close on Escape on their own. Wire
+  // up those expected menu behaviors here.
+  const ribbonMenus = [...root.querySelectorAll<HTMLDetailsElement>('.ribbon-menu')];
+  const closeRibbonMenus = (except?: HTMLDetailsElement) => {
+    ribbonMenus.forEach((menu) => { if (menu !== except) menu.open = false; });
+  };
+  ribbonMenus.forEach((menu) => {
+    const onToggle = () => { if (menu.open) closeRibbonMenus(menu); };
+    menu.addEventListener('toggle', onToggle);
+    resizeCleanups.push(() => menu.removeEventListener('toggle', onToggle));
+  });
+  const onRibbonOutsidePointerDown = (event: PointerEvent) => {
+    const target = event.target as Node | null;
+    if (target && ribbonMenus.some((menu) => menu.contains(target))) return;
+    closeRibbonMenus();
+  };
+  const onRibbonKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') return;
+    const openMenu = ribbonMenus.find((menu) => menu.open);
+    if (!openMenu) return;
+    openMenu.open = false;
+    openMenu.querySelector('summary')?.focus();
+  };
+  document.addEventListener('pointerdown', onRibbonOutsidePointerDown);
+  document.addEventListener('keydown', onRibbonKeyDown);
+  resizeCleanups.push(() => {
+    document.removeEventListener('pointerdown', onRibbonOutsidePointerDown);
+    document.removeEventListener('keydown', onRibbonKeyDown);
+  });
+
   floatingPropertiesButton.addEventListener('click', () => setPropertyDockVisible(propertyDock.hidden));
   ribbonPropertiesButton.addEventListener('click', () => {
     setPropertyDockVisible(propertyDock.hidden);

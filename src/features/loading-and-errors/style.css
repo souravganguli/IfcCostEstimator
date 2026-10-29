@@ -1,3 +1,3 @@
 .feedback-empty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; pointer-events: none; color: #687b70; }
 .feedback-empty > svg { width: 44px; height: 44px; stroke-width: 1; color: #829c8c; }
-.feedback-error { position: absolute; left: 20px; right: 20px; top: 40%; padding: 20px; background: #fff3ef; color: #953f35; border: 1px solid #e2bcb3; line-height: 1.5; }
+.feedback-error { position: absolute; left: 20px; right: 20px; top: 40%; padding: 20px; background: #fff3ef; color: #953f35; border: 1px solid #e2bcb3; line-height: var(--fluent-line-height-body); }

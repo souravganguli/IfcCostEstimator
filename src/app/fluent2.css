@@ -33,7 +33,7 @@ body {
   color: var(--fluent-neutral-foreground);
   background: var(--fluent-neutral-background);
   font-family: var(--fluent-font-family);
-  font-size: 14px;
+  font-size: var(--fluent-font-size-body);
 }
 
 button,
@@ -41,17 +41,17 @@ input,
 select,
 textarea {
   font-family: var(--fluent-font-family);
-  font-size: 14px;
+  font-size: var(--fluent-font-size-body);
 }
 
 button {
-  min-height: 32px;
-  padding: 0 12px;
+  min-height: var(--fluent-control);
+  padding: 0 var(--fluent-space-3);
   border: 1px solid var(--fluent-neutral-stroke);
   border-radius: var(--fluent-radius-small);
   color: var(--fluent-neutral-foreground);
   background: var(--fluent-surface);
-  font-weight: 400;
+  font-weight: var(--fluent-font-weight-regular);
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
 }
 
@@ -116,14 +116,14 @@ h4 {
 }
 
 h2 {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22px;
+  font-size: var(--fluent-font-size-body);
+  font-weight: var(--fluent-font-weight-semibold);
+  line-height: var(--fluent-line-height-body);
 }
 
 h3 {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-body);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 .topbar {
@@ -135,24 +135,6 @@ h3 {
 .topbar h1,
 .topbar h1 span {
   color: var(--fluent-neutral-foreground);
-}
-
-.application-ribbon .ifc-loading .primary,
-.application-ribbon .primary {
-  border-color: var(--fluent-brand-primary);
-  color: #ffffff;
-  background: var(--fluent-brand-primary);
-}
-
-.application-ribbon .ifc-loading .primary:hover:not(:disabled),
-.application-ribbon .primary:hover:not(:disabled) {
-  border-color: var(--fluent-brand-hover);
-  background: var(--fluent-brand-hover);
-}
-
-.application-ribbon .primary:active:not(:disabled) {
-  border-color: var(--fluent-brand-pressed);
-  background: var(--fluent-brand-pressed);
 }
 
 .ribbon-menu > summary {
@@ -217,8 +199,8 @@ h3 {
 
 .tool-sidebar-header h2,
 .property-dock-header h2 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-body);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 .tool-sidebar-header .icon-button,
@@ -255,8 +237,8 @@ h3 {
 }
 
 .feature-panel h2 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-body);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 .property-category {
@@ -355,11 +337,33 @@ footer {
   background: #cfe4fa;
 }
 
-/* Type ramp (size/line-height) and 4px spacing scale */
+/*
+ * Fluent 2 type ramp and 4px spacing scale.
+ *
+ * The ramp is the single source of truth for typography; every surface must use
+ * these tokens and must not introduce ad-hoc font sizes, line heights, or
+ * weights. See docs/feature/fluent2-design-system.md requirement 7. Any value
+ * outside this ramp is a human-approved exception that must be recorded in the
+ * spec's Recorded Deviations table.
+ *
+ *   Caption   12 / 16            labels, helper text, property names,
+ *                                category headers, footer, compact ribbon/footer
+ *                                minimum.
+ *   Sub-head  12 / 16  semibold  sub-headings (secondary color).
+ *   Body      14 / 20            controls, values.
+ *   Subtitle  14 / 20  semibold  pane and panel titles.
+ */
 :root {
-  --fluent-caption: 12px/16px var(--fluent-font-family);
-  --fluent-body: 14px/20px var(--fluent-font-family);
-  --fluent-subtitle: 600 14px/20px var(--fluent-font-family);
+  --fluent-font-size-caption: 12px;
+  --fluent-line-height-caption: 16px;
+  --fluent-font-size-body: 14px;
+  --fluent-line-height-body: 20px;
+  --fluent-font-weight-regular: 400;
+  --fluent-font-weight-semibold: 600;
+  /* Shorthand `font` values for whole-element use (reset other font props). */
+  --fluent-caption: var(--fluent-font-size-caption) / var(--fluent-line-height-caption) var(--fluent-font-family);
+  --fluent-body: var(--fluent-font-size-body) / var(--fluent-line-height-body) var(--fluent-font-family);
+  --fluent-subtitle: var(--fluent-font-weight-semibold) var(--fluent-font-size-body) / var(--fluent-line-height-body) var(--fluent-font-family);
   --fluent-space-1: 4px;
   --fluent-space-2: 8px;
   --fluent-space-3: 12px;
@@ -373,19 +377,19 @@ button,
 input,
 select,
 textarea {
-  line-height: 20px;
+  line-height: var(--fluent-line-height-body);
 }
 
 h2 {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: var(--fluent-font-size-body);
+  line-height: var(--fluent-line-height-body);
 }
 
 h3,
 h4 {
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
+  font-weight: var(--fluent-font-weight-semibold);
   color: var(--fluent-neutral-secondary);
 }
 
@@ -399,9 +403,9 @@ h4 {
 .property-dock-header h2,
 .feature-panel h2,
 .sidebar h2 {
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-body);
+  line-height: var(--fluent-line-height-body);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 .feature-panel {
@@ -420,14 +424,14 @@ h4 {
 .search-result span:last-child,
 .model-controls-count,
 .model-controls-title span {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
 }
 
 .feature-panel button,
 .feature-panel input:not([type="checkbox"], [type="radio"], [type="range"]),
 .feature-panel select {
-  font-size: 14px;
+  font-size: var(--fluent-font-size-body);
 }
 
 .feature-panel button {
@@ -437,9 +441,9 @@ h4 {
 .property-category > summary {
   min-height: var(--fluent-control);
   padding: 0 var(--fluent-space-3);
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 .property-row {
@@ -449,13 +453,13 @@ h4 {
 }
 
 .property-value {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: var(--fluent-font-size-body);
+  line-height: var(--fluent-line-height-body);
 }
 
 footer {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
 }
 
 .tool-rail-item {
@@ -565,17 +569,9 @@ footer {
   background: var(--fluent-surface);
 }
 
-/* The Open button is a Fluent primary button; drop the legacy green fill and
- * let the component's own brand styling show through. Keep only its layout. */
-.ifc-loading .primary,
-.primary {
-  background: transparent;
-  border-color: transparent;
-  color: inherit;
-}
-
-.ifc-loading .primary svg,
-.primary svg {
+/* The Open IFC button uses the subtle Fluent appearance so it reads as an
+ * ordinary menu item; keep only its icon sizing here. */
+.ifc-loading .ribbon-open-ifc svg {
   width: 14px;
   height: 14px;
 }
@@ -598,9 +594,9 @@ footer {
 }
 
 .property-category-heading {
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
+  font-weight: var(--fluent-font-weight-semibold);
 }
 
 @media (prefers-reduced-motion: reduce) {

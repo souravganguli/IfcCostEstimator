@@ -1,5 +1,21 @@
 :root { --header-height: 44px; --footer-height: 24px; --min-app-width: 1280px; --min-app-height: 720px; --tool-sidebar-width: 310px; --property-pane-width: 360px; font-family: 'Bahnschrift', 'Trebuchet MS', sans-serif; color: #23332d; background: #f5f7f6; font-synthesis: none; letter-spacing: 0; }
 * { box-sizing: border-box; }
+/*
+ * Lucide icons are outline/stroke icons that rely on fill="none". The Fluent
+ * Button shadow DOM forces `::slotted(svg) { fill: currentcolor; }`, which fills
+ * those outlines into solid blobs. Restore the intended outline look: force no
+ * fill, draw with the current color, and use a lighter 1.5 stroke (the inline
+ * stroke-width=2 reads as heavy at small UI sizes). !important is required to
+ * beat the component's ::slotted fill rule.
+ */
+button svg, fluent-button svg, .tool-rail-item svg, .floating-toolbar svg, .icon-button svg {
+  fill: none !important;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+button svg *, fluent-button svg *, .tool-rail-item svg *, .floating-toolbar svg *, .icon-button svg * {
+  fill: none !important;
+}
 body { margin: 0; }
 html, body { min-width: var(--min-app-width); }
 #app { height: 100dvh; min-width: var(--min-app-width); min-height: var(--min-app-height); display: grid; grid-template-rows: var(--header-height) minmax(0, 1fr) var(--footer-height); overflow: hidden; }
@@ -7,13 +23,13 @@ button, input { font: inherit; }
 .topbar { position: relative; z-index: 5; height: var(--header-height); display: flex; flex-direction: column; background: white; border-bottom: 1px solid #d6dfda; }
 .topbar-title-row { display: flex; align-items: center; gap: 6px; padding: 0 8px; height: 22px; border-bottom: 1px solid #edf2ef; }
 .topbar-ribbon-row { display: flex; align-items: center; height: 22px; padding: 0 4px; }
-h1 { margin: 0; font-size: 13px; color: #176951; white-space: nowrap; }
-h1 span { color: #23332d; font-weight: 400; }
+h1 { margin: 0; font-size: var(--fluent-font-size-body); line-height: var(--fluent-line-height-body); color: #176951; white-space: nowrap; }
+h1 span { color: #23332d; font-weight: var(--fluent-font-weight-regular); }
 .loading-slot { margin-left: auto; }
 .application-ribbon { display: flex; height: 100%; align-items: center; gap: 2px; margin-left: 4px; }
 .application-ribbon .loading-slot { margin-left: 0; }
 .ribbon-menu { position: relative; height: 100%; display: flex; align-items: center; }
-.ribbon-menu > summary { display: flex; height: 20px; align-items: center; padding: 0 8px; border: 1px solid transparent; border-radius: 3px; color: #23332d; cursor: pointer; font-size: 12px; list-style: none; user-select: none; }
+.ribbon-menu > summary { display: flex; height: 20px; align-items: center; padding: 0 8px; border: 1px solid transparent; border-radius: 3px; color: #23332d; cursor: pointer; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); list-style: none; user-select: none; }
 .ribbon-menu > summary::-webkit-details-marker { display: none; }
 .ribbon-menu[open] > summary, .ribbon-menu > summary:hover { border-color: #c8d6cd; background: #e7f2eb; }
 .ribbon-menu > summary:focus-visible { outline: 2px solid #176951; outline-offset: 2px; }
@@ -22,16 +38,30 @@ h1 span { color: #23332d; font-weight: 400; }
 .ribbon-menu-panel > button:hover { background: #e7f2eb; }
 .ribbon-file-panel { min-width: 200px; }
 .ribbon-file-panel .ifc-loading { margin-left: 0; }
-.ribbon-file-panel .ifc-loading .primary { min-height: 32px; height: 32px; width: 100%; justify-content: flex-start; padding: 0 10px; font-size: 14px; }
+/*
+ * Fluent 2 type ramp (fluent2-design-system.md requirement 7): the compact
+ * ribbon triggers (File/View/Settings) are Caption 12 — the minimum compact
+ * size — while the actions they open are menu controls at Body 14/20. Keeping
+ * the dropdown items larger than their trigger gives the intended visual
+ * hierarchy. Fluent buttons carry their own host font-size, so it is set on the
+ * element directly.
+ */
+.ribbon-menu-panel, .ribbon-menu-panel fluent-button, .ribbon-menu-panel .ifc-loading .ribbon-open-ifc { font-size: var(--fluent-font-size-body); line-height: var(--fluent-line-height-body); }
+/*
+ * Open IFC is the only item in the File menu. It uses the subtle Fluent
+ * appearance (set in mountIfcLoading) so it reads as an ordinary left-aligned
+ * menu item like Properties, not a prominent brand-filled call to action.
+ */
+.ribbon-file-panel .ifc-loading .ribbon-open-ifc { min-height: 32px; height: 32px; width: 100%; justify-content: flex-start; padding: 0 10px; }
 .ribbon-settings-panel { min-width: 230px; padding: 10px; }
-.ribbon-settings-panel .viewer-settings-toggle { min-height: 30px; }
+.ribbon-settings-panel .viewer-settings-toggle { min-height: 30px; font-size: var(--fluent-font-size-body); line-height: var(--fluent-line-height-body); }
 .workspace { display: grid; grid-template-columns: 48px minmax(240px, var(--tool-sidebar-width)) minmax(0, 1fr) 0; min-height: 0; }
 .workspace.pane-closed { grid-template-columns: 48px 0 minmax(0, 1fr) 0; }
 .workspace.property-open { grid-template-columns: 48px minmax(240px, var(--tool-sidebar-width)) minmax(0, 1fr) var(--property-pane-width); }
 .workspace.pane-closed.property-open { grid-template-columns: 48px 0 minmax(0, 1fr) var(--property-pane-width); }
 .tool-rail { z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; overflow-y: auto; background: white; border-right: 1px solid #d6dfda; }
 .tool-rail-item { position: relative; flex: 0 0 40px; width: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 3px; color: #53665c; background: transparent; }
-.tool-rail-item svg { stroke-width: 1.5; }
+
 .tool-rail-item:hover, .tool-rail-item.is-active { color: #176951; background: #e7f2eb; }
 .tool-rail-item.is-active::before { position: absolute; top: 5px; bottom: 5px; left: -4px; width: 3px; border-radius: 0 2px 2px 0; background: #176951; content: ''; }
 .tool-rail-item:focus-visible { outline-offset: -2px; }
@@ -45,7 +75,7 @@ h1 span { color: #23332d; font-weight: 400; }
 .tool-pane .feature-panel { margin-bottom: 10px; }
 .pane-resize-handle { position: absolute; z-index: 4; top: 0; right: -3px; bottom: 0; width: 7px; cursor: col-resize; touch-action: none; }
 .pane-resize-handle:hover, .pane-resize-handle:focus-visible, .pane-resize-handle.is-resizing { background: #17695166; outline: none; }
-h2 { font-size: 15px; font-weight: 500; margin: 0 0 20px; }
+h2 { font-size: var(--fluent-font-size-body); line-height: var(--fluent-line-height-body); font-weight: var(--fluent-font-weight-semibold); margin: 0 0 20px; }
 .viewport { position: relative; grid-column: 3; grid-row: 1; min-width: 0; overflow: hidden; background: #eaf0ed; }
 .property-dock { position: relative; grid-column: 4; grid-row: 1; display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; border-left: 1px solid #c8d6cd; background: #fffffff0; }
 .property-dock-header { z-index: 1; display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; border-bottom: 1px solid #d6dfda; background: white; }
@@ -56,26 +86,26 @@ h2 { font-size: 15px; font-weight: 500; margin: 0 0 20px; }
 .property-resize-handle:hover, .property-resize-handle:focus-visible, .property-resize-handle.is-resizing { background: #17695166; outline: none; }
 .properties-content { min-height: 100%; }
 .properties-element-summary { display: flex; flex-direction: column; gap: 3px; margin: 0 0 10px; padding: 10px 8px; border-bottom: 1px solid #d6dfda; }
-.properties-element-summary strong { overflow-wrap: anywhere; color: #23332d; font-weight: 600; }
-.properties-element-summary span { color: #687b70; font-size: 12px; }
+.properties-element-summary strong { overflow-wrap: anywhere; color: #23332d; font-weight: var(--fluent-font-weight-semibold); }
+.properties-element-summary span { color: #687b70; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
 .property-category { margin: 0 0 8px; border: 1px solid #d6dfda; background: #fff; }
-.property-category > summary { position: sticky; top: 0; z-index: 1; padding: 8px 10px; cursor: pointer; color: #23332d; background: #f5f7f6; font-weight: 600; }
+.property-category > summary { position: sticky; top: 0; z-index: 1; padding: 8px 10px; cursor: pointer; color: #23332d; background: #f5f7f6; font-weight: var(--fluent-font-weight-semibold); }
 .property-category-content { padding: 0 8px; }
 .property-row { display: grid; grid-template-columns: minmax(0, 0.9fr) 1px minmax(0, 1.1fr); align-items: start; gap: 8px; min-height: 34px; padding: 7px 2px; border-bottom: 1px solid #edf0ee; }
 .property-row:last-child { border-bottom: 0; }
-.property-name, .property-value { min-width: 0; overflow-wrap: anywhere; font-size: 12px; line-height: 1.4; }
+.property-name, .property-value { min-width: 0; overflow-wrap: anywhere; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
 .property-name { color: #53665c; }
 .property-separator { align-self: stretch; background: #d6dfda; }
 .property-value { color: #23332d; }
-.properties-empty { padding: 10px; color: #687b70; font-size: 13px; }
-.dock-choice { min-height: 30px; padding: 0 8px; font-size: 12px; }
+.properties-empty { padding: 10px; color: #687b70; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
+.dock-choice { min-height: 30px; padding: 0 8px; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
 .viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .viewer-overlay { position: absolute; inset: 0; pointer-events: none; }
 .floating-toolbar { position: absolute; z-index: 1; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--fluent-neutral-stroke, #d1d1d1); border-radius: var(--fluent-radius-medium, 6px); background: var(--fluent-surface, #ffffff); box-shadow: var(--fluent-shadow-16, 0 8px 16px #0000001a, 0 2px 4px #0000000a); pointer-events: auto; }
 .floating-toolbar .floating-action { display: inline-flex; align-items: center; gap: 5px; }
-.floating-toolbar .floating-action svg { width: 15px; height: 15px; flex-shrink: 0; stroke-width: 1.5; }
+.floating-toolbar .floating-action svg { width: 15px; height: 15px; flex-shrink: 0; }
 .floating-toolbar [data-floating].is-active::part(control) { background: var(--fluent-brand-tint, #ebf3fc); }
-footer { height: var(--footer-height); min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; border-top: 1px solid #d6dfda; background: white; color: #687b70; font-size: 12px; }
+footer { height: var(--footer-height); min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; border-top: 1px solid #d6dfda; background: white; color: #687b70; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
 footer span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 footer span:last-child { flex-shrink: 0; }
 .feature-panel { background: #ffffffed; border: 1px solid #c8d6cd; border-radius: 4px; padding: 12px; box-shadow: 0 2px 8px #23332d18; }
@@ -91,12 +121,10 @@ button:hover { background: #e7f2eb; }
 button:focus-visible, input:focus-visible { outline: 2px solid #176951; outline-offset: 3px; }
 button:disabled { opacity: 0.45; cursor: default; }
 button svg { width: 18px; height: 18px; flex-shrink: 0; }
-.primary { background: #176951; color: white; border-color: #176951; padding: 0 14px; }
-.primary:hover { background: #10513d; }
 .icon-button { width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; }
 .first-person-minimap { width: 180px; height: 120px; position: relative; overflow: hidden; background: #eaf0ed; border: 1px solid #9ab5a5; }
 .minimap-marker { position: absolute; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: #176951; }
 .topbar-title-row .icon-button { width: 20px; min-width: 20px; height: 20px; min-height: 20px; border-color: transparent; background: transparent; }
 .topbar-title-row .icon-button:hover { background: #edf2ef; }
-.topbar-title-row .icon-button svg { width: 14px; height: 14px; stroke-width: 1.5; }
+.topbar-title-row .icon-button svg { width: 14px; height: 14px; }
 /* Desktop Chrome is the only supported target. 1280x720 is a hard minimum: below it the layout does not reflow or stack; the viewport scrolls instead. Mobile and narrow layouts are not supported. */

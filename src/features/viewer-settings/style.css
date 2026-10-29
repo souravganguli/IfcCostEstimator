@@ -1,2 +1,2 @@
-.viewer-settings-toggle { display: flex; align-items: center; gap: 6px; font-size: 13px; padding-right: 8px; }
+.viewer-settings-toggle { display: flex; align-items: center; gap: 6px; font-size: var(--fluent-font-size-body); line-height: var(--fluent-line-height-body); padding-right: 8px; }
 .viewer-settings-toggle input { accent-color: #176951; }

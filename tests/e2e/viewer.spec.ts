@@ -70,7 +70,16 @@ test('shell renders under the project subpath without startup errors or external
   const openButton = page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' });
   await expect(openButton).toBeVisible();
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).fontFamily)).toContain('Segoe UI');
-  expect(await openButton.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(15, 108, 189)');
+  // Visual hierarchy: the compact ribbon triggers are Caption 12 while the menu
+  // actions they open are Body 14 (fluent2-design-system.md requirement 7), so
+  // the dropdown items read larger than their trigger.
+  const triggerFontSize = await page.locator('[data-ribbon-menu="file"] summary').evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
+  const openItemFontSize = await openButton.evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
+  expect(triggerFontSize).toBe(12);
+  expect(openItemFontSize).toBe(14);
+  expect(openItemFontSize).toBeGreaterThan(triggerFontSize);
+  // Open IFC is a subtle menu item, not a prominent brand-filled call to action.
+  expect(await openButton.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
   await page.locator('[data-ribbon-menu="file"] summary').click();
   await expect(page.getByRole('navigation', { name: 'Viewer tools' })).toBeVisible();
   await expect(page.getByRole('complementary', { name: 'Model browser and tools' })).toBeVisible();
@@ -168,6 +177,36 @@ test('shell renders under the project subpath without startup errors or external
   expect(failed).toEqual([]);
   expect(external).toEqual([]);
   await page.screenshot({ path: test.info().outputPath('shell.png') });
+});
+
+test('ribbon menus open one at a time and close on outside click or Escape', async ({ page }) => {
+  await page.goto('./');
+  const fileMenu = page.locator('[data-ribbon-menu="file"]');
+  const viewMenu = page.locator('[data-ribbon-menu="view"]');
+  const settingsMenu = page.locator('[data-ribbon-menu="settings"]');
+
+  // Opening one menu closes any other open menu (single-open behavior).
+  await fileMenu.locator('summary').click();
+  await expect(fileMenu).toHaveAttribute('open', '');
+  await settingsMenu.locator('summary').click();
+  await expect(settingsMenu).toHaveAttribute('open', '');
+  await expect(fileMenu).not.toHaveAttribute('open', '');
+  await viewMenu.locator('summary').click();
+  await expect(viewMenu).toHaveAttribute('open', '');
+  await expect(settingsMenu).not.toHaveAttribute('open', '');
+
+  // Clicking outside the ribbon closes the open menu.
+  await page.getByRole('region', { name: '3D viewer' }).click({ position: { x: 20, y: 20 } });
+  await expect(viewMenu).not.toHaveAttribute('open', '');
+  await expect(fileMenu).not.toHaveAttribute('open', '');
+  await expect(settingsMenu).not.toHaveAttribute('open', '');
+
+  // Escape closes the open menu and returns focus to its summary.
+  await fileMenu.locator('summary').click();
+  await expect(fileMenu).toHaveAttribute('open', '');
+  await page.keyboard.press('Escape');
+  await expect(fileMenu).not.toHaveAttribute('open', '');
+  await expect(fileMenu.locator('summary')).toBeFocused();
 });
 
 test('real IFC geometry renders, moves, and isolates repeated-name models with recoverable failures', async ({ page }) => {

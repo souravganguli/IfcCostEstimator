@@ -6,17 +6,20 @@ import './style.css';
 export function mountIfcLoading(host: HTMLElement, session: ModelSession, availability: Availability): FeatureHandle {
   host.classList.add('ifc-loading');
 
+  // Presented as an item inside the File ribbon menu, so it uses the subtle
+  // appearance to read as an ordinary menu action rather than a prominent
+  // brand-filled call to action.
   const picker = createFilePickerButton({
     label: 'Open IFC',
     accept: '.ifc',
     multiple: true,
     ariaLabel: 'Open IFC files',
-    appearance: 'primary',
+    appearance: 'subtle',
     icon: createElement(FolderOpen),
   });
   const { element: button, input } = picker;
   button.id = 'open';
-  button.className = 'primary';
+  button.className = 'ribbon-open-ifc';
   input.id = 'file-input';
 
   const refresh = () => {

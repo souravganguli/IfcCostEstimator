@@ -1,0 +1,3 @@
+# Placeholder so the Dockerfile's optional-CA COPY always has a matching
+# source and never fails when .devcontainer/zscaler.crt is absent. The build
+# ignores this file. Do not remove.

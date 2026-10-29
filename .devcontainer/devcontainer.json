@@ -1,0 +1,27 @@
+{
+  "name": "IfcCostEstimator",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "ms-playwright.playwright",
+        "ms-azuretools.vscode-containers"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  },
+  "forwardPorts": [5173, 5174, 4174],
+  "portsAttributes": {
+    "5173": { "label": "Vite dev server", "onAutoForward": "openPreview" },
+    "5174": { "label": "Playwright dev test server" },
+    "4174": { "label": "Playwright preview test server" }
+  },
+  "postCreateCommand": "npm ci && npx playwright install --with-deps chrome",
+  "remoteUser": "node"
+}

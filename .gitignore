@@ -6,3 +6,6 @@ dist/
 /tests/artifacts/*
 !/tests/artifacts/benchmark-baseline.json
 *.local
+
+# Local-only corporate CA (Zscaler TLS inspection); not for a public repo.
+/.devcontainer/zscaler.crt

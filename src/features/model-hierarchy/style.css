@@ -1,0 +1,66 @@
+/*
+ * Levels and hierarchy pane. Built on fluent-tree/fluent-tree-item per the
+ * Fluent 2 design policy: depth is expressed by the component's own
+ * indentation, every row stays on a single line, and visibility actions are
+ * compact icon buttons revealed on hover/focus (never permanent text buttons).
+ * Spacing uses the shared 4-px scale and the Fluent type ramp tokens.
+ */
+.hierarchy-panel { display: flex; flex-direction: column; min-height: 0; }
+
+/* Toolbar: filter box + Show all (n). */
+.hierarchy-toolbar { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+.hierarchy-toolbar .hierarchy-filter { flex: 1; min-width: 0; }
+.hierarchy-toolbar .hierarchy-show-all { flex: 0 0 auto; white-space: nowrap; }
+
+.hierarchy-empty { margin: 4px 0; color: #687b70; font-size: var(--fluent-font-size-caption); line-height: var(--fluent-line-height-caption); }
+.hierarchy-empty[hidden] { display: none; }
+
+.hierarchy-tree { display: block; }
+
+/* Row content: single-line, ellipsis-truncated label with a leading type icon. */
+.hierarchy-icon { display: inline-flex; align-items: center; color: #53665c; }
+.hierarchy-icon svg { width: 16px; height: 16px; }
+.hierarchy-label {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fluent-font-size-body);
+  line-height: var(--fluent-line-height-body);
+  vertical-align: middle;
+}
+
+/* Trailing aside: badges + compact action icons. */
+.hierarchy-actions { display: inline-flex; align-items: center; gap: 2px; }
+.hierarchy-action {
+  width: 24px; min-width: 24px; height: 24px; min-height: 24px;
+  opacity: 0;
+  pointer-events: none;
+}
+.hierarchy-action svg { width: 16px; height: 16px; }
+
+/* Reveal actions on row hover or when the row (or an action) has focus. */
+fluent-tree-item:hover > [slot="aside"] .hierarchy-action,
+fluent-tree-item:focus-within > [slot="aside"] .hierarchy-action,
+fluent-tree-item:focus > [slot="aside"] .hierarchy-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Hidden state: dim the row and show the Hidden badge. */
+fluent-tree-item[data-visibility="hidden"] > .hierarchy-icon,
+fluent-tree-item[data-visibility="hidden"] > .hierarchy-label { opacity: 0.45; }
+
+.hierarchy-hidden-badge,
+.hierarchy-mixed-badge {
+  font-size: var(--fluent-font-size-caption);
+  line-height: var(--fluent-line-height-caption);
+  padding: 0 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.hierarchy-hidden-badge { color: #5a4a00; background: #fff4ce; }
+.hierarchy-mixed-badge { color: #3a4a66; background: #e8eef7; }
+.hierarchy-hidden-badge[hidden],
+.hierarchy-mixed-badge[hidden] { display: none; }

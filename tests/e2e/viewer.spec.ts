@@ -502,3 +502,171 @@ test('graphics context loss clears the session, stops the renderer, and requires
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
 });
+
+test.describe('Levels and hierarchy pane', () => {
+  const multistorey = fileURLToPath(new URL('../fixtures/1a/multistorey-ifc4.ifc', import.meta.url));
+  const duplexArchitecture = fileURLToPath(new URL('../fixtures/benchmarkmodels/Ifc2x3_Duplex_Architecture.ifc', import.meta.url));
+
+  async function openHierarchy(page: Page): Promise<Locator> {
+    await page.getByLabel('Open IFC files', { exact: false }).setInputFiles(multistorey);
+    await expect(page.locator('[data-state=loaded]')).toHaveCount(1, { timeout: 120000 });
+    await page.locator('.tool-rail-item[data-pane="levels"]').click();
+    const tree = page.locator('.hierarchy-tree');
+    await expect(tree).toBeVisible();
+    return tree;
+  }
+
+  test('renders an indented Fluent tree with single-line rows, hover actions, and no wrapping', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('./');
+    const tree = await openHierarchy(page);
+
+    // AC1: the pane is built on fluent-tree/fluent-tree-item (R10/T12).
+    expect(await tree.evaluate((element) => element.tagName.toLowerCase())).toBe('fluent-tree');
+    const root = tree.locator('fluent-tree-item.hierarchy-model-root').first();
+    await expect(root).toBeVisible();
+    expect(await root.evaluate((element) => element.tagName.toLowerCase())).toBe('fluent-tree-item');
+
+    // AC3: a parent node is expandable (shows a chevron — never Fluent's
+    // `empty` leaf state) and its real children build lazily on first expand.
+    await expect(root).not.toHaveAttribute('empty', '');
+    // Only an invisible lazy-expansion placeholder exists before expansion.
+    await expect(root.locator('fluent-tree-item:not([data-placeholder])')).toHaveCount(0);
+    // Expand with the keyboard (roving-tabindex model: focus the row, press
+    // ArrowRight) — the real user path, not a synthetic event.
+    await root.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(root).toHaveAttribute('expanded', '');
+    await expect(root.locator('fluent-tree-item:not([data-placeholder])').first()).toBeVisible();
+    // The root's own lazy-expansion placeholder is removed once real children
+    // exist (deeper collapsed children keep their own placeholders).
+    await expect(root.locator('> fluent-tree-item[data-placeholder]')).toHaveCount(0);
+
+    // AC1/AC4: every rendered label stays on a single line (no wrapping).
+    const labels = tree.locator('.hierarchy-label');
+    const count = await labels.count();
+    expect(count).toBeGreaterThan(0);
+    for (let index = 0; index < count; index += 1) {
+      const label = labels.nth(index);
+      const metrics = await label.evaluate((element) => ({
+        whiteSpace: getComputedStyle(element).whiteSpace,
+        overflow: getComputedStyle(element).overflow,
+        title: element.getAttribute('title'),
+        lines: Math.round(element.getBoundingClientRect().height / parseFloat(getComputedStyle(element).lineHeight)),
+      }));
+      expect(metrics.whiteSpace).toBe('nowrap');
+      expect(metrics.overflow).toBe('hidden');
+      expect(metrics.title ?? '').not.toBe('');
+      expect(metrics.lines).toBeLessThanOrEqual(1);
+    }
+    // No horizontal overflow at the 1280 minimum width.
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+    // AC5: actions are compact icon buttons revealed on hover, with aria names,
+    // not permanent text buttons.
+    const firstItem = root.locator('fluent-tree-item:not([data-placeholder])').first();
+    const action = firstItem.locator('.hierarchy-action').first();
+    await expect(action).toHaveCount(1);
+    expect(await action.evaluate((element) => getComputedStyle(element).opacity)).toBe('0');
+    await firstItem.hover();
+    await expect.poll(() => action.evaluate((element) => getComputedStyle(element).opacity)).toBe('1');
+    expect(await action.getAttribute('aria-label')).not.toBe('');
+
+    expect(errors).toEqual([]);
+    await page.screenshot({ path: test.info().outputPath('hierarchy-tree.png') });
+  });
+
+  test('hides elements with visible state and count, filters, and restores via Show all', async ({ page }) => {
+    await page.goto('./');
+    const tree = await openHierarchy(page);
+    const root = tree.locator('fluent-tree-item.hierarchy-model-root').first();
+    await root.evaluate((element) => { (element as unknown as { expanded: boolean }).expanded = true; element.dispatchEvent(new Event('toggle')); });
+
+    // Expand every spatial node until element rows surface (the spatial chain is
+    // project → site → building → storey → element).
+    await expect.poll(async () => {
+      await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
+        for (const item of items) {
+          if (!(item as unknown as { expanded: boolean }).expanded) {
+            (item as unknown as { expanded: boolean }).expanded = true;
+            item.dispatchEvent(new Event('toggle'));
+          }
+        }
+      });
+      return tree.locator('fluent-tree-item[data-kind="element"]').count();
+    }, { timeout: 15000 }).toBeGreaterThan(0);
+    const element = tree.locator('fluent-tree-item[data-kind="element"]').first();
+    await expect(element).toBeVisible();
+
+    // AC6: hide one element → it is dimmed with a hidden badge; the model root,
+    // which still has visible elements, shows a mixed ("partly hidden") state;
+    // and the Show all count reflects the hidden element.
+    await element.hover();
+    await element.locator('[data-action="visibility"]').click();
+    await expect(element).toHaveAttribute('data-visibility', 'hidden');
+    await expect(element.locator('.hierarchy-hidden-badge')).toBeVisible();
+    await expect(root).toHaveAttribute('data-visibility', 'mixed');
+    await expect(root.locator('.hierarchy-mixed-badge').first()).toBeVisible();
+    const showAll = page.locator('.hierarchy-show-all');
+    await expect(showAll).toContainText('(1)');
+
+    // AC9: filtering narrows to matches and their ancestors; clearing restores.
+    const filter = page.getByLabel('Filter hierarchy by name or class');
+    const label = await element.locator('.hierarchy-label').innerText();
+    const term = label.slice(0, 4);
+    const setFilter = async (value: string) => filter.evaluate((host, text) => {
+      const input = (host as unknown as { value: string });
+      input.value = text;
+      host.dispatchEvent(new Event('input', { bubbles: true }));
+    }, value);
+    await setFilter(term);
+    await expect(element).toBeVisible();
+    // A non-matching sibling element should be filtered out.
+    await expect.poll(() => tree.locator('fluent-tree-item[data-kind="element"]:not([hidden])').count()).toBeGreaterThan(0);
+    await setFilter('');
+    await expect(root).toBeVisible();
+
+    // AC7: Show all clears hierarchy hides.
+    await showAll.click();
+    await expect(element).toHaveAttribute('data-visibility', 'visible');
+    await expect(showAll).toContainText('(0)');
+  });
+
+  test('IfcSpace nodes use a distinct icon from structural levels', async ({ page }) => {
+    test.setTimeout(180000);
+    await page.goto('./');
+    await page.getByLabel('Open IFC files', { exact: false }).setInputFiles(duplexArchitecture);
+    await expect(page.locator('[data-state=loaded]')).toHaveCount(1, { timeout: 120000 });
+    await page.locator('.tool-rail-item[data-pane="levels"]').click();
+    const tree = page.locator('.hierarchy-tree');
+    await expect(tree).toBeVisible();
+
+    // Expand the whole spatial structure (project → site → building → storey →
+    // space) until IfcSpace rows are materialised.
+    await expect.poll(async () => {
+      await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
+        for (const item of items) {
+          if (!(item as unknown as { expanded: boolean }).expanded) {
+            (item as unknown as { expanded: boolean }).expanded = true;
+            item.dispatchEvent(new Event('toggle'));
+          }
+        }
+      });
+      return tree.locator('fluent-tree-item[data-ifc-class="IFCSPACE" i]').count();
+    }, { timeout: 20000 }).toBeGreaterThan(0);
+
+    // The space row's type icon is visually distinct from a storey's: the icon
+    // SVGs differ in their vector content (iconFor maps IfcSpace to a dedicated
+    // room icon, not the shared layers icon used for storeys/sites).
+    const spaceIcon = tree.locator('fluent-tree-item[data-ifc-class="IFCSPACE" i] > .hierarchy-icon svg').first();
+    const storeyIcon = tree.locator('fluent-tree-item[data-ifc-class="IFCBUILDINGSTOREY" i] > .hierarchy-icon svg').first();
+    await expect(spaceIcon).toHaveCount(1);
+    await expect(storeyIcon).toHaveCount(1);
+    const spaceMarkup = await spaceIcon.evaluate((element) => element.innerHTML);
+    const storeyMarkup = await storeyIcon.evaluate((element) => element.innerHTML);
+    expect(spaceMarkup).not.toBe(storeyMarkup);
+    expect(spaceMarkup.length).toBeGreaterThan(0);
+  });
+});

@@ -1,6 +1,8 @@
 # Architecture
 
-This document is the authoritative record of all architectural decisions for IfcCostEstimator. The [README](../Readme.md) covers product direction and local development; this file covers every decision about boundaries, technology choices, module structure, data flow, storage, deployment, and evolution.
+This document is the authoritative record of the **current-state** architecture for IfcCostEstimator. The [README](../Readme.md) covers product direction and local development; this file covers every decision about boundaries, technology choices, module structure, data flow, storage, deployment, and evolution.
+
+The _reasoning and history_ behind each decision — context, alternatives, and consequences — is captured as dated [Architecture Decision Records](architecture/adr/README.md). Open architectural questions are tracked in [architecture/adr/gaps.md](architecture/adr/gaps.md). When a decision changes, add or supersede an ADR and update this document to match.
 
 ## Boundaries
 

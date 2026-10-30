@@ -30,13 +30,14 @@ a multiple-choice questionnaire to the user (see phase 8).
   `completed` immediately when it is done. Keep the list visible and current so
   progress is auditable.
 - **Use Python for anything scriptable.** When a task benefits from automation —
-  downloading videos/screenshots, extracting video frames, fetching and parsing
-  transcripts, scraping forum threads, de-duplicating sources, converting or
-  resizing images, generating a sources table, or any batch/data step — write
-  and run a short Python script in the terminal rather than doing it by hand.
-  Prefer standard tooling (`requests`, `yt-dlp`, `ffmpeg` via subprocess,
-  `beautifulsoup4`, `Pillow`). Install what you need with `pip` and report what
-  you ran. Save any generated artifacts under the feature's `assets/` folder.
+  fetching and parsing transcripts, scraping forum threads, de-duplicating
+  sources, generating a sources table, or any batch/data step — write and run a
+  short Python script in the terminal rather than doing it by hand. Install what
+  you need with `pip` and report what you ran. Save any generated artifacts
+  under the feature's `assets/` folder. For capturing media and extracting
+  images from videos, follow the
+  [`capture-feature-media`](../skills/capture-feature-media/SKILL.md) skill,
+  which owns that tooling and the batch script.
 - **Keep an auditable source log** (URL, title, product, what it showed you) so
   every claim in the final doc is traceable. Build it as you go; a Python step
   may emit it as a table.
@@ -81,20 +82,18 @@ through them.
 
 ### 5. Obtain screenshots and videos of the feature in use
 
-- For each comparable product, **capture screenshots and at least one video**
-  showing the feature in use. For an existing/established product, **at least
-  one video of the feature in action is expected**; study it by stepping through
-  and taking screenshots of each distinct UI state.
-- Prefer Python automation: use `yt-dlp` to download the video, `ffmpeg` to
-  extract frames at intervals (e.g. every ~15-30s of the relevant section or at
-  each distinct interaction), and fetch/parse the transcript; cite the video and
-  timestamps. Fall back to the browser screenshot tool for live demos/docs pages.
-- **Save every downloaded artifact under the feature's `assets/` folder**
-  (`docs/feature/<slug>/assets/`), name it descriptively
-  (`<product>-<state>.png`), and map each screenshot/clip to the flow step or
-  finding it illustrates.
-- If a video genuinely cannot be found or downloaded, report that honestly and
-  record why.
+For each comparable product, **capture screenshots and at least one video** of
+the feature in use; for an established product at least one video of the feature
+in action is expected. Study it by stepping through each distinct UI state, and
+save every artifact under `docs/feature/<slug>/assets/`.
+
+> **Follow the [`capture-feature-media`](../skills/capture-feature-media/SKILL.md)
+> skill for this phase.** It is the single source of truth for the tooling,
+> example commands, the Python batch script (`yt-dlp` download + `ffmpeg` frame
+> extraction), transcript fetching and parsing, the browser screenshot fallback,
+> asset naming (`<product>-<state>.png`), the output location, and the
+> completion checklist. If a video genuinely cannot be found or downloaded,
+> report that honestly and record why.
 
 ### 6. Study product boards and forums, then re-evaluate the request
 
@@ -246,10 +245,11 @@ Reference every image with a relative path into the assets folder.>
   phase, and record explicitly when one yields nothing.
 - Always maintain a todo list that mirrors the phases; keep exactly one item
   `in-progress` and mark items `completed` as you finish them.
-- Use Python scripts (run in the terminal) for scriptable work — downloading
-  videos/screenshots, extracting frames with `ffmpeg`/`yt-dlp`, fetching and
+- Use Python scripts (run in the terminal) for scriptable work — fetching and
   parsing transcripts, scraping forums, and generating tables — and report the
-  commands you ran.
+  commands you ran. For capturing media and extracting images from videos,
+  follow the [`capture-feature-media`](../skills/capture-feature-media/SKILL.md)
+  skill, which owns the `yt-dlp`/`ffmpeg` tooling and batch script.
 - Do original research; do not invent product behaviour. Cite every source.
 - For an existing/established comparable product, obtain **at least one video**
   of the feature in action; study it via screenshots of each UI state. Report

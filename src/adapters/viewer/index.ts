@@ -1,4 +1,4 @@
-import { AmbientLight, Color, DirectionalLight, GridHelper, Group, Mesh, MeshStandardMaterial, OrthographicCamera, PerspectiveCamera, Plane, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three';
+import { AmbientLight, Color, DirectionalLight, GridHelper, Group, Mesh, MeshStandardMaterial, OrthographicCamera, PerspectiveCamera, Plane, Raycaster, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { frameModels } from './framing';
 import type {
@@ -42,7 +42,10 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
   };
 
   constructor(private readonly container: HTMLElement, private readonly onError: (message: string) => void = () => {}) {
-    this.renderer = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    // No preserveDrawingBuffer: keeping it on disables the browser's copy-on-swap
+    // optimisation and slows every rendered frame, which badly hurts large-model
+    // load time. Thumbnails are captured via an off-screen render target instead.
+    this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.localClippingEnabled = true;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.domElement.setAttribute('aria-label', 'IFC model scene');
@@ -453,23 +456,42 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
 
   captureThumbnail(maxSize: number): string | undefined {
     if (this.disposed) return undefined;
+    let target: WebGLRenderTarget | undefined;
     try {
-      // Render once so the preserved drawing buffer is current, then downscale
-      // to a small off-screen canvas sized to stay within storage quota.
-      this.renderer.render(this.scene, this.activeCamera());
+      // Render into an off-screen target sized to the thumbnail, then read its
+      // pixels back. This avoids requiring preserveDrawingBuffer on the main
+      // renderer (which would slow every frame) while still producing a capture
+      // that stays within storage quota.
       const source = this.renderer.domElement;
-      const scale = Math.min(1, maxSize / Math.max(source.width, source.height));
-      const width = Math.max(1, Math.round(source.width * scale));
-      const height = Math.max(1, Math.round(source.height * scale));
+      const aspect = source.height > 0 ? source.width / source.height : 1;
+      const longest = Math.max(1, maxSize);
+      const width = Math.max(1, Math.round(aspect >= 1 ? longest : longest * aspect));
+      const height = Math.max(1, Math.round(aspect >= 1 ? longest / aspect : longest));
+      target = new WebGLRenderTarget(width, height);
+      this.renderer.setRenderTarget(target);
+      this.renderer.render(this.scene, this.activeCamera());
+      const pixels = new Uint8Array(width * height * 4);
+      this.renderer.readRenderTargetPixels(target, 0, 0, width, height, pixels);
+      this.renderer.setRenderTarget(null);
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
       const context = canvas.getContext('2d');
       if (!context) return undefined;
-      context.drawImage(source, 0, 0, width, height);
+      const image = context.createImageData(width, height);
+      // WebGL reads bottom-to-top; flip rows so the image is upright.
+      for (let row = 0; row < height; row++) {
+        const sourceStart = row * width * 4;
+        const destStart = (height - row - 1) * width * 4;
+        image.data.set(pixels.subarray(sourceStart, sourceStart + width * 4), destStart);
+      }
+      context.putImageData(image, 0, 0);
       return canvas.toDataURL('image/png');
     } catch {
       return undefined;
+    } finally {
+      this.renderer.setRenderTarget(null);
+      target?.dispose();
     }
   }
 

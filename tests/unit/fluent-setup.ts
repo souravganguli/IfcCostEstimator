@@ -23,4 +23,17 @@ if (typeof HTMLElement !== 'undefined' && !('attachInternals' in HTMLElement.pro
   };
 }
 
+// happy-dom resolves `HTMLInputElement.list` by building a selector from the
+// element's `list` attribute. Fluent's text input assigns an auto-generated id
+// containing `{}` characters, which are invalid in a CSS selector and make the
+// getter throw during element connection. The real browser (Chrome e2e) is
+// unaffected; neutralise the getter for the DOM shim so form controls connect.
+if (typeof HTMLInputElement !== 'undefined') {
+  try {
+    Object.defineProperty(HTMLInputElement.prototype, 'list', { configurable: true, get: () => null });
+  } catch {
+    // If the property is non-configurable in this environment, leave it as is.
+  }
+}
+
 import '../../src/app/fluent-bootstrap';

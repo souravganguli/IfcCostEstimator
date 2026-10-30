@@ -20,7 +20,7 @@ import { mountDisplayControls } from '../features/display-controls';
 import { mountSectionClipping } from '../features/section-clipping';
 import { mountModelMeasurement } from '../features/model-measurement';
 import { mountFirstPerson } from '../features/first-person';
-import { mountViewpoints } from '../features/viewpoints';
+import { mountViewerViewpoints } from '../features/viewer-viewpoints';
 import { mountPropertyColoring } from '../features/property-coloring';
 import { mountQuantityTakeoff } from '../features/quantity-takeoff';
 import { mountEstimate } from '../features/estimate';
@@ -84,6 +84,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         <div class="pane-resize-handle" data-resize="tools" role="separator" aria-orientation="vertical" aria-label="Resize tool pane" aria-valuemin="240" aria-valuemax="520" aria-valuenow="310" tabindex="0"></div>
       </aside>
       <section class="viewport" aria-label="3D viewer">
+        <div class="view-tab-strip-host" data-slot="tab-strip"></div>
         <div class="viewer-overlay" data-slot="feedback"></div>
         <div class="floating-toolbar" role="toolbar" aria-label="Viewer actions">
           <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="measure" aria-label="Measure">Measure</fluent-button>
@@ -345,7 +346,16 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         renderer: viewer.renderer.domElement,
       }, selection),
       mountFirstPerson(slot('walkthrough'), viewport, viewer),
-      mountViewpoints(slot('viewpoints'), viewer),
+      mountViewerViewpoints(
+        slot('viewpoints'),
+        {
+          scene: viewer,
+          session,
+          selection,
+          exitWalkthrough: () => viewer!.setFirstPerson(false),
+        },
+        { tabStripHost: slot('tab-strip'), notice: feedback.notice },
+      ),
       mountPropertyColoring(slot('coloring'), session, viewer),
       mountQuantityTakeoff(slot('takeoff'), session, selection),
       mountEstimate(slot('estimate'), session, feedback.notice),

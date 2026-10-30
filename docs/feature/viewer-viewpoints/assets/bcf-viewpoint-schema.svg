@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="520" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+  <rect x="0" y="0" width="820" height="520" fill="#ffffff" stroke="#8a8886"/>
+  <text x="16" y="28" font-weight="bold" font-size="16" fill="#201f1e">Saved-view snapshot model (based on BCF 3.0 visualization info)</text>
+  <!-- Camera -->
+  <rect x="20" y="50" width="250" height="150" fill="#eff6fc" stroke="#0078d4"/>
+  <text x="32" y="72" font-weight="bold" fill="#0078d4">Camera (exactly one)</text>
+  <text x="32" y="94" fill="#323130">Perspective: viewpoint, direction,</text>
+  <text x="32" y="110" fill="#323130">up vector, FieldOfView, aspect</text>
+  <text x="32" y="134" fill="#323130">OR Orthogonal: viewpoint,</text>
+  <text x="32" y="150" fill="#323130">direction, up, ViewToWorldScale,</text>
+  <text x="32" y="166" fill="#323130">aspect</text>
+  <!-- Components -->
+  <rect x="290" y="50" width="250" height="200" fill="#f3fdf3" stroke="#107c10"/>
+  <text x="302" y="72" font-weight="bold" fill="#107c10">Components</text>
+  <text x="302" y="96" fill="#323130">Selection: highlighted elements</text>
+  <text x="302" y="120" fill="#323130">Visibility: DefaultVisibility +</text>
+  <text x="302" y="136" fill="#323130">ViewSetupHints (spaces/openings)</text>
+  <text x="302" y="152" fill="#323130">+ Exceptions list</text>
+  <text x="302" y="176" fill="#323130">Coloring: ARGB per element list</text>
+  <text x="302" y="208" fill="#605e5c" font-size="11">(alert if &gt;1000 components)</text>
+  <!-- Clipping -->
+  <rect x="560" y="50" width="240" height="120" fill="#fff4ce" stroke="#d29200"/>
+  <text x="572" y="72" font-weight="bold" fill="#8a6500">ClippingPlanes (optional)</text>
+  <text x="572" y="96" fill="#323130">Each plane: Location + Direction</text>
+  <text x="572" y="112" fill="#323130">Direction points to clipped</text>
+  <text x="572" y="128" fill="#323130">half-space</text>
+  <!-- Snapshot/markup -->
+  <rect x="560" y="190" width="240" height="90" fill="#f3f2f1" stroke="#8a8886"/>
+  <text x="572" y="212" font-weight="bold" fill="#323130">Snapshot (optional)</text>
+  <text x="572" y="234" fill="#323130">PNG/JPEG thumbnail ≤ 1500px</text>
+  <text x="572" y="256" fill="#605e5c" font-size="11">Lines/Bitmaps = out of scope</text>
+  <!-- Identity -->
+  <rect x="20" y="300" width="780" height="90" fill="#faf9f8" stroke="#8a8886"/>
+  <text x="32" y="322" font-weight="bold" fill="#201f1e">Saved-view identity (app-level, our model)</text>
+  <text x="32" y="344" fill="#323130">GUID · display name (duplicates allowed) · folder · created/modified · source-model GlobalId refs</text>
+  <text x="32" y="366" fill="#323130">Units: lengths in metres, angles in degrees (BCF convention) · projection = exactly one camera kind</text>
+  <text x="16" y="430" fill="#605e5c" font-size="11">Element references use IFC GlobalId; app maps to loaded model-scoped elements, alerting on unmatched.</text>
+  <text x="16" y="452" fill="#605e5c" font-size="11">Source: buildingSMART BCF-XML 3.0 Documentation (Visualization information .bcfv).</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+<rect width="760" height="460" fill="#ffffff" stroke="#8a8886"/>
+<text x="16" y="30" font-size="16" font-weight="bold" fill="#201f1e">Rhino 8 — NamedView panel (docs.mcneel.com)</text>
+<text x="16" y="52" font-size="11" fill="#605e5c">Reference still of documented behaviour (docs.mcneel.com/rhino/8/help/en-us/commands/namedview.htm)</text>
+<rect x="16" y="66" width="200" height="378" fill="#f3f2f1" stroke="#e1dfdd"/>
+<text x="26" y="88" font-weight="bold" fill="#201f1e">Named Views</text>
+<rect x="26" y="98" width="180" height="40" fill="#ffffff" stroke="#c8c6c4"/><text x="34" y="122" fill="#323130">▦ Perspective-01</text>
+<rect x="26" y="142" width="180" height="40" fill="#eff6fc" stroke="#0078d4"/><text x="34" y="166" fill="#201f1e">▦ Top-plan *</text>
+<rect x="26" y="186" width="180" height="40" fill="#ffffff" stroke="#c8c6c4"/><text x="34" y="210" fill="#323130">▦ Section A</text>
+<text x="26" y="250" font-size="11" fill="#605e5c">Toolbar: Save as · Restore ·</text>
+<text x="26" y="268" font-size="11" fill="#605e5c">To current / new floating viewport ·</text>
+<text x="26" y="286" font-size="11" fill="#605e5c">Duplicate · Delete · Import from 3dm ·</text>
+<text x="26" y="304" font-size="11" fill="#605e5c">Move up/down (custom order)</text>
+<text x="26" y="334" font-size="11" fill="#605e5c">Right-click: List/Thumbnail, Sort,</text>
+<text x="26" y="352" font-size="11" fill="#605e5c">Rename, Copy/Paste, Animation</text>
+<rect x="232" y="66" width="512" height="378" fill="#e8e6e4" stroke="#e1dfdd"/>
+<text x="300" y="250" fill="#605e5c">Active viewport — title shows "*" when</text>
+<text x="300" y="270" fill="#605e5c">the live view differs from the named view</text>
+<text x="300" y="300" font-size="11" fill="#605e5c">NamedView = camera (location/target/lens/projection).</text>
+<text x="300" y="318" font-size="11" fill="#605e5c">Snapshots command adds layer states, locked/hidden,</text>
+<text x="300" y="336" font-size="11" fill="#605e5c">display mode, materials, render settings.</text>
+</svg>

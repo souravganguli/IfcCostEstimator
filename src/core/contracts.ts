@@ -194,3 +194,77 @@ export interface ElementVisibility {
   isIsolated(modelId: number): boolean;
   subscribe(listener: () => void): () => void;
 }
+
+/**
+ * Model-scoped element reference carried by a captured viewpoint. The saved
+ * view feature maps these to/from IFC GlobalIds for cross-session matching.
+ */
+export interface ViewpointComponent {
+  readonly modelId: number;
+  readonly expressId: number;
+}
+
+/** A colored element in a captured/applied viewpoint (hex color string). */
+export interface ViewpointColoring extends ViewpointComponent {
+  readonly color: string;
+}
+
+/** Camera pose + projection in a captured viewpoint. Lengths metres, angles degrees. */
+export type ViewpointCamera =
+  | {
+      readonly kind: 'perspective';
+      readonly position: readonly [number, number, number];
+      readonly target: readonly [number, number, number];
+      readonly up: readonly [number, number, number];
+      readonly fieldOfView: number;
+    }
+  | {
+      readonly kind: 'orthographic';
+      readonly position: readonly [number, number, number];
+      readonly target: readonly [number, number, number];
+      readonly up: readonly [number, number, number];
+      readonly viewToWorldScale: number;
+    };
+
+/** A clipping plane; direction points into the clipped (hidden) half-space. */
+export interface ViewpointClippingPlane {
+  readonly location: readonly [number, number, number];
+  readonly direction: readonly [number, number, number];
+}
+
+/**
+ * Serialisable capture/restore boundary for saved views. Implemented by the
+ * viewer adapter which owns scene nodes, camera, clipping, coloring, and
+ * visibility. The feature captures plain data and applies plain data; it never
+ * receives mutable render objects. Restore is deterministic: applying a
+ * category replaces (not merges) the prior transient state for that category.
+ */
+export interface ViewpointScene {
+  /** Capture the current camera pose + projection as plain data. */
+  captureCamera(): ViewpointCamera;
+  /** Apply a camera pose + projection, replacing the current camera state. */
+  applyCamera(camera: ViewpointCamera): void;
+  /** Capture all active clipping planes (empty when clipping is off). */
+  captureClipping(): readonly ViewpointClippingPlane[];
+  /** Replace all clipping planes with the given set (empty clears clipping). */
+  applyClipping(planes: readonly ViewpointClippingPlane[]): void;
+  /** Capture the currently colored elements across all loaded models. */
+  captureColoring(): readonly ViewpointColoring[];
+  /**
+   * Replace all element coloring with the given set. Elements not listed are
+   * reset to their authored color (no override leaks across views).
+   */
+  applyColoring(coloring: readonly ViewpointColoring[]): void;
+  /** Capture the currently hidden elements across all loaded models. */
+  captureHidden(): readonly ViewpointComponent[];
+  /**
+   * Replace element visibility: hide exactly the listed elements and show all
+   * others, across every loaded model (deterministic, all-or-nothing).
+   */
+  applyHidden(hidden: readonly ViewpointComponent[]): void;
+  /**
+   * Render the current frame to a small PNG data URL for a thumbnail, with the
+   * longest side at most `maxSize` pixels. Returns undefined when unavailable.
+   */
+  captureThumbnail(maxSize: number): string | undefined;
+}

@@ -21,3 +21,26 @@ RUN set -eux; \
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt
+
+# --- System packages: ffmpeg (media processing) ---
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg; \
+    rm -rf /var/lib/apt/lists/*
+
+# --- uv (Python package & venv manager) ---
+# Installed to a system location so it is on PATH for the non-root `node` user.
+ENV UV_INSTALL_DIR=/usr/local/bin
+RUN set -eux; \
+    curl -LsSf https://astral.sh/uv/install.sh | sh; \
+    uv --version
+
+# --- Python virtual environment with required packages ---
+# Created at /opt/venv and owned by `node` so the dev user can modify it.
+ENV VIRTUAL_ENV=/opt/venv
+RUN set -eux; \
+    uv venv "$VIRTUAL_ENV" --python 3.12; \
+    VIRTUAL_ENV="$VIRTUAL_ENV" uv pip install pandas; \
+    chown -R node:node "$VIRTUAL_ENV"
+# Put the venv first on PATH so `python` and installed tools resolve to it.
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"

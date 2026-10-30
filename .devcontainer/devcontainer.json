@@ -22,6 +22,10 @@
     "5174": { "label": "Playwright dev test server" },
     "4174": { "label": "Playwright preview test server" }
   },
-  "postCreateCommand": "npm ci && npx playwright install --with-deps chrome",
+  "remoteEnv": {
+    "VIRTUAL_ENV": "/opt/venv",
+    "PATH": "/opt/venv/bin:${containerEnv:PATH}"
+  },
+  "postCreateCommand": "npm ci && npx playwright install --with-deps chrome && uv --version && python -c \"import pandas; print('pandas', pandas.__version__)\" && ffmpeg -version | head -n 1",
   "remoteUser": "node"
 }

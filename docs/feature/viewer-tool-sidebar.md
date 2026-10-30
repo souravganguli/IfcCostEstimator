@@ -13,7 +13,7 @@ Include a thin top application ribbon for opening IFC files, viewing Properties,
 ## Requirements
 
 1. Keep a narrow, persistent tool rail at the left edge of the workspace while the side pane is open or closed.
-2. Provide labeled, keyboard-accessible controls for Model browser, Levels and hierarchy, Element properties, Viewpoints, Search and filter, Appearance, Measurement, Section clipping, First person, Quantity takeoff, Cost estimate, and Plan and section drawings.
+2. Provide labeled, keyboard-accessible controls for Model browser, Levels and hierarchy, Element properties, Viewpoints, Search and filter, Appearance, Measurement, Section clipping, Quantity takeoff, Cost estimate, and Plan and section drawings. First person is a viewport floating-toolbar toggle rather than a rail pane.
 3. Selecting a tool opens its contextual side pane, updates a visible pane title, and marks the active rail control using an accessible pressed/current state.
 4. Selecting the active rail control or the pane close button closes the pane; selecting another rail control switches panes and reopens it.
 5. Closing the pane returns its width to the 3D viewport without unloading models, changing model visibility, resetting feature state, or changing the camera.

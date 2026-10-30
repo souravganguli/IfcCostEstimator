@@ -26,7 +26,7 @@ import { mountQuantityTakeoff } from '../features/quantity-takeoff';
 import { mountEstimate } from '../features/estimate';
 import { mountCostBreakdown } from '../features/cost-breakdown';
 import { mountDrawings } from '../features/drawings';
-import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft, X, Ruler, Scissors, PanelRight, Eye } from 'lucide';
+import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, ClipboardList, Calculator, LayoutPanelLeft, X, Ruler, Scissors, PanelRight, Eye } from 'lucide';
 import './fluent-bootstrap';
 import './fluent2.css';
 
@@ -65,7 +65,6 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="viewpoints" aria-label="Viewpoints" aria-pressed="false" title="Viewpoints"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="search" aria-label="Search and filter" aria-pressed="false" title="Search and filter"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="appearance" aria-label="Appearance" aria-pressed="false" title="Appearance"></fluent-button>
-        <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="walkthrough" aria-label="First person" aria-pressed="false" title="First person"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="takeoff" aria-label="Quantity takeoff" aria-pressed="false" title="Quantity takeoff"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="estimate" aria-label="Cost estimate" aria-pressed="false" title="Cost estimate"></fluent-button>
         <fluent-button appearance="subtle" icon-only type="button" class="tool-rail-item" data-pane="drawings" aria-label="Plan and section drawings" aria-pressed="false" title="Plan and section drawings"></fluent-button>
@@ -79,7 +78,6 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         <div class="tool-pane" data-tool-pane="appearance" hidden><div data-slot="display"></div><div data-slot="coloring"></div></div>
         <div class="tool-pane" data-tool-pane="measure" hidden><div data-slot="measurement"></div></div>
         <div class="tool-pane" data-tool-pane="clipping" hidden><div data-slot="clipping"></div></div>
-        <div class="tool-pane" data-tool-pane="walkthrough" hidden><div data-slot="walkthrough"></div></div>
         <div class="tool-pane" data-tool-pane="takeoff" hidden><div data-slot="takeoff"></div></div>
         <div class="tool-pane" data-tool-pane="estimate" hidden><div data-slot="estimate"></div><div data-slot="cost-breakdown"></div></div>
         <div class="tool-pane" data-tool-pane="drawings" hidden><div data-slot="drawings"></div></div>
@@ -90,6 +88,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         <div class="floating-toolbar" role="toolbar" aria-label="Viewer actions">
           <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="measure" aria-label="Measure">Measure</fluent-button>
           <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="clipping" aria-label="Clip">Clip</fluent-button>
+          <span class="floating-action" data-slot="walkthrough"></span>
           <span class="floating-action" data-slot="navigation"></span>
           <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="properties" aria-controls="property-dock" aria-pressed="false" aria-expanded="false" aria-label="Properties">Properties</fluent-button>
           <fluent-button appearance="subtle" type="button" class="floating-action" data-floating="show-all" aria-label="Show all">Show all</fluent-button>
@@ -115,14 +114,14 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   const paneLabels: Record<string, string> = {
     models: 'Model browser', levels: 'Levels and hierarchy', viewpoints: 'Viewpoints',
     search: 'Search and filter', appearance: 'Appearance', measure: 'Measurement',
-    clipping: 'Section clipping', walkthrough: 'First person', takeoff: 'Quantity takeoff',
+    clipping: 'Section clipping', takeoff: 'Quantity takeoff',
     estimate: 'Cost estimate', drawings: 'Plan and section drawings',
   };
   const toolRailButtons = [...root.querySelectorAll<HTMLElement>('.tool-rail-item')];
   const ribbonPropertiesButton = root.querySelector<HTMLElement>('.ribbon-menu [data-action="toggle-properties"]')!;
   const floatingPropertiesButton = root.querySelector<HTMLElement>('[data-floating="properties"]')!;
   const viewMenu = root.querySelector<HTMLDetailsElement>('[data-ribbon-menu="view"]')!;
-  const railIcons = [Boxes, Layers3, Bookmark, Search, Palette, PersonStanding, ClipboardList, Calculator, LayoutPanelLeft];
+  const railIcons = [Boxes, Layers3, Bookmark, Search, Palette, ClipboardList, Calculator, LayoutPanelLeft];
   toolRailButtons.forEach((button, index) => button.append(createElement(railIcons[index])));
 
   // Add icons to floating toolbar action buttons
@@ -345,7 +344,7 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
         getPoint: (x, y) => viewer!.getPoint(x, y),
         renderer: viewer.renderer.domElement,
       }, selection),
-      mountFirstPerson(slot('walkthrough'), viewer),
+      mountFirstPerson(slot('walkthrough'), viewport, viewer),
       mountViewpoints(slot('viewpoints'), viewer),
       mountPropertyColoring(slot('coloring'), session, viewer),
       mountQuantityTakeoff(slot('takeoff'), session, selection),

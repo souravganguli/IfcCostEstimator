@@ -1,5 +1,5 @@
+import { createElement, PersonStanding } from 'lucide';
 import type { FeatureHandle } from '../../core/contracts';
-import { fluentButton } from '../../core/fluent';
 import { firstPersonStep, minimapMarker } from '../../core/first-person';
 
 export interface FirstPersonViewer {
@@ -8,24 +8,29 @@ export interface FirstPersonViewer {
   readonly renderer: { domElement: HTMLElement };
 }
 
-export function mountFirstPerson(target: HTMLElement, viewer: FirstPersonViewer): FeatureHandle {
-  const panel = document.createElement('section');
-  panel.className = 'feature-panel first-person-panel';
-
-  const heading = document.createElement('h2');
-  heading.textContent = 'First person';
-
-  const toggle = fluentButton('Walkthrough', { appearance: 'outline' });
+export function mountFirstPerson(
+  toolbarHost: HTMLElement,
+  overlayHost: HTMLElement,
+  viewer: FirstPersonViewer,
+): FeatureHandle {
+  const toggle = document.createElement('fluent-button');
+  toggle.setAttribute('appearance', 'subtle');
+  toggle.setAttribute('type', 'button');
+  toggle.className = 'floating-action';
+  toggle.dataset.floating = 'walkthrough';
+  toggle.setAttribute('aria-label', 'First person');
+  toggle.setAttribute('aria-pressed', 'false');
+  toggle.prepend(createElement(PersonStanding));
+  const label = document.createTextNode('First person');
+  toggle.append(label);
 
   const minimap = document.createElement('div');
   minimap.className = 'first-person-minimap';
   minimap.setAttribute('aria-label', 'First-person minimap');
+  minimap.hidden = true;
   const marker = document.createElement('span');
   marker.className = 'minimap-marker';
   minimap.append(marker);
-
-  const status = document.createElement('p');
-  status.textContent = 'Orbit mode';
 
   let active = false;
 
@@ -63,21 +68,24 @@ export function mountFirstPerson(target: HTMLElement, viewer: FirstPersonViewer)
   window.addEventListener('keyup', onUp);
   viewer.renderer.domElement.addEventListener('pointermove', onPointer);
 
-  toggle.addEventListener('click', () => {
-    active = !active;
+  const setActive = (next: boolean) => {
+    active = next;
     viewer.setFirstPerson(active);
-    toggle.textContent = active ? 'Exit walkthrough' : 'Walkthrough';
-    status.textContent = active
-      ? 'First-person mode · WASD/arrow keys · click scene for mouse look'
-      : 'Orbit mode';
+    toggle.setAttribute('aria-label', active ? 'Exit first person' : 'First person');
+    toggle.setAttribute('aria-pressed', String(active));
+    toggle.classList.toggle('is-active', active);
+    label.textContent = active ? 'Exit' : 'First person';
+    minimap.hidden = !active;
     draw();
-  });
+  };
+
+  toggle.addEventListener('click', () => setActive(!active));
   viewer.renderer.domElement.addEventListener('click', () => {
     if (active) viewer.renderer.domElement.requestPointerLock?.();
   });
 
-  panel.append(heading, toggle, minimap, status);
-  target.append(panel);
+  toolbarHost.replaceChildren(toggle);
+  overlayHost.append(minimap);
   draw();
   move();
 
@@ -89,7 +97,8 @@ export function mountFirstPerson(target: HTMLElement, viewer: FirstPersonViewer)
       window.removeEventListener('keyup', onUp);
       viewer.renderer.domElement.removeEventListener('pointermove', onPointer);
       viewer.setFirstPerson(false);
-      panel.remove();
+      toolbarHost.replaceChildren();
+      minimap.remove();
     },
   };
 }

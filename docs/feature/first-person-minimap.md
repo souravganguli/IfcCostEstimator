@@ -15,7 +15,7 @@ Include a display-only side minimap using an independent simplified footprint de
 1. Show a compact simplified model footprint with a camera-position marker and heading indicator while first-person mode is active.
 2. Keep the map synchronized with camera movement and show the footprint of the storey containing the camera (determined from camera elevation against storey elevations across visible models, with the storey label shown), retaining authored model coordinates. When no storey structure exists, fall back to a combined top-down footprint of all visible geometry and label it as such.
 3. Generate the footprint independently from full 2D plan-view linework. Hide or disable the map with an understandable state when model geometry cannot provide a reliable footprint; never show a misleading position.
-4. Keep the overlay within the viewport, readable at supported desktop sizes, and visually subordinate to the main scene.
+4. Keep the overlay within the viewport (anchored in a viewport corner, clear of the floating toolbar), readable at supported desktop sizes, and visually subordinate to the main scene. It appears only while first-person mode is active and does not intercept navigation input.
 5. The minimap is informational only and must not change camera pose, model visibility, or plan selection.
 
 ## Dependencies

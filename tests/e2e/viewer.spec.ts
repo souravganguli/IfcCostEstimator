@@ -279,6 +279,31 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await expectGridChecked(page, false);
 });
 
+test('first person is a floating-toolbar toggle that shows the minimap only while active', async ({ page }) => {
+  await page.goto('./');
+  await page.getByLabel('Open IFC files').setInputFiles(modelFile());
+  await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
+
+  // The control lives on the viewport floating toolbar, not the left tool rail.
+  await expect(page.locator('.tool-rail-item[data-pane="walkthrough"]')).toHaveCount(0);
+  const toggle = page.locator('.floating-toolbar [data-floating="walkthrough"]');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+  const minimap = page.getByLabel('First-person minimap');
+  await expect(minimap).toBeHidden();
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(toggle).toHaveAttribute('aria-label', 'Exit first person');
+  await expect(minimap).toBeVisible();
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(toggle).toHaveAttribute('aria-label', 'First person');
+  await expect(minimap).toBeHidden();
+});
+
 test('storage denial does not prevent rendering and in-memory preferences', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', { get: () => { throw new Error('Storage denied'); } });

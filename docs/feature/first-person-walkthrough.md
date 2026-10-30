@@ -12,7 +12,7 @@ Include a switchable first-person mode, keyboard movement, and mouse look. Initi
 
 ## Requirements
 
-1. Provide explicit enter/exit controls; entering and exiting must preserve loaded models and their authored coordinates.
+1. Provide explicit enter/exit controls on the viewport floating toolbar; the toggle shows a visible active (pressed) state and switches its label between enter and exit. Entering and exiting must preserve loaded models and their authored coordinates.
 1a. Entry starts at the current camera's ground projection at eye height 1.7 m (user adjustable). Exit, including Escape, restores the exact previous orbit camera. Controls: W/A/S/D move, arrow keys or mouse look, Shift to run; default speed 3 m/s.
 2. Support keyboard movement and mouse look with a visible control state. Pointer lock, if used, requires a user gesture and Escape or an explicit command must exit the mode.
 3. Keep movement speed bounded and camera values finite; looking direction changes view orientation without unintentionally changing horizontal movement direction.

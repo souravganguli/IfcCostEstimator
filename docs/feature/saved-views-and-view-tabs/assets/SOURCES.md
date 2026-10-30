@@ -1,0 +1,14 @@
+# Source log (saved views & view tabs research)
+
+| # | Product | Feature | Official doc URL | Video URL | What it showed |
+|---|---------|---------|------------------|-----------|----------------|
+| 1 | Navisworks 2024 | Saved Viewpoints Window | https://help.autodesk.com/view/NAV/2024/ENU/?guid=GUID-285C7051-5CA4-4888-85FD-69C7C0066949 | https://www.youtube.com/watch?v=WT4pwvFl9EY | Dockable window, folders, ortho/persp icons, animation clips, context-menu driven, rename via slow-click/F2 |
+| 2 | Navisworks 2024 | Viewpoint Defaults Page | https://help.autodesk.com/view/NAV/2024/ENU/?guid=GUID-19811D07-510B-44A1-9602-B82294E8D09E | (same) | Save Hide/Required Attributes + Override Appearance toggles (off by default, memory cost); camera always saved |
+| 3 | Navisworks 2024 | Create and Modify Viewpoints (parent) | https://help.autodesk.com/view/NAV/2024/ENU/?guid=GUID-A087DBDB-61AB-41BF-82DD-A602009918FE | (same) | Overview / Save & Share / Recall / Organize / Edit & Delete / Default options structure |
+| 4 | Rhino 8 | NamedView command | https://docs.mcneel.com/rhino/8/help/en-us/commands/namedview.htm | https://www.youtube.com/watch?v=krN5r8kRy84 | Save/restore/rename/import, thumbnails, custom order, drag to viewport, "to new floating viewport", animation, camera widget |
+| 5 | Rhino 8 | Snapshots command | https://docs.mcneel.com/rhino/8/help/en-us/commands/snapshots.htm | (same) | Saves Views (camera, cplane, display mode), Objects (clipping planes, visibility, display mode, material, position), layers, lights, rendering |
+| 6 | APS (Autodesk Platform Services) Viewer | getState / restoreState | https://aps.autodesk.com/blog/customize-viewer-state-using-filter-object-part-1 | n/a | State object: seedURN, objectSet (selection/isolation), viewport (eye/target/up), renderOptions, cutplanes |
+| 7 | buildingSMART | BCF 3.0 visualization info (.bcfv) | https://github.com/buildingSMART/BCF-XML/tree/release_3_0/Documentation | n/a | Viewpoint fields: Components(Selection/Visibility/Coloring), OrthogonalCamera/PerspectiveCamera, Lines, ClippingPlanes, Bitmap |
+| 8 | xeokit SDK | BCFViewpointsPlugin | https://xeokit.github.io/xeokit-sdk/docs/class/src/plugins/BCFViewpointsPlugin/BCFViewpointsPlugin.js~BCFViewpointsPlugin.html | n/a | Web IFC viewer get/setViewpoint to BCF (camera, section planes, visible/colorized objects, selection) |
+| 9 | Revit 2024 | Tab Views | https://help.autodesk.com/view/RVT/2024/ENU/?guid=GUID-BB63FD7F-59D4-420B-BEE7-B59E1B6A1D64 | n/a | Each view own tab, tile vs tab, drag to reorder/dock/move monitor, overflow drop-down, Ctrl+Tab cycle |
+| 10 | Revit Ideas (community) | "Close Tabbed Views" request | https://forums.autodesk.com/t5/revit-ideas/close-tabbed-views/idi-p/8404586 | n/a | User request for right-click close-all/close-others; tab clutter pain |

@@ -17,20 +17,23 @@ export function mountDisplayControls(target: HTMLElement, session: ModelSession,
 
   const render = () => {
     panel.replaceChildren(heading);
-    session.getModels().filter((model) => model.state === 'loaded').forEach((model) => {
-      const row = document.createElement('div');
-      row.className = 'display-row';
-      const label = document.createElement('span');
-      label.textContent = model.name;
+    session
+      .getModels()
+      .filter((model) => model.state === 'loaded')
+      .forEach((model) => {
+        const row = document.createElement('div');
+        row.className = 'display-row';
+        const label = document.createElement('span');
+        label.textContent = model.name;
 
-      const wire = fluentCheckbox({ ariaLabel: `Wireframe ${model.id}` });
-      const opacity = fluentSlider({ ariaLabel: `Opacity ${model.id}`, min: 0.1, max: 1, step: 0.05, value: 1 });
-      wire.addEventListener('change', () => viewer.setModelDisplay(model.id, { wireframe: wire.checked }));
-      opacity.addEventListener('input', () => viewer.setModelDisplay(model.id, { opacity: Number(opacity.value) }));
+        const wire = fluentCheckbox({ ariaLabel: `Wireframe ${model.id}` });
+        const opacity = fluentSlider({ ariaLabel: `Opacity ${model.id}`, min: 0.1, max: 1, step: 0.05, value: 1 });
+        wire.addEventListener('change', () => viewer.setModelDisplay(model.id, { wireframe: wire.checked }));
+        opacity.addEventListener('input', () => viewer.setModelDisplay(model.id, { opacity: Number(opacity.value) }));
 
-      row.append(label, wire, opacity);
-      panel.append(row);
-    });
+        row.append(label, wire, opacity);
+        panel.append(row);
+      });
   };
 
   const off = session.subscribe(render);

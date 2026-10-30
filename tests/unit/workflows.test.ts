@@ -19,12 +19,17 @@ describe('default-branch GitHub Pages delivery', () => {
     const workflow = readYaml('../../.github/workflows/pages.yml');
     const steps = workflow.jobs.deploy.steps;
     const browserTestIndex = steps.findIndex((step: { run?: string }) => step.run?.includes('test:e2e'));
-    const unitTestIndex = steps.findIndex((step: { run?: string }) => step.run === 'npm run test');
+    const unitTestIndex = steps.findIndex((step: { run?: string }) => step.run?.includes('npm run test:coverage'));
+    const lintIndex = steps.findIndex((step: { run?: string }) => step.run === 'npm run lint');
+    const typecheckIndex = steps.findIndex((step: { run?: string }) => step.run === 'npm run typecheck');
+    const formatIndex = steps.findIndex((step: { run?: string }) => step.run === 'npm run format:check');
     const buildIndex = steps.findIndex((step: { run?: string }) => step.run === 'npm run build');
     const uploadIndex = steps.findIndex((step: { uses?: string }) => step.uses === 'actions/upload-pages-artifact@v3');
     const deployIndex = steps.findIndex((step: { uses?: string }) => step.uses === 'actions/deploy-pages@v4');
-    const browserProjects = readFileSync(new URL('../playwright.config.ts', import.meta.url), 'utf8')
-      .match(/projects:\s*\[([^\]]*)\]/)?.[1] ?? '';
+    const browserProjects =
+      readFileSync(new URL('../playwright.config.ts', import.meta.url), 'utf8').match(
+        /projects:\s*\[([^\]]*)\]/,
+      )?.[1] ?? '';
 
     expect(steps.some((step: { run?: string }) => step.run === 'npx playwright install --with-deps chrome')).toBe(true);
     expect(browserTestIndex).toBeGreaterThan(-1);
@@ -32,9 +37,19 @@ describe('default-branch GitHub Pages delivery', () => {
     expect(unitTestIndex).toBeGreaterThan(-1);
     expect(unitTestIndex).toBeLessThan(buildIndex);
     expect(buildIndex).toBeLessThan(browserTestIndex);
+    // Quality gates (typecheck, lint, format) must run before the build so a
+    // failing gate blocks deployment.
+    expect(typecheckIndex).toBeGreaterThan(-1);
+    expect(lintIndex).toBeGreaterThan(-1);
+    expect(formatIndex).toBeGreaterThan(-1);
+    expect(typecheckIndex).toBeLessThan(buildIndex);
+    expect(lintIndex).toBeLessThan(buildIndex);
+    expect(formatIndex).toBeLessThan(buildIndex);
     expect(browserTestIndex).toBeLessThan(uploadIndex);
     expect(steps[browserTestIndex].env).toEqual({ TEST_SERVER: 'preview' });
-    expect(steps.findIndex((step: { uses?: string }) => step.uses === 'actions/configure-pages@v5')).toBeLessThan(uploadIndex);
+    expect(steps.findIndex((step: { uses?: string }) => step.uses === 'actions/configure-pages@v5')).toBeLessThan(
+      uploadIndex,
+    );
     expect(steps[uploadIndex].with.path).toBe('dist');
     expect(deployIndex).toBeGreaterThan(uploadIndex);
     expect(browserProjects).toContain("{ name: 'chrome', use: { channel: 'chrome'");
@@ -44,7 +59,9 @@ describe('default-branch GitHub Pages delivery', () => {
   it('grants Pages deployment permissions only to the deploy job and verifies the live entry point', () => {
     const workflow = readYaml('../../.github/workflows/pages.yml');
     const job = workflow.jobs.deploy;
-    const verify = job.steps.find((step: { name?: string }) => step.name === 'Verify deployed entry point and application asset');
+    const verify = job.steps.find(
+      (step: { name?: string }) => step.name === 'Verify deployed entry point and application asset',
+    );
 
     expect(job.permissions).toMatchObject({ pages: 'write', 'id-token': 'write' });
     expect(job.environment.name).toBe('github-pages');

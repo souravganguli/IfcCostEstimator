@@ -11,31 +11,67 @@ import type {
   ViewpointComponent,
   ViewpointScene,
 } from '../../src/core/contracts';
-import { captureSnapshot, restoreSnapshot, type ViewpointCapabilities } from '../../src/features/viewer-viewpoints/scene-capture';
+import {
+  captureSnapshot,
+  restoreSnapshot,
+  type ViewpointCapabilities,
+} from '../../src/features/viewer-viewpoints/scene-capture';
 import { SNAPSHOT_CATEGORIES, type SnapshotCategory } from '../../src/core/saved-views';
 
 class FakeScene implements ViewpointScene {
-  camera: ViewpointCamera = { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 };
+  camera: ViewpointCamera = {
+    kind: 'perspective',
+    position: [1, 2, 3],
+    target: [0, 0, 0],
+    up: [0, 1, 0],
+    fieldOfView: 45,
+  };
   clipping: ViewpointClippingPlane[] = [];
   coloring: ViewpointColoring[] = [];
   hidden: ViewpointComponent[] = [];
-  captureCamera() { return this.camera; }
-  applyCamera(camera: ViewpointCamera) { this.camera = camera; }
-  captureClipping() { return this.clipping; }
-  applyClipping(planes: readonly ViewpointClippingPlane[]) { this.clipping = [...planes]; }
-  captureColoring() { return this.coloring; }
-  applyColoring(coloring: readonly ViewpointColoring[]) { this.coloring = [...coloring]; }
-  captureHidden() { return this.hidden; }
-  applyHidden(hidden: readonly ViewpointComponent[]) { this.hidden = [...hidden]; }
-  captureThumbnail() { return undefined; }
+  captureCamera() {
+    return this.camera;
+  }
+  applyCamera(camera: ViewpointCamera) {
+    this.camera = camera;
+  }
+  captureClipping() {
+    return this.clipping;
+  }
+  applyClipping(planes: readonly ViewpointClippingPlane[]) {
+    this.clipping = [...planes];
+  }
+  captureColoring() {
+    return this.coloring;
+  }
+  applyColoring(coloring: readonly ViewpointColoring[]) {
+    this.coloring = [...coloring];
+  }
+  captureHidden() {
+    return this.hidden;
+  }
+  applyHidden(hidden: readonly ViewpointComponent[]) {
+    this.hidden = [...hidden];
+  }
+  captureThumbnail() {
+    return undefined;
+  }
 }
 
 class FakeSelection implements SelectionCapability {
   private value: ElementIdentity | null = null;
-  current() { return this.value; }
-  set(identity: ElementIdentity | null) { this.value = identity; }
-  clear() { this.value = null; }
-  subscribe() { return () => {}; }
+  current() {
+    return this.value;
+  }
+  set(identity: ElementIdentity | null) {
+    this.value = identity;
+  }
+  clear() {
+    this.value = null;
+  }
+  subscribe() {
+    return () => {};
+  }
 }
 
 function fakeSession(models: ModelSummary[], globalIds: Record<string, string> = {}): ModelSession {
@@ -46,10 +82,16 @@ function fakeSession(models: ModelSummary[], globalIds: Record<string, string> =
     dispose() {},
     properties: {
       getProperties: () => undefined,
-      getMetadata: (identity) => ({ ifcClass: 'IfcWall', globalId: globalIds[`${identity.modelId}:${identity.expressId}`] }),
+      getMetadata: (identity) => ({
+        ifcClass: 'IfcWall',
+        globalId: globalIds[`${identity.modelId}:${identity.expressId}`],
+      }),
     },
     elements: {
-      getAll: () => Object.keys(globalIds).filter((k) => Number(k.split(':')[0]) === modelId).map((k) => ({ modelId, expressId: Number(k.split(':')[1]) })),
+      getAll: () =>
+        Object.keys(globalIds)
+          .filter((k) => Number(k.split(':')[0]) === modelId)
+          .map((k) => ({ modelId, expressId: Number(k.split(':')[1]) })),
       search: () => [],
       filter: () => [],
     },
@@ -123,7 +165,14 @@ describe('scene capture/restore', () => {
     const scene = new FakeScene();
     let exited = 0;
     restoreSnapshot(
-      { scene, session: fakeSession([]), selection: new FakeSelection(), exitWalkthrough: () => { exited += 1; } },
+      {
+        scene,
+        session: fakeSession([]),
+        selection: new FakeSelection(),
+        exitWalkthrough: () => {
+          exited += 1;
+        },
+      },
       { camera: scene.camera },
     );
     expect(exited).toBe(1);
@@ -140,7 +189,11 @@ describe('scene capture/restore', () => {
     const snapshot = {
       camera: { kind: 'perspective', position: [9, 9, 9], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 60 } as const,
       clippingPlanes: [{ location: [0, 1, 0] as const, direction: [0, -1, 0] as const }],
-      visibility: { defaultVisibility: true, viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true }, exceptions: [{ modelId: 1, expressId: 5 }] },
+      visibility: {
+        defaultVisibility: true,
+        viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true },
+        exceptions: [{ modelId: 1, expressId: 5 }],
+      },
       coloring: [{ modelId: 1, expressId: 6, color: '#ff0000' }],
     };
     const result = restoreSnapshot(capabilities, snapshot);
@@ -154,11 +207,20 @@ describe('scene capture/restore', () => {
   it('matches references across sessions by GlobalId when express ids differ', () => {
     const scene = new FakeScene();
     const session = fakeSession([{ id: 2, name: 'reopened', state: 'loaded', visible: true }], { '2:77': 'GUID-X' });
-    const capabilities: ViewpointCapabilities = { scene, session, selection: new FakeSelection(), exitWalkthrough() {} };
+    const capabilities: ViewpointCapabilities = {
+      scene,
+      session,
+      selection: new FakeSelection(),
+      exitWalkthrough() {},
+    };
     // Imported view referenced model 1 / express 5, but the element now lives
     // in model 2 / express 77 with the same GlobalId.
     const snapshot = {
-      visibility: { defaultVisibility: true, viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true }, exceptions: [{ modelId: 1, expressId: 5, globalId: 'GUID-X' }] },
+      visibility: {
+        defaultVisibility: true,
+        viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true },
+        exceptions: [{ modelId: 1, expressId: 5, globalId: 'GUID-X' }],
+      },
     };
     const result = restoreSnapshot(capabilities, snapshot);
     expect(result.missing).toBe(0);

@@ -46,61 +46,67 @@ export function collectTakeoff(session: ModelSession, options: TakeoffOptions = 
       options.scope === model.id ||
       (options.scope === 'visible' && model.visible));
 
-  session.getModels().filter(inScope).forEach((model) => {
-    const asset = session.getAsset(model.id);
-    asset?.elements?.getAll().forEach((identity) => {
-      const properties = asset.properties?.getProperties(identity);
-      properties?.groups
-        .filter((group) => group.kind === 'qto')
-        .forEach((group) =>
-          group.entries.forEach((entry) => {
-            if (entry.value.kind !== 'number' || !entry.value.unit) return;
-            const metric = toMetric(entry.value.value, entry.value.unit);
-            if (!metric.ok) return;
-            const key = `${bucketFor(properties.metadata)} · ${entry.name}`;
-            const row =
-              rows.get(key) ?? { kind: metric.kind, quantity: 0, count: 0, source: 'source' as const, identities: [] };
-            row.quantity += metric.value;
-            row.count += 1;
-            row.identities.push(identity);
-            rows.set(key, row);
-          }),
-        );
-    });
+  session
+    .getModels()
+    .filter(inScope)
+    .forEach((model) => {
+      const asset = session.getAsset(model.id);
+      asset?.elements?.getAll().forEach((identity) => {
+        const properties = asset.properties?.getProperties(identity);
+        properties?.groups
+          .filter((group) => group.kind === 'qto')
+          .forEach((group) =>
+            group.entries.forEach((entry) => {
+              if (entry.value.kind !== 'number' || !entry.value.unit) return;
+              const metric = toMetric(entry.value.value, entry.value.unit);
+              if (!metric.ok) return;
+              const key = `${bucketFor(properties.metadata)} · ${entry.name}`;
+              const row = rows.get(key) ?? {
+                kind: metric.kind,
+                quantity: 0,
+                count: 0,
+                source: 'source' as const,
+                identities: [],
+              };
+              row.quantity += metric.value;
+              row.count += 1;
+              row.identities.push(identity);
+              rows.set(key, row);
+            }),
+          );
+      });
 
-    if (options.geometryFallback) {
-      const triangles = asset?.triangles ?? [];
-      const byElement = new Map<number, number>();
-      triangles.forEach((triangle) =>
-        byElement.set(
-          triangle.elementId,
-          (byElement.get(triangle.elementId) ?? 0) + signedVolume(triangle.a, triangle.b, triangle.c),
-        ),
-      );
-      byElement.forEach((value, expressId) => {
-        const identity = { modelId: model.id, expressId };
-        const properties = asset?.properties?.getProperties(identity);
-        const hasSourceQuantity = properties?.groups.some(
-          (group) => group.kind === 'qto' && group.entries.some((entry) => entry.value.kind === 'number'),
+      if (options.geometryFallback) {
+        const triangles = asset?.triangles ?? [];
+        const byElement = new Map<number, number>();
+        triangles.forEach((triangle) =>
+          byElement.set(
+            triangle.elementId,
+            (byElement.get(triangle.elementId) ?? 0) + signedVolume(triangle.a, triangle.b, triangle.c),
+          ),
         );
-        if (!properties || hasSourceQuantity) return;
-        const key = `${bucketFor(properties.metadata)} · Geometry volume`;
-        const row =
-          rows.get(key) ??
-          {
+        byElement.forEach((value, expressId) => {
+          const identity = { modelId: model.id, expressId };
+          const properties = asset?.properties?.getProperties(identity);
+          const hasSourceQuantity = properties?.groups.some(
+            (group) => group.kind === 'qto' && group.entries.some((entry) => entry.value.kind === 'number'),
+          );
+          if (!properties || hasSourceQuantity) return;
+          const key = `${bucketFor(properties.metadata)} · Geometry volume`;
+          const row = rows.get(key) ?? {
             kind: 'volume' as QuantityKind,
             quantity: 0,
             count: 0,
             source: 'geometry-derived (approximate)' as const,
             identities: [],
           };
-        row.quantity += Math.abs(value);
-        row.count += 1;
-        row.identities.push(identity);
-        rows.set(key, row);
-      });
-    }
-  });
+          row.quantity += Math.abs(value);
+          row.count += 1;
+          row.identities.push(identity);
+          rows.set(key, row);
+        });
+      }
+    });
 
   return [...rows.entries()].map(([key, row]) => ({ key, ...row }));
 }
@@ -119,11 +125,18 @@ export function mountQuantityTakeoff(
   const table = document.createElement('div');
 
   const scope = fluentDropdown(
-    [{ value: 'all', text: 'All models' }, { value: 'visible', text: 'Visible models' }],
+    [
+      { value: 'all', text: 'All models' },
+      { value: 'visible', text: 'Visible models' },
+    ],
     { ariaLabel: 'Takeoff scope', value: 'all' },
   );
   const grouping = fluentDropdown(
-    [{ value: 'class', text: 'IFC class' }, { value: 'type', text: 'Type' }, { value: 'storey', text: 'Storey' }],
+    [
+      { value: 'class', text: 'IFC class' },
+      { value: 'type', text: 'Type' },
+      { value: 'storey', text: 'Storey' },
+    ],
     { ariaLabel: 'Takeoff grouping', value: 'class' },
   );
   const fallback = fluentCheckbox({

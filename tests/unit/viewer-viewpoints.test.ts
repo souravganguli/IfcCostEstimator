@@ -14,27 +14,59 @@ import { mountViewerViewpoints } from '../../src/features/viewer-viewpoints';
 import type { LibraryStorage } from '../../src/features/viewer-viewpoints/persistence';
 
 class FakeScene implements ViewpointScene {
-  camera: ViewpointCamera = { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 };
+  camera: ViewpointCamera = {
+    kind: 'perspective',
+    position: [1, 2, 3],
+    target: [0, 0, 0],
+    up: [0, 1, 0],
+    fieldOfView: 45,
+  };
   clipping: ViewpointClippingPlane[] = [];
   coloring: ViewpointColoring[] = [];
   hidden: ViewpointComponent[] = [];
-  captureCamera() { return this.camera; }
-  applyCamera(camera: ViewpointCamera) { this.camera = camera; }
-  captureClipping() { return this.clipping; }
-  applyClipping(planes: readonly ViewpointClippingPlane[]) { this.clipping = [...planes]; }
-  captureColoring() { return this.coloring; }
-  applyColoring(c: readonly ViewpointColoring[]) { this.coloring = [...c]; }
-  captureHidden() { return this.hidden; }
-  applyHidden(h: readonly ViewpointComponent[]) { this.hidden = [...h]; }
-  captureThumbnail() { return 'data:image/png;base64,iVBORw0KGgo='; }
+  captureCamera() {
+    return this.camera;
+  }
+  applyCamera(camera: ViewpointCamera) {
+    this.camera = camera;
+  }
+  captureClipping() {
+    return this.clipping;
+  }
+  applyClipping(planes: readonly ViewpointClippingPlane[]) {
+    this.clipping = [...planes];
+  }
+  captureColoring() {
+    return this.coloring;
+  }
+  applyColoring(c: readonly ViewpointColoring[]) {
+    this.coloring = [...c];
+  }
+  captureHidden() {
+    return this.hidden;
+  }
+  applyHidden(h: readonly ViewpointComponent[]) {
+    this.hidden = [...h];
+  }
+  captureThumbnail() {
+    return 'data:image/png;base64,iVBORw0KGgo=';
+  }
 }
 
 class FakeSelection implements SelectionCapability {
   private value: ElementIdentity | null = null;
-  current() { return this.value; }
-  set(v: ElementIdentity | null) { this.value = v; }
-  clear() { this.value = null; }
-  subscribe() { return () => {}; }
+  current() {
+    return this.value;
+  }
+  set(v: ElementIdentity | null) {
+    this.value = v;
+  }
+  clear() {
+    this.value = null;
+  }
+  subscribe() {
+    return () => {};
+  }
 }
 
 function fakeSession(models: ModelSummary[]): ModelSession {
@@ -53,7 +85,9 @@ function memoryStorage(): LibraryStorage {
   return { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => void store.set(k, v) };
 }
 
-function mount(overrides: { scene?: FakeScene; session?: ModelSession; storage?: LibraryStorage; notice?: (m: string) => void } = {}) {
+function mount(
+  overrides: { scene?: FakeScene; session?: ModelSession; storage?: LibraryStorage; notice?: (m: string) => void } = {},
+) {
   const host = document.createElement('div');
   document.body.append(host);
   const tabStripHost = document.createElement('div');
@@ -63,7 +97,12 @@ function mount(overrides: { scene?: FakeScene; session?: ModelSession; storage?:
   const exitWalkthrough = vi.fn();
   const handle = mountViewerViewpoints(
     host,
-    { scene, session: overrides.session ?? fakeSession([{ id: 1, name: 'm', state: 'loaded', visible: true }]), selection, exitWalkthrough },
+    {
+      scene,
+      session: overrides.session ?? fakeSession([{ id: 1, name: 'm', state: 'loaded', visible: true }]),
+      selection,
+      exitWalkthrough,
+    },
     { tabStripHost, storage: overrides.storage ?? memoryStorage(), notice: overrides.notice },
   );
   return { host, tabStripHost, scene, selection, exitWalkthrough, handle };
@@ -77,7 +116,9 @@ describe('viewer-viewpoints feature', () => {
     const saveButton = [...host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Save current view')!;
     saveButton.dispatchEvent(new Event('click'));
     expect(host.querySelector('.viewpoints-dialog')).toBeTruthy();
-    const confirm = [...host.querySelectorAll('.viewpoints-dialog fluent-button')].find((b) => b.textContent === 'Save')!;
+    const confirm = [...host.querySelectorAll('.viewpoints-dialog fluent-button')].find(
+      (b) => b.textContent === 'Save',
+    )!;
     confirm.dispatchEvent(new Event('click'));
     expect(host.querySelectorAll('.viewpoints-entry').length).toBe(1);
     expect(tabStripHost.querySelectorAll('.view-tab').length).toBe(1);
@@ -87,7 +128,9 @@ describe('viewer-viewpoints feature', () => {
     const { host, scene, exitWalkthrough } = mount();
     const saveButton = [...host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Save current view')!;
     saveButton.dispatchEvent(new Event('click'));
-    [...host.querySelectorAll('.viewpoints-dialog fluent-button')].find((b) => b.textContent === 'Save')!.dispatchEvent(new Event('click'));
+    [...host.querySelectorAll('.viewpoints-dialog fluent-button')]
+      .find((b) => b.textContent === 'Save')!
+      .dispatchEvent(new Event('click'));
     // Move the live camera away, then re-open the tab's label to restore.
     scene.camera = { kind: 'perspective', position: [99, 99, 99], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 };
     const label = host.querySelector<HTMLElement>('.viewpoints-entry-label')!;
@@ -99,9 +142,13 @@ describe('viewer-viewpoints feature', () => {
   it('persists the library across remounts (AC4)', () => {
     const storage = memoryStorage();
     const first = mount({ storage });
-    const saveButton = [...first.host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Save current view')!;
+    const saveButton = [...first.host.querySelectorAll('fluent-button')].find(
+      (b) => b.textContent === 'Save current view',
+    )!;
     saveButton.dispatchEvent(new Event('click'));
-    [...first.host.querySelectorAll('.viewpoints-dialog fluent-button')].find((b) => b.textContent === 'Save')!.dispatchEvent(new Event('click'));
+    [...first.host.querySelectorAll('.viewpoints-dialog fluent-button')]
+      .find((b) => b.textContent === 'Save')!
+      .dispatchEvent(new Event('click'));
     first.handle.dispose();
     document.body.replaceChildren();
 
@@ -111,11 +158,20 @@ describe('viewer-viewpoints feature', () => {
 
   it('warns and keeps views in memory when storage is unavailable (AC4, T5)', () => {
     const notice = vi.fn();
-    const brokenStorage: LibraryStorage = { getItem: () => { throw new Error('denied'); }, setItem() { throw new Error('denied'); } };
+    const brokenStorage: LibraryStorage = {
+      getItem: () => {
+        throw new Error('denied');
+      },
+      setItem() {
+        throw new Error('denied');
+      },
+    };
     const { host } = mount({ storage: brokenStorage, notice });
     const saveButton = [...host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Save current view')!;
     saveButton.dispatchEvent(new Event('click'));
-    [...host.querySelectorAll('.viewpoints-dialog fluent-button')].find((b) => b.textContent === 'Save')!.dispatchEvent(new Event('click'));
+    [...host.querySelectorAll('.viewpoints-dialog fluent-button')]
+      .find((b) => b.textContent === 'Save')!
+      .dispatchEvent(new Event('click'));
     // The view is still in the library (memory) even though persistence warned.
     expect(host.querySelectorAll('.viewpoints-entry').length).toBe(1);
     expect(notice).toHaveBeenCalled();
@@ -125,7 +181,9 @@ describe('viewer-viewpoints feature', () => {
     const { host, tabStripHost } = mount();
     const saveButton = [...host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Save current view')!;
     saveButton.dispatchEvent(new Event('click'));
-    [...host.querySelectorAll('.viewpoints-dialog fluent-button')].find((b) => b.textContent === 'Save')!.dispatchEvent(new Event('click'));
+    [...host.querySelectorAll('.viewpoints-dialog fluent-button')]
+      .find((b) => b.textContent === 'Save')!
+      .dispatchEvent(new Event('click'));
     const clearAll = [...host.querySelectorAll('fluent-button')].find((b) => b.textContent === 'Clear all')!;
     clearAll.dispatchEvent(new Event('click'));
     expect(host.querySelectorAll('.viewpoints-entry').length).toBe(0);

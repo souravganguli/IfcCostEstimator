@@ -1,6 +1,15 @@
 /** Pure measurement helpers. Coordinates are model units until normalized. */
-export interface Point3 { readonly x: number; readonly y: number; readonly z: number }
-export interface Measurement { readonly distance: number; readonly horizontal: number; readonly vertical: number; readonly unit: string }
+export interface Point3 {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
+export interface Measurement {
+  readonly distance: number;
+  readonly horizontal: number;
+  readonly vertical: number;
+  readonly unit: string;
+}
 
 export function measurePoints(a: Point3, b: Point3, factor = 1, unit = 'm'): Measurement {
   const dx = (b.x - a.x) * factor;

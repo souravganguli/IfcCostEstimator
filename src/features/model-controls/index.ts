@@ -3,7 +3,12 @@ import type { FeatureHandle, ModelSession } from '../../core/contracts';
 import { iconButton } from '../../core/ui';
 import './style.css';
 
-export function mountModelControls(panel: HTMLElement, toggleHost: HTMLElement, session: ModelSession, setCollapsed: (collapsed: boolean) => void): FeatureHandle {
+export function mountModelControls(
+  panel: HTMLElement,
+  toggleHost: HTMLElement,
+  session: ModelSession,
+  setCollapsed: (collapsed: boolean) => void,
+): FeatureHandle {
   const events = new AbortController();
   let rows = new AbortController();
   let collapsed = false;
@@ -11,15 +16,19 @@ export function mountModelControls(panel: HTMLElement, toggleHost: HTMLElement, 
   toggle.id = 'toggle-sidebar';
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-controls', panel.id);
-  toggle.addEventListener('click', () => {
-    collapsed = !collapsed;
-    setCollapsed(collapsed);
-    const label = collapsed ? 'Expand models panel' : 'Collapse models panel';
-    toggle.setAttribute('aria-expanded', String(!collapsed));
-    toggle.setAttribute('aria-label', label);
-    toggle.title = label;
-    toggle.replaceChildren(createElement(collapsed ? PanelLeftOpen : PanelLeftClose));
-  }, { signal: events.signal });
+  toggle.addEventListener(
+    'click',
+    () => {
+      collapsed = !collapsed;
+      setCollapsed(collapsed);
+      const label = collapsed ? 'Expand models panel' : 'Collapse models panel';
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      toggle.replaceChildren(createElement(collapsed ? PanelLeftOpen : PanelLeftClose));
+    },
+    { signal: events.signal },
+  );
   toggleHost.replaceChildren(toggle);
   const refresh = () => {
     rows.abort();
@@ -48,7 +57,10 @@ export function mountModelControls(panel: HTMLElement, toggleHost: HTMLElement, 
       title.append(name, detail);
       row.append(title);
       if (model.state === 'loaded') {
-        const visibility = iconButton(`${model.visible ? 'Hide' : 'Show'} model ${model.id}`, model.visible ? Eye : EyeOff);
+        const visibility = iconButton(
+          `${model.visible ? 'Hide' : 'Show'} model ${model.id}`,
+          model.visible ? Eye : EyeOff,
+        );
         visibility.addEventListener('click', () => session.toggle(model.id), { signal: rows.signal });
         row.append(visibility);
       }

@@ -9,7 +9,9 @@ const bytes = (text: string) => new TextEncoder().encode(text);
 
 describe('IFC processor with authored IFC4 fixture', () => {
   const api = new IfcAPI();
-  beforeAll(async () => { await api.Init(undefined, true); });
+  beforeAll(async () => {
+    await api.Init(undefined, true);
+  });
   afterAll(() => api.Dispose());
 
   it('extracts geometry, preserves placement', () => {

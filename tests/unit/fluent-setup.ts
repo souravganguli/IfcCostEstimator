@@ -11,13 +11,27 @@ if (typeof HTMLElement !== 'undefined' && !('attachInternals' in HTMLElement.pro
     return {
       setFormValue() {},
       setValidity() {},
-      checkValidity() { return true; },
-      reportValidity() { return true; },
-      get form() { return null; },
-      get validity() { return {} as ValidityState; },
-      get validationMessage() { return ''; },
-      get willValidate() { return true; },
-      get labels() { return [] as unknown as NodeList; },
+      checkValidity() {
+        return true;
+      },
+      reportValidity() {
+        return true;
+      },
+      get form() {
+        return null;
+      },
+      get validity() {
+        return {} as ValidityState;
+      },
+      get validationMessage() {
+        return '';
+      },
+      get willValidate() {
+        return true;
+      },
+      get labels() {
+        return [] as unknown as NodeList;
+      },
       states: new Set<string>(),
     };
   };

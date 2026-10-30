@@ -67,7 +67,9 @@ describe('VisualizationInfo XML (cross-tool interop, T8)', () => {
   });
 
   it('writes and reads an orthographic camera', () => {
-    const ortho: SavedViewSnapshot = { camera: { kind: 'orthographic', position: [0, 20, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 30 } };
+    const ortho: SavedViewSnapshot = {
+      camera: { kind: 'orthographic', position: [0, 20, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 30 },
+    };
     const parsed = parseVisualizationInfo(visualizationInfoXml(ortho, 'g'));
     expect(parsed?.camera).toMatchObject({ kind: 'orthographic', viewToWorldScale: 30 });
   });

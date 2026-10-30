@@ -2,7 +2,12 @@ import { Maximize } from 'lucide';
 import type { Availability, FeatureHandle, ModelSession, ViewerControls } from '../../core/contracts';
 import { iconButton } from '../../core/ui';
 
-export function mountNavigation(host: HTMLElement, session: ModelSession, availability: Availability, viewer: Pick<ViewerControls, 'fit'>): FeatureHandle {
+export function mountNavigation(
+  host: HTMLElement,
+  session: ModelSession,
+  availability: Availability,
+  viewer: Pick<ViewerControls, 'fit'>,
+): FeatureHandle {
   const button = iconButton('Fit visible models', Maximize);
   button.id = 'fit';
   const events = new AbortController();
@@ -15,5 +20,12 @@ export function mountNavigation(host: HTMLElement, session: ModelSession, availa
   const offAvailability = availability.subscribe(refresh);
   host.replaceChildren(button);
   refresh();
-  return { dispose() { events.abort(); offSession(); offAvailability(); host.replaceChildren(); } };
+  return {
+    dispose() {
+      events.abort();
+      offSession();
+      offAvailability();
+      host.replaceChildren();
+    },
+  };
 }

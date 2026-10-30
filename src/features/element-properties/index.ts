@@ -3,12 +3,17 @@ import type { FieldValue } from '../../core/predicate';
 
 function formatValue(value: FieldValue): string {
   switch (value.kind) {
-    case 'unset': return 'Unset';
-    case 'list': return value.value.map(formatValue).join(', ');
-    case 'number': return `${value.value}${value.unit ? ` ${value.unit}` : ''}`;
-    case 'boolean': return value.value ? 'True' : 'False';
+    case 'unset':
+      return 'Unset';
+    case 'list':
+      return value.value.map(formatValue).join(', ');
+    case 'number':
+      return `${value.value}${value.unit ? ` ${value.unit}` : ''}`;
+    case 'boolean':
+      return value.value ? 'True' : 'False';
     case 'enum':
-    case 'text': return value.value;
+    case 'text':
+      return value.value;
   }
 }
 
@@ -82,7 +87,11 @@ function renderProperties(panel: HTMLElement, properties: ElementProperties, mod
   });
 }
 
-export function mountElementProperties(target: HTMLElement, selection: SelectionCapability, session: ModelSession): FeatureHandle {
+export function mountElementProperties(
+  target: HTMLElement,
+  selection: SelectionCapability,
+  session: ModelSession,
+): FeatureHandle {
   const panel = document.createElement('section');
   panel.className = 'properties-content';
   panel.setAttribute('aria-label', 'Selected element properties');
@@ -94,11 +103,14 @@ export function mountElementProperties(target: HTMLElement, selection: Selection
     if (!properties) {
       const empty = document.createElement('p');
       empty.className = 'properties-empty';
-      empty.textContent = identity ? 'No properties available for the selected element.' : 'Select an element to inspect its properties.';
+      empty.textContent = identity
+        ? 'No properties available for the selected element.'
+        : 'Select an element to inspect its properties.';
       panel.append(empty);
       return;
     }
-    const modelName = session.getModels().find((model) => model.id === identity?.modelId)?.name ?? `Model #${identity?.modelId}`;
+    const modelName =
+      session.getModels().find((model) => model.id === identity?.modelId)?.name ?? `Model #${identity?.modelId}`;
     renderProperties(panel, properties, modelName);
   };
   const unsubscribeSelection = selection.subscribe(render);

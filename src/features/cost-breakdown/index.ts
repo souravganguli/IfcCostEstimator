@@ -21,51 +21,58 @@ export function mountCostBreakdown(
 
   let mappings: Mapping[] = [];
   const loadedModels = () => session.getModels().filter((model) => model.state === 'loaded');
-  const knownItems = () => cbs.value.split(',').map((item) => item.trim()).filter(Boolean);
+  const knownItems = () =>
+    cbs.value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
 
   const render = () => {
     rows.replaceChildren();
     const items = knownItems();
 
     loadedModels().forEach((model) => {
-      session.getAsset(model.id)?.elements?.getAll().forEach((identity) => {
-        const current = mappings.find((item) => mappingMatches(item, identity.modelId, identity.expressId));
+      session
+        .getAsset(model.id)
+        ?.elements?.getAll()
+        .forEach((identity) => {
+          const current = mappings.find((item) => mappingMatches(item, identity.modelId, identity.expressId));
 
-        const row = document.createElement('div');
-        row.className = 'mapping-row';
+          const row = document.createElement('div');
+          row.className = 'mapping-row';
 
-        const label = fluentButton(`${model.name} #${identity.expressId}`, { appearance: 'subtle' });
-        label.addEventListener('click', () => selection.set(identity));
+          const label = fluentButton(`${model.name} #${identity.expressId}`, { appearance: 'subtle' });
+          label.addEventListener('click', () => selection.set(identity));
 
-        const select = fluentDropdown(
-          [{ value: '', text: 'Unmapped' }, ...items.map((item) => ({ value: item, text: item }))],
-          { ariaLabel: `CBS mapping ${identity.modelId}-${identity.expressId}`, value: current?.cbs ?? '' },
-        );
-        const override = fluentTextInput({
-          type: 'number',
-          placeholder: 'Qty override',
-          ariaLabel: `Quantity override ${identity.modelId}-${identity.expressId}`,
-          value: current?.override === undefined ? '' : String(current.override),
+          const select = fluentDropdown(
+            [{ value: '', text: 'Unmapped' }, ...items.map((item) => ({ value: item, text: item }))],
+            { ariaLabel: `CBS mapping ${identity.modelId}-${identity.expressId}`, value: current?.cbs ?? '' },
+          );
+          const override = fluentTextInput({
+            type: 'number',
+            placeholder: 'Qty override',
+            ariaLabel: `Quantity override ${identity.modelId}-${identity.expressId}`,
+            value: current?.override === undefined ? '' : String(current.override),
+          });
+
+          const update = () => {
+            mappings = mappings.filter((item) => !mappingMatches(item, identity.modelId, identity.expressId));
+            if (select.value || override.value) {
+              mappings.push({
+                modelId: identity.modelId,
+                expressId: identity.expressId,
+                cbs: select.value,
+                override: override.value ? Number(override.value) : undefined,
+              });
+            }
+            render();
+          };
+          select.addEventListener('change', update);
+          override.addEventListener('change', update);
+
+          row.append(label, select, override);
+          rows.append(row);
         });
-
-        const update = () => {
-          mappings = mappings.filter((item) => !mappingMatches(item, identity.modelId, identity.expressId));
-          if (select.value || override.value) {
-            mappings.push({
-              modelId: identity.modelId,
-              expressId: identity.expressId,
-              cbs: select.value,
-              override: override.value ? Number(override.value) : undefined,
-            });
-          }
-          render();
-        };
-        select.addEventListener('change', update);
-        override.addEventListener('change', update);
-
-        row.append(label, select, override);
-        rows.append(row);
-      });
     });
 
     const elementCount = loadedModels().reduce(

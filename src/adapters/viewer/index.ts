@@ -1,6 +1,24 @@
-import { AmbientLight, Color, DirectionalLight, GridHelper, Group, Mesh, MeshStandardMaterial, OrthographicCamera, PerspectiveCamera, Plane, Raycaster, Scene, Vector2, Vector3, WebGLRenderer, WebGLRenderTarget } from 'three';
+import {
+  AmbientLight,
+  Color,
+  DirectionalLight,
+  GridHelper,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Plane,
+  Raycaster,
+  Scene,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+  WebGLRenderTarget,
+} from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { frameModels } from './framing';
+import type { Material, Object3D } from 'three';
 import type {
   ElementIdentity,
   ElementVisibility,
@@ -11,6 +29,17 @@ import type {
   ViewpointComponent,
   ViewpointScene,
 } from '../../core/contracts';
+
+// Three.js types `Object3D.userData` as an untyped record, so reads of our
+// application-specific keys are `any`. These helpers recover type safety at the
+// one boundary where the keys are written, keeping the rest of the viewer typed.
+interface ViewerUserData {
+  modelId?: number;
+  expressId?: number;
+}
+const userData = (object: Object3D): ViewerUserData => object.userData as ViewerUserData;
+const modelIdOf = (object: Object3D): number | undefined => userData(object).modelId;
+const expressIdOf = (object: Object3D): number | undefined => userData(object).expressId;
 
 export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene {
   readonly scene = new Scene();
@@ -41,7 +70,10 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
     this.onError('Graphics context lost. Reload the page and reopen your files.');
   };
 
-  constructor(private readonly container: HTMLElement, private readonly onError: (message: string) => void = () => {}) {
+  constructor(
+    private readonly container: HTMLElement,
+    private readonly onError: (message: string) => void = () => {},
+  ) {
     // No preserveDrawingBuffer: keeping it on disables the browser's copy-on-swap
     // optimisation and slows every rendered frame, which badly hurts large-model
     // load time. Thumbnails are captured via an off-screen render target instead.
@@ -115,11 +147,14 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
 
   private applyClippingToMaterials(): void {
     const planes = this.clippingPlanes;
-    for (const group of this.models) group.traverse((object) => {
-      if (!(object instanceof Mesh)) return;
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
-      materials.forEach((material) => { if (material instanceof MeshStandardMaterial) material.clippingPlanes = planes.length ? planes : []; });
-    });
+    for (const group of this.models)
+      group.traverse((object) => {
+        if (!(object instanceof Mesh)) return;
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach((material) => {
+          if (material instanceof MeshStandardMaterial) material.clippingPlanes = planes.length ? planes : [];
+        });
+      });
   }
 
   /** The camera the renderer and picking currently use (perspective or orthographic). */
@@ -161,14 +196,15 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
   add(group: Group): void {
     if (this.disposed) throw new Error('Viewer has been disposed.');
     this.models.add(group);
+    const groupModelId = modelIdOf(group);
     group.traverse((object) => {
-      if (object instanceof Mesh) object.userData.modelId = group.userData.modelId;
+      if (object instanceof Mesh) userData(object).modelId = groupModelId;
     });
     this.scene.add(group);
     // Newly added models inherit any active clipping/coloring so restored
     // views remain consistent if a model loads after a view is applied.
     if (this.clippingPlanes.length) this.applyClippingToMaterials();
-    this.reapplyColors(group.userData.modelId);
+    if (groupModelId !== undefined) this.reapplyColors(groupModelId);
   }
 
   /** Re-apply tracked element color overrides to a model's meshes. */
@@ -181,7 +217,12 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
 
   remove(group: Group): void {
     if (this.highlighted && group.getObjectById(this.highlighted.mesh.id)) this.highlight(null);
-    const modelId = group.userData.modelId;
+    const modelId = modelIdOf(group);
+    if (modelId === undefined) {
+      this.models.delete(group);
+      group.removeFromParent();
+      return;
+    }
     this.models.delete(group);
     this.hidden.delete(modelId);
     this.isolation.delete(modelId);
@@ -195,10 +236,11 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
   private apply(modelId: number): void {
     const hidden = this.hidden.get(modelId) ?? new Set<number>();
     for (const group of this.models) {
-      if (group.userData.modelId !== modelId) continue;
+      if (modelIdOf(group) !== modelId) continue;
       group.traverse((object) => {
-        if (object instanceof Mesh && Number.isInteger(object.userData.expressId)) {
-          object.visible = !hidden.has(object.userData.expressId);
+        const expressId = expressIdOf(object);
+        if (object instanceof Mesh && expressId !== undefined && Number.isInteger(expressId)) {
+          object.visible = !hidden.has(expressId);
         }
       });
     }
@@ -223,9 +265,10 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
     const visible = new Set(expressIds);
     const all = new Set<number>();
     for (const group of this.models) {
-      if (group.userData.modelId !== modelId) continue;
+      if (modelIdOf(group) !== modelId) continue;
       group.traverse((object) => {
-        if (object instanceof Mesh && Number.isInteger(object.userData.expressId)) all.add(object.userData.expressId);
+        const expressId = expressIdOf(object);
+        if (object instanceof Mesh && expressId !== undefined && Number.isInteger(expressId)) all.add(expressId);
       });
     }
     this.hidden.set(modelId, new Set([...all].filter((id) => !visible.has(id))));
@@ -268,29 +311,27 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
   pick(clientX: number, clientY: number): ElementIdentity | null {
     const rect = this.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-    this.raycaster.setFromCamera(new Vector2(
-      ((clientX - rect.left) / rect.width) * 2 - 1,
-      -((clientY - rect.top) / rect.height) * 2 + 1,
-    ), this.activeCamera());
+    this.raycaster.setFromCamera(
+      new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1),
+      this.activeCamera(),
+    );
     const hits = this.raycaster.intersectObjects([...this.models], true);
-    const hit = hits.find((item) => item.object instanceof Mesh && Number.isInteger(item.object.userData.expressId));
+    const hit = hits.find((item) => item.object instanceof Mesh && Number.isInteger(expressIdOf(item.object)));
     if (!hit) return null;
-    return { modelId: hit.object.userData.modelId, expressId: hit.object.userData.expressId };
+    const modelId = modelIdOf(hit.object);
+    const expressId = expressIdOf(hit.object);
+    if (modelId === undefined || expressId === undefined) return null;
+    return { modelId, expressId };
   }
 
   getPoint(clientX: number, clientY: number): Vector3 | null {
     const rect = this.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
     this.raycaster.setFromCamera(
-      new Vector2(
-        ((clientX - rect.left) / rect.width) * 2 - 1,
-        -((clientY - rect.top) / rect.height) * 2 + 1,
-      ),
+      new Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1),
       this.activeCamera(),
     );
-    const hit = this.raycaster
-      .intersectObjects([...this.models], true)
-      .find((item) => item.object instanceof Mesh);
+    const hit = this.raycaster.intersectObjects([...this.models], true).find((item) => item.object instanceof Mesh);
     return hit?.point.clone() ?? null;
   }
 
@@ -350,9 +391,9 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
 
   captureCamera(): ViewpointCamera {
     const cam = this.activeCamera();
-    const position = cam.position.toArray() as [number, number, number];
-    const target = this.controls.target.toArray() as [number, number, number];
-    const up = cam.up.toArray() as [number, number, number];
+    const position = cam.position.toArray();
+    const target = this.controls.target.toArray();
+    const up = cam.up.toArray();
     if (this.orthographic) {
       return { kind: 'orthographic', position, target, up, viewToWorldScale: this.orthoScale };
     }
@@ -366,7 +407,10 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
     const up = new Vector3(...camera.up);
     if (![...position.toArray(), ...target.toArray()].every(Number.isFinite)) return;
     if (camera.kind === 'orthographic') {
-      this.orthoScale = Number.isFinite(camera.viewToWorldScale) && camera.viewToWorldScale > 0 ? camera.viewToWorldScale : this.orthoScale;
+      this.orthoScale =
+        Number.isFinite(camera.viewToWorldScale) && camera.viewToWorldScale > 0
+          ? camera.viewToWorldScale
+          : this.orthoScale;
       this.setOrthographic();
       this.orthoCamera.position.copy(position);
       this.orthoCamera.up.copy(up);
@@ -392,8 +436,8 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
       const location = plane.normal.clone().multiplyScalar(-plane.constant);
       const direction = plane.normal.clone().negate();
       return {
-        location: location.toArray() as [number, number, number],
-        direction: direction.toArray() as [number, number, number],
+        location: location.toArray(),
+        direction: direction.toArray(),
       };
     });
   }
@@ -503,8 +547,8 @@ export class Viewer implements ViewerPicking, ElementVisibility, ViewpointScene 
     this.renderer.setAnimationLoop(null);
     this.controls.dispose();
     this.grid.geometry.dispose();
-    const materials = Array.isArray(this.grid.material) ? this.grid.material : [this.grid.material];
-    materials.forEach((material) => material.dispose());
+    const gridMaterials: Material[] = Array.isArray(this.grid.material) ? this.grid.material : [this.grid.material];
+    gridMaterials.forEach((material) => material.dispose());
     this.renderer.dispose();
     this.renderer.domElement.remove();
     this.scene.clear();

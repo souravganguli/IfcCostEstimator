@@ -3,12 +3,7 @@
 // versions, or quota errors fall back to in-memory defaults and are reported
 // to the caller, never silently losing the in-session library.
 
-import {
-  emptyLibrary,
-  parseLibrary,
-  serializeLibrary,
-  type SavedViewLibrary,
-} from '../../core/saved-views';
+import { emptyLibrary, parseLibrary, serializeLibrary, type SavedViewLibrary } from '../../core/saved-views';
 import { exportBcfZip, importBcfZip } from '../../core/bcf-zip';
 
 /** The minimal storage surface the library needs (localStorage-compatible). */
@@ -32,7 +27,10 @@ export function loadLibrary(storage: LibraryStorage): LoadResult {
   try {
     raw = storage.getItem(LIBRARY_KEY);
   } catch {
-    return { library: emptyLibrary(), warning: 'Saved views storage is unavailable; views are kept for this session only.' };
+    return {
+      library: emptyLibrary(),
+      warning: 'Saved views storage is unavailable; views are kept for this session only.',
+    };
   }
   if (!raw) return { library: emptyLibrary() };
   const parsed = parseLibrary(raw);

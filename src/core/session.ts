@@ -13,8 +13,12 @@ export class ModelRegistry implements ModelSession {
 
   getModels(): readonly ModelSummary[] {
     return [...this.records.values()].map((record) => ({
-      id: record.id, name: record.name, state: record.state,
-      visible: record.asset?.visible ?? false, schema: record.asset?.schema, error: record.error,
+      id: record.id,
+      name: record.name,
+      state: record.state,
+      visible: record.asset?.visible ?? false,
+      schema: record.asset?.schema,
+      error: record.error,
     }));
   }
 
@@ -25,7 +29,9 @@ export class ModelRegistry implements ModelSession {
   subscribe(listener: () => void): () => void {
     if (this.disposed) return () => {};
     this.listeners.add(listener);
-    return () => { this.listeners.delete(listener); };
+    return () => {
+      this.listeners.delete(listener);
+    };
   }
 
   private notify(): void {

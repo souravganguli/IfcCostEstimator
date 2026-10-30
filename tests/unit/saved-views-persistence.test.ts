@@ -8,7 +8,13 @@ import {
   type LibraryStorage,
 } from '../../src/features/viewer-viewpoints/persistence';
 import { exportBcfZip } from '../../src/core/bcf-zip';
-import { addView, createSavedView, emptyLibrary, serializeLibrary, type SavedViewSnapshot } from '../../src/core/saved-views';
+import {
+  addView,
+  createSavedView,
+  emptyLibrary,
+  serializeLibrary,
+  type SavedViewSnapshot,
+} from '../../src/core/saved-views';
 
 const snapshot: SavedViewSnapshot = {
   camera: { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 },
@@ -40,7 +46,9 @@ describe('saved-views persistence (T4, T5)', () => {
 
   it('warns and does not throw when storage reads fail (T5)', () => {
     const throwing: LibraryStorage = {
-      getItem() { throw new Error('denied'); },
+      getItem() {
+        throw new Error('denied');
+      },
       setItem() {},
     };
     const result = loadLibrary(throwing);
@@ -51,7 +59,9 @@ describe('saved-views persistence (T4, T5)', () => {
   it('warns on quota-exceeded writes instead of losing views (T5)', () => {
     const throwing: LibraryStorage = {
       getItem: () => null,
-      setItem() { throw new Error('QuotaExceeded'); },
+      setItem() {
+        throw new Error('QuotaExceeded');
+      },
     };
     const warning = saveLibrary(throwing, addView(emptyLibrary(), createSavedView('A', snapshot)));
     expect(warning).toMatch(/full or unavailable/i);

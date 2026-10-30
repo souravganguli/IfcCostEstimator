@@ -4,10 +4,7 @@ import { neutralizeSpreadsheetText } from './estimate-data';
 export function spreadsheetCell(value: string | number, formula?: string): string {
   if (formula) return `<c><f>${formula}</f><v></v></c>`;
   if (typeof value === 'number') return `<c><v>${value}</v></c>`;
-  const escaped = neutralizeSpreadsheetText(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  const escaped = neutralizeSpreadsheetText(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return `<c t="inlineStr"><is><t>${escaped}</t></is></c>`;
 }
 
@@ -43,8 +40,8 @@ function zip(files: readonly [string, string][]): Blob {
     // Local file header (30 bytes + filename)
     const header = new Uint8Array(30 + nameBytes.length);
     const hv = new DataView(header.buffer);
-    hv.setUint32(0, 0x04034b50, true);  // local file signature
-    hv.setUint16(8, 0, true);           // compression: stored
+    hv.setUint32(0, 0x04034b50, true); // local file signature
+    hv.setUint16(8, 0, true); // compression: stored
     hv.setUint32(14, checksum, true);
     hv.setUint32(18, bytes.length, true);
     hv.setUint32(22, bytes.length, true);
@@ -55,13 +52,13 @@ function zip(files: readonly [string, string][]): Blob {
     // Central directory entry (46 bytes + filename)
     const entry = new Uint8Array(46 + nameBytes.length);
     const ev = new DataView(entry.buffer);
-    ev.setUint32(0, 0x02014b50, true);  // central directory signature
-    ev.setUint16(8, 20, true);          // version needed
+    ev.setUint32(0, 0x02014b50, true); // central directory signature
+    ev.setUint16(8, 20, true); // version needed
     ev.setUint32(16, checksum, true);
     ev.setUint32(20, bytes.length, true);
     ev.setUint32(24, bytes.length, true);
     ev.setUint16(28, nameBytes.length, true);
-    ev.setUint32(42, offset, true);     // local header offset
+    ev.setUint32(42, offset, true); // local header offset
     entry.set(nameBytes, 46);
     central.push(entry);
 
@@ -95,10 +92,7 @@ function zip(files: readonly [string, string][]): Blob {
 // ── SpreadsheetML sheet serialiser ────────────────────────────────────────────
 
 function escapeXml(value: string): string {
-  return neutralizeSpreadsheetText(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return neutralizeSpreadsheetText(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function sheetCell(value: string | number, ref: string): string {
@@ -137,26 +131,44 @@ export function buildEstimateWorkbook(
   input: { readonly currency: string; readonly models: readonly string[] } & WorkbookDataset,
 ): Blob {
   const sheets = [
-    ['takeoff',     input.takeoff   ?? [['Quantity takeoff', 'Value'], ['Loaded models', input.models.length]]],
+    [
+      'takeoff',
+      input.takeoff ?? [
+        ['Quantity takeoff', 'Value'],
+        ['Loaded models', input.models.length],
+      ],
+    ],
     ['element-list', input.elements ?? [['Model'], ...input.models.map((name) => [name])]],
-    ['cbs-estimate', [['Quantity', 'Rate', 'Markup %', 'Cost'], [1, 0, 0, 'FORMULA:ROUND(A2*B2*(1+C2/100),2)']]],
-    ['assemblies',  input.assemblies ?? [['Assembly', 'Rate']]],
-    ['notes',       [['Currency', input.currency], ['Generated', new Date().toISOString()], ['Mappings', input.mappings?.length ?? 0]]],
+    [
+      'cbs-estimate',
+      [
+        ['Quantity', 'Rate', 'Markup %', 'Cost'],
+        [1, 0, 0, 'FORMULA:ROUND(A2*B2*(1+C2/100),2)'],
+      ],
+    ],
+    ['assemblies', input.assemblies ?? [['Assembly', 'Rate']]],
+    [
+      'notes',
+      [
+        ['Currency', input.currency],
+        ['Generated', new Date().toISOString()],
+        ['Mappings', input.mappings?.length ?? 0],
+      ],
+    ],
   ] as const;
 
-  const sheetRefs = sheets
-    .map(([name], i) => `<sheet name="${name}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`)
-    .join('');
+  const sheetRefs = sheets.map(([name], i) => `<sheet name="${name}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('');
   const workbook =
     `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"` +
     ` xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">` +
     `<sheets>${sheetRefs}</sheets></workbook>`;
 
   const relEntries = sheets
-    .map((_, i) =>
-      `<Relationship Id="rId${i + 1}"` +
-      ` Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"` +
-      ` Target="worksheets/sheet${i + 1}.xml"/>`,
+    .map(
+      (_, i) =>
+        `<Relationship Id="rId${i + 1}"` +
+        ` Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"` +
+        ` Target="worksheets/sheet${i + 1}.xml"/>`,
     )
     .join('');
   const rels =
@@ -164,9 +176,10 @@ export function buildEstimateWorkbook(
     `${relEntries}</Relationships>`;
 
   const overrides = sheets
-    .map((_, i) =>
-      `<Override PartName="/xl/worksheets/sheet${i + 1}.xml"` +
-      ` ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`,
+    .map(
+      (_, i) =>
+        `<Override PartName="/xl/worksheets/sheet${i + 1}.xml"` +
+        ` ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`,
     )
     .join('');
   const content =

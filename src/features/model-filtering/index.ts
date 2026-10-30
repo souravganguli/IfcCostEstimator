@@ -4,7 +4,11 @@ import { fluentButton, fluentDropdown, fluentTextInput } from '../../core/fluent
 type CriterionRow = { field: HTMLSelectElement; values: HTMLInputElement; container: HTMLElement };
 const fields = ['IfcClass', 'Name', 'GlobalId', 'TypeName', 'Storey'];
 
-export function mountModelFiltering(target: HTMLElement, session: ModelSession, selection: SelectionCapability): FeatureHandle {
+export function mountModelFiltering(
+  target: HTMLElement,
+  session: ModelSession,
+  selection: SelectionCapability,
+): FeatureHandle {
   const panel = document.createElement('section');
   panel.className = 'feature-panel filter-panel';
   panel.setAttribute('aria-label', 'Filter models');
@@ -20,34 +24,49 @@ export function mountModelFiltering(target: HTMLElement, session: ModelSession, 
   const criteria: CriterionRow[] = [];
 
   const evaluate = () => {
-    const active: ElementFilterCriterion[] = criteria.map((row) => ({
-      field: row.field.value,
-      conditions: row.values.value.split(',').map((value) => value.trim()).filter(Boolean)
-        .map((value) => ({ field: row.field.value, op: 'contains' as const, value })),
-    })).filter((criterion) => criterion.conditions.length > 0);
+    const active: ElementFilterCriterion[] = criteria
+      .map((row) => ({
+        field: row.field.value,
+        conditions: row.values.value
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean)
+          .map((value) => ({ field: row.field.value, op: 'contains' as const, value })),
+      }))
+      .filter((criterion) => criterion.conditions.length > 0);
     if (!active.length) {
       status.textContent = 'No criteria applied.';
       return;
     }
     let count = 0;
     results.replaceChildren();
-    session.getModels().filter((model) => model.state === 'loaded').forEach((model) => {
-      const matches = session.getAsset(model.id)?.elements?.filter(active) ?? [];
-      count += matches.length;
-      matches.slice(0, 20).forEach((identity) => {
-        const button = fluentButton(`${model.name} #${identity.expressId}`, { appearance: 'subtle' });
-        button.className = 'search-result';
-        button.addEventListener('click', () => selection.set(identity));
-        results.append(button);
+    session
+      .getModels()
+      .filter((model) => model.state === 'loaded')
+      .forEach((model) => {
+        const matches = session.getAsset(model.id)?.elements?.filter(active) ?? [];
+        count += matches.length;
+        matches.slice(0, 20).forEach((identity) => {
+          const button = fluentButton(`${model.name} #${identity.expressId}`, { appearance: 'subtle' });
+          button.className = 'search-result';
+          button.addEventListener('click', () => selection.set(identity));
+          results.append(button);
+        });
       });
-    });
     status.textContent = `${count} matching element${count === 1 ? '' : 's'}.`;
   };
   const addCriterion = () => {
     const container = document.createElement('div');
     container.className = 'filter-criterion';
-    const field = fluentDropdown(fields.map((name) => ({ value: name, text: name })), { ariaLabel: 'Filter field', value: fields[0] });
-    const values = fluentTextInput({ type: 'text', placeholder: 'value or comma-separated values', ariaLabel: 'Filter values' });
+    const field = fluentDropdown(
+      fields.map((name) => ({ value: name, text: name })),
+      { ariaLabel: 'Filter field', value: fields[0] },
+    );
+    const values = fluentTextInput({
+      type: 'text',
+      placeholder: 'value or comma-separated values',
+      ariaLabel: 'Filter values',
+    });
     const remove = fluentButton('Remove', { appearance: 'subtle' });
     const row = { field, values, container };
     remove.addEventListener('click', () => {

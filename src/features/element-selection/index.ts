@@ -14,7 +14,9 @@ export function mountElementSelection(
     if (event.button !== 0) return;
     selection.set(picking.pick(event.clientX, event.clientY));
   };
-  const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') selection.clear(); };
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') selection.clear();
+  };
   target.addEventListener('pointerup', onPointer);
   target.addEventListener('keydown', onKey);
   const unsubscribe = selection.subscribe((identity: ElementIdentity | null) => {

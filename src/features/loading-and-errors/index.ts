@@ -2,9 +2,16 @@ import { createElement, Box } from 'lucide';
 import type { Availability, FeatureHandle, ModelSession } from '../../core/contracts';
 import './style.css';
 
-export interface FeedbackHandle extends FeatureHandle { notice(message: string): void }
+export interface FeedbackHandle extends FeatureHandle {
+  notice: (message: string) => void;
+}
 
-export function mountFeedback(overlay: HTMLElement, footer: HTMLElement, session: ModelSession, availability: Availability): FeedbackHandle {
+export function mountFeedback(
+  overlay: HTMLElement,
+  footer: HTMLElement,
+  session: ModelSession,
+  availability: Availability,
+): FeedbackHandle {
   const empty = document.createElement('div');
   empty.className = 'feedback-empty';
   const heading = document.createElement('h2');
@@ -37,7 +44,14 @@ export function mountFeedback(overlay: HTMLElement, footer: HTMLElement, session
   const offAvailability = availability.subscribe(refresh);
   refresh();
   return {
-    notice(message) { if (availability.available) status.textContent = message; },
-    dispose() { offSession(); offAvailability(); overlay.replaceChildren(); footer.replaceChildren(); },
+    notice(message) {
+      if (availability.available) status.textContent = message;
+    },
+    dispose() {
+      offSession();
+      offAvailability();
+      overlay.replaceChildren();
+      footer.replaceChildren();
+    },
   };
 }

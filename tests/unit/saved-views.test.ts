@@ -95,7 +95,11 @@ describe('saved-views library model', () => {
   it('counts components and detects threshold exceedance (R11, T12)', () => {
     const many = Array.from({ length: COMPONENT_WARNING_THRESHOLD + 1 }, (_, i) => ({ modelId: 1, expressId: i }));
     const snapshot: SavedViewSnapshot = {
-      visibility: { defaultVisibility: true, viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true }, exceptions: many },
+      visibility: {
+        defaultVisibility: true,
+        viewSetupHints: { spacesVisible: true, spaceBoundariesVisible: true, openingsVisible: true },
+        exceptions: many,
+      },
     };
     expect(componentCount(snapshot)).toBe(COMPONENT_WARNING_THRESHOLD + 1);
     expect(exceedsComponentThreshold(snapshot)).toBe(true);
@@ -103,16 +107,32 @@ describe('saved-views library model', () => {
   });
 
   it('detects snapshot divergence ignoring float jitter (T10)', () => {
-    const base: SavedViewSnapshot = { camera: { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 } };
-    const jittered: SavedViewSnapshot = { camera: { kind: 'perspective', position: [1 + 1e-9, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 } };
-    const moved: SavedViewSnapshot = { camera: { kind: 'perspective', position: [5, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 } };
+    const base: SavedViewSnapshot = {
+      camera: { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 },
+    };
+    const jittered: SavedViewSnapshot = {
+      camera: { kind: 'perspective', position: [1 + 1e-9, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 },
+    };
+    const moved: SavedViewSnapshot = {
+      camera: { kind: 'perspective', position: [5, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45 },
+    };
     expect(snapshotsDiffer(base, jittered)).toBe(false);
     expect(snapshotsDiffer(base, moved)).toBe(true);
   });
 
   it('treats component order as insignificant for dirty detection (AC2)', () => {
-    const a: SavedViewSnapshot = { coloring: [{ modelId: 1, expressId: 2, color: '#ff0000' }, { modelId: 1, expressId: 3, color: '#00ff00' }] };
-    const b: SavedViewSnapshot = { coloring: [{ modelId: 1, expressId: 3, color: '#00ff00' }, { modelId: 1, expressId: 2, color: '#ff0000' }] };
+    const a: SavedViewSnapshot = {
+      coloring: [
+        { modelId: 1, expressId: 2, color: '#ff0000' },
+        { modelId: 1, expressId: 3, color: '#00ff00' },
+      ],
+    };
+    const b: SavedViewSnapshot = {
+      coloring: [
+        { modelId: 1, expressId: 3, color: '#00ff00' },
+        { modelId: 1, expressId: 2, color: '#ff0000' },
+      ],
+    };
     expect(snapshotsDiffer(a, b)).toBe(false);
   });
 
@@ -120,7 +140,9 @@ describe('saved-views library model', () => {
     let library = emptyLibrary();
     const view = createSavedView('A', perspective);
     library = addView(library, view);
-    const next: SavedViewSnapshot = { camera: { kind: 'orthographic', position: [0, 10, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 30 } };
+    const next: SavedViewSnapshot = {
+      camera: { kind: 'orthographic', position: [0, 10, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 30 },
+    };
     library = updateViewSnapshot(library, view.id, next, 'data:image/png;base64,AAAA');
     expect(library.views[0].id).toBe(view.id);
     expect(library.views[0].snapshot.camera?.kind).toBe('orthographic');
@@ -155,7 +177,14 @@ describe('saved-views serialization (T4, T7)', () => {
           name: 'V',
           futureField: 42,
           snapshot: {
-            camera: { kind: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fieldOfView: 45, extra: 'x' },
+            camera: {
+              kind: 'perspective',
+              position: [1, 2, 3],
+              target: [0, 0, 0],
+              up: [0, 1, 0],
+              fieldOfView: 45,
+              extra: 'x',
+            },
             selection: [{ modelId: 1, expressId: 2, extra: 'y' }],
           },
         },
@@ -168,7 +197,9 @@ describe('saved-views serialization (T4, T7)', () => {
   });
 
   it('preserves both perspective and orthographic cameras (T8)', () => {
-    const ortho: SavedViewSnapshot = { camera: { kind: 'orthographic', position: [0, 10, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 25 } };
+    const ortho: SavedViewSnapshot = {
+      camera: { kind: 'orthographic', position: [0, 10, 0], target: [0, 0, 0], up: [0, 0, -1], viewToWorldScale: 25 },
+    };
     let library = addView(emptyLibrary(), createSavedView('Ortho', ortho));
     library = addView(library, createSavedView('Persp', perspective));
     const parsed = parseLibrary(serializeLibrary(library));

@@ -49,7 +49,7 @@ export interface ViewpointsOptions {
   /** Persistence surface; defaults to window.localStorage when available. */
   readonly storage?: LibraryStorage;
   /** Non-blocking user notice channel (toast/status). */
-  notice?(message: string): void;
+  notice?: (message: string) => void;
 }
 
 interface OpenTab {
@@ -96,7 +96,11 @@ export function mountViewerViewpoints(
     }
     const warning = saveLibrary(storage, library);
     if (warning) notice(warning);
-    saveOpenTabs(storage, openTabs.map((tab) => tab.id), activeTabId);
+    saveOpenTabs(
+      storage,
+      openTabs.map((tab) => tab.id),
+      activeTabId,
+    );
   };
 
   const findView = (id: string): SavedView | undefined => library.views.find((view) => view.id === id);
@@ -121,7 +125,15 @@ export function mountViewerViewpoints(
 
   const toolbar = document.createElement('div');
   toolbar.className = 'viewpoints-toolbar';
-  toolbar.append(saveCurrent, newFolderButton, importButton, exportBcfButton, exportJsonButton, deleteSelectedButton, clearAllButton);
+  toolbar.append(
+    saveCurrent,
+    newFolderButton,
+    importButton,
+    exportBcfButton,
+    exportJsonButton,
+    deleteSelectedButton,
+    clearAllButton,
+  );
 
   const dialogHost = document.createElement('div');
   dialogHost.className = 'viewpoints-dialog-host';
@@ -217,13 +229,21 @@ export function mountViewerViewpoints(
     dialog.setAttribute('role', 'group');
     dialog.setAttribute('aria-label', 'Save current view');
 
-    const nameInput = fluentTextInput({ ariaLabel: 'View name', placeholder: 'View name', value: prefill ? `${prefill.name}` : 'New view' });
+    const nameInput = fluentTextInput({
+      ariaLabel: 'View name',
+      placeholder: 'View name',
+      value: prefill ? `${prefill.name}` : 'New view',
+    });
 
     const categoryList = document.createElement('div');
     categoryList.className = 'viewpoints-categories';
     const checks = new Map<SnapshotCategory, HTMLInputElement>();
     SNAPSHOT_CATEGORIES.forEach((category) => {
-      const checkbox = fluentCheckbox({ label: CATEGORY_LABELS[category], checked: true, ariaLabel: CATEGORY_LABELS[category] });
+      const checkbox = fluentCheckbox({
+        label: CATEGORY_LABELS[category],
+        checked: true,
+        ariaLabel: CATEGORY_LABELS[category],
+      });
       checks.set(category, checkbox);
       categoryList.append(checkbox);
     });
@@ -292,8 +312,10 @@ export function mountViewerViewpoints(
   };
 
   // --- library rendering ----------------------------------------------
-  const folderOptions = () =>
-    [{ value: '', text: 'No folder' }, ...library.folders.map((folder) => ({ value: folder.id, text: folder.name }))];
+  const folderOptions = () => [
+    { value: '', text: 'No folder' },
+    ...library.folders.map((folder) => ({ value: folder.id, text: folder.name })),
+  ];
 
   const renderEntry = (view: SavedView, index: number): HTMLElement => {
     const row = document.createElement('div');
@@ -331,13 +353,23 @@ export function mountViewerViewpoints(
       renderLibrary();
       persist();
     });
-    const up = fluentButton('↑', { appearance: 'subtle', iconOnly: true, ariaLabel: `Move ${view.name} up`, disabled: index === 0 });
+    const up = fluentButton('↑', {
+      appearance: 'subtle',
+      iconOnly: true,
+      ariaLabel: `Move ${view.name} up`,
+      disabled: index === 0,
+    });
     up.addEventListener('click', () => {
       library = reorderView(library, view.id, index - 1);
       renderLibrary();
       persist();
     });
-    const down = fluentButton('↓', { appearance: 'subtle', iconOnly: true, ariaLabel: `Move ${view.name} down`, disabled: index === library.views.length - 1 });
+    const down = fluentButton('↓', {
+      appearance: 'subtle',
+      iconOnly: true,
+      ariaLabel: `Move ${view.name} down`,
+      disabled: index === library.views.length - 1,
+    });
     down.addEventListener('click', () => {
       library = reorderView(library, view.id, index + 1);
       renderLibrary();
@@ -390,7 +422,10 @@ export function mountViewerViewpoints(
   const renderLibrary = () => {
     list.replaceChildren();
     if (library.views.length === 0) {
-      const empty = fluentText('No saved views yet. Set up the scene and choose Save current view.', { size: 200, block: true });
+      const empty = fluentText('No saved views yet. Set up the scene and choose Save current view.', {
+        size: 200,
+        block: true,
+      });
       list.append(empty);
       updateToolbarState();
       return;
@@ -420,7 +455,10 @@ export function mountViewerViewpoints(
       const header = document.createElement('div');
       header.className = 'viewpoints-folder-header';
       const title = fluentText(folder.name, { weight: 'semibold' });
-      const renameFolderButton = fluentButton('Rename', { appearance: 'subtle', ariaLabel: `Rename folder ${folder.name}` });
+      const renameFolderButton = fluentButton('Rename', {
+        appearance: 'subtle',
+        ariaLabel: `Rename folder ${folder.name}`,
+      });
       renameFolderButton.addEventListener('click', () => {
         const next = window.prompt('Rename folder', folder.name);
         if (next === null) return;
@@ -428,7 +466,10 @@ export function mountViewerViewpoints(
         renderLibrary();
         persist();
       });
-      const deleteFolderButton = fluentButton('Delete folder', { appearance: 'subtle', ariaLabel: `Delete folder ${folder.name}` });
+      const deleteFolderButton = fluentButton('Delete folder', {
+        appearance: 'subtle',
+        ariaLabel: `Delete folder ${folder.name}`,
+      });
       deleteFolderButton.addEventListener('click', () => {
         library = removeFolder(library, folder.id);
         renderLibrary();
@@ -473,7 +514,10 @@ export function mountViewerViewpoints(
         notice('View updated.');
       });
 
-      const saveAsNew = fluentButton('Save as new', { appearance: 'subtle', ariaLabel: `Save ${view.name} as a new view` });
+      const saveAsNew = fluentButton('Save as new', {
+        appearance: 'subtle',
+        ariaLabel: `Save ${view.name} as a new view`,
+      });
       saveAsNew.addEventListener('click', () => {
         if (atViewLimit(library)) {
           notice('Maximum number of saved views reached.');

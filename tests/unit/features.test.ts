@@ -13,15 +13,30 @@ function sessionStub() {
   const session: ModelSession = {
     getModels: () => models,
     getAsset: () => undefined,
-    subscribe: (listener) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
-    enqueue: vi.fn(async () => {}), toggle: vi.fn(), remove: vi.fn(),
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    enqueue: vi.fn(async () => {}),
+    toggle: vi.fn(),
+    remove: vi.fn(),
   };
   return {
-    session, listeners,
-    update(next: readonly ModelSummary[]) { models = next; listeners.forEach((listener) => listener()); },
+    session,
+    listeners,
+    update(next: readonly ModelSummary[]) {
+      models = next;
+      listeners.forEach((listener) => listener());
+    },
   };
 }
-const host = () => { const element = document.createElement('div'); document.body.append(element); return element; };
+const host = () => {
+  const element = document.createElement('div');
+  document.body.append(element);
+  return element;
+};
 afterEach(() => document.body.replaceChildren());
 
 describe('isolated feature public interfaces', () => {
@@ -100,7 +115,12 @@ describe('isolated feature public interfaces', () => {
     const target = host();
     const setGridVisible = vi.fn();
     const notice = vi.fn();
-    const storage = { getItem: () => null, setItem: () => { throw new Error('QuotaExceeded'); } };
+    const storage = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error('QuotaExceeded');
+      },
+    };
     const feature = mountSettings(target, storage, { setGridVisible }, notice);
     const checkbox = target.querySelector<HTMLInputElement>('fluent-checkbox')!;
     checkbox.checked = false;

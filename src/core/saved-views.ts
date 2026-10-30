@@ -210,9 +210,7 @@ export function updateViewSnapshot(
   return {
     ...library,
     views: library.views.map((view) =>
-      view.id === id
-        ? { ...view, snapshot, thumbnail: thumbnail ?? view.thumbnail, updatedAt: Date.now() }
-        : view,
+      view.id === id ? { ...view, snapshot, thumbnail: thumbnail ?? view.thumbnail, updatedAt: Date.now() } : view,
     ),
   };
 }
@@ -266,18 +264,14 @@ export function removeFolder(library: SavedViewLibrary, id: string): SavedViewLi
 export function moveViewToFolder(library: SavedViewLibrary, id: string, folderId?: string): SavedViewLibrary {
   return {
     ...library,
-    views: library.views.map((view) =>
-      view.id === id ? { ...view, folderId, updatedAt: Date.now() } : view,
-    ),
+    views: library.views.map((view) => (view.id === id ? { ...view, folderId, updatedAt: Date.now() } : view)),
   };
 }
 
 /** Total number of element references across selection/visibility/coloring. */
 export function componentCount(snapshot: SavedViewSnapshot): number {
   return (
-    (snapshot.selection?.length ?? 0) +
-    (snapshot.visibility?.exceptions.length ?? 0) +
-    (snapshot.coloring?.length ?? 0)
+    (snapshot.selection?.length ?? 0) + (snapshot.visibility?.exceptions.length ?? 0) + (snapshot.coloring?.length ?? 0)
   );
 }
 
@@ -304,8 +298,20 @@ function round(n: number): number {
 export function snapshotKey(snapshot: SavedViewSnapshot): string {
   const camera = snapshot.camera
     ? snapshot.camera.kind === 'perspective'
-      ? ['P', roundVec(snapshot.camera.position), roundVec(snapshot.camera.target), roundVec(snapshot.camera.up), round(snapshot.camera.fieldOfView)]
-      : ['O', roundVec(snapshot.camera.position), roundVec(snapshot.camera.target), roundVec(snapshot.camera.up), round(snapshot.camera.viewToWorldScale)]
+      ? [
+          'P',
+          roundVec(snapshot.camera.position),
+          roundVec(snapshot.camera.target),
+          roundVec(snapshot.camera.up),
+          round(snapshot.camera.fieldOfView),
+        ]
+      : [
+          'O',
+          roundVec(snapshot.camera.position),
+          roundVec(snapshot.camera.target),
+          roundVec(snapshot.camera.up),
+          round(snapshot.camera.viewToWorldScale),
+        ]
     : null;
   const clipping = snapshot.clippingPlanes
     ? snapshot.clippingPlanes.map((p) => [roundVec(p.location), roundVec(p.direction)])
@@ -314,9 +320,7 @@ export function snapshotKey(snapshot: SavedViewSnapshot): string {
     ? [
         snapshot.visibility.defaultVisibility,
         snapshot.visibility.viewSetupHints,
-        [...snapshot.visibility.exceptions]
-          .map((c) => `${c.modelId}:${c.expressId}`)
-          .sort(),
+        [...snapshot.visibility.exceptions].map((c) => `${c.modelId}:${c.expressId}`).sort(),
       ]
     : null;
   const selection = snapshot.selection
@@ -386,8 +390,9 @@ function coerceView(value: unknown): SavedView[] {
 
 function coerceVec3(value: unknown): Vec3Tuple | undefined {
   if (!Array.isArray(value) || value.length < 3) return undefined;
-  const [x, y, z] = value;
-  if ([x, y, z].every((n) => typeof n === 'number' && Number.isFinite(n))) return [x, y, z];
+  const [x, y, z] = value as unknown[];
+  if ([x, y, z].every((n) => typeof n === 'number' && Number.isFinite(n)))
+    return [x as number, y as number, z as number];
   return undefined;
 }
 
@@ -395,7 +400,9 @@ function coerceComponent(value: unknown): SavedViewComponent[] {
   if (!value || typeof value !== 'object') return [];
   const c = value as Record<string, unknown>;
   if (typeof c.modelId !== 'number' || typeof c.expressId !== 'number') return [];
-  return [{ modelId: c.modelId, expressId: c.expressId, globalId: typeof c.globalId === 'string' ? c.globalId : undefined }];
+  return [
+    { modelId: c.modelId, expressId: c.expressId, globalId: typeof c.globalId === 'string' ? c.globalId : undefined },
+  ];
 }
 
 function coerceSnapshot(value: unknown): SavedViewSnapshot {

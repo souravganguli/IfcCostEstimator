@@ -2,7 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { Group } from 'three';
 
 const spies = vi.hoisted(() => ({
-  rendererDispose: vi.fn(), controlsDispose: vi.fn(), animation: vi.fn(), disconnect: vi.fn(),
+  rendererDispose: vi.fn(),
+  controlsDispose: vi.fn(),
+  animation: vi.fn(),
+  disconnect: vi.fn(),
 }));
 vi.mock('three', async (importOriginal) => {
   const actual = await importOriginal<typeof import('three')>();
@@ -29,7 +32,13 @@ import { Viewer } from '../../src/adapters/viewer';
 
 describe('viewer resource lifecycle', () => {
   it('tears down a lost context exactly once and reports it through its public callback', () => {
-    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect = spies.disconnect; });
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        disconnect = spies.disconnect;
+      },
+    );
     const container = document.createElement('div');
     const failure = vi.fn();
     const viewer = new Viewer(container, failure);

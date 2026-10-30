@@ -5,7 +5,16 @@ import type { ModelAsset } from '../../src/core/contracts';
 const file = () => ({ name: 'same.ifc', arrayBuffer: async () => new ArrayBuffer(8) }) as File;
 const asset = (): ModelAsset => {
   let visible = true;
-  return { schema: 'IFC4', get visible() { return visible; }, setVisible(value) { visible = value; }, dispose: vi.fn() };
+  return {
+    schema: 'IFC4',
+    get visible() {
+      return visible;
+    },
+    setVisible(value) {
+      visible = value;
+    },
+    dispose: vi.fn(),
+  };
 };
 
 describe('isolated model session public contract', () => {
@@ -42,8 +51,15 @@ describe('isolated model session public contract', () => {
   it('disposes late results, stops queued work and detaches subscribers', async () => {
     let finish!: (value: ModelAsset) => void;
     let started!: () => void;
-    const loading = new Promise<void>((resolve) => { started = resolve; });
-    const load = vi.fn(() => { started(); return new Promise<ModelAsset>((resolve) => { finish = resolve; }); });
+    const loading = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    const load = vi.fn(() => {
+      started();
+      return new Promise<ModelAsset>((resolve) => {
+        finish = resolve;
+      });
+    });
     const session = new ModelRegistry(load);
     const listener = vi.fn();
     const unsubscribe = session.subscribe(listener);

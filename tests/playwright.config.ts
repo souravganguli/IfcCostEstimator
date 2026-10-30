@@ -9,14 +9,9 @@ const basePath = process.env.VITE_BASE_PATH ?? '/IfcCostEstimator/';
 export default defineConfig({
   testDir: './e2e',
   outputDir: './results',
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: fileURLToPath(new URL('./reports', import.meta.url)), open: 'never' }],
-  ],
+  reporter: [['list'], ['html', { outputFolder: fileURLToPath(new URL('./reports', import.meta.url)), open: 'never' }]],
   fullyParallel: false,
-  projects: [
-    { name: 'chrome', use: { channel: 'chrome', launchOptions } },
-  ],
+  projects: [{ name: 'chrome', use: { channel: 'chrome', launchOptions } }],
   use: {
     baseURL: `http://127.0.0.1:${port}${basePath}`,
     viewport: { width: 1440, height: 900 },

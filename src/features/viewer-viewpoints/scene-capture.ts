@@ -2,18 +2,8 @@
 // snapshot shape. Capture reads live scene state through the ViewpointScene
 // boundary; restore applies it deterministically and reports missing elements.
 
-import type {
-  ElementIdentity,
-  ModelSession,
-  SelectionCapability,
-  ViewpointScene,
-} from '../../core/contracts';
-import type {
-  SavedViewComponent,
-  SavedViewSnapshot,
-  SnapshotCategory,
-  Vec3Tuple,
-} from '../../core/saved-views';
+import type { ElementIdentity, ModelSession, SelectionCapability, ViewpointScene } from '../../core/contracts';
+import type { SavedViewComponent, SavedViewSnapshot, SnapshotCategory } from '../../core/saved-views';
 
 /** Capabilities the saved-view feature needs to capture and restore scenes. */
 export interface ViewpointCapabilities {
@@ -21,7 +11,7 @@ export interface ViewpointCapabilities {
   readonly session: ModelSession;
   readonly selection: SelectionCapability;
   /** Exit walkthrough/first-person to orbit before a restore (§R10). */
-  exitWalkthrough(): void;
+  exitWalkthrough: () => void;
 }
 
 /** Resolve an element's IFC GlobalId for cross-session reference matching. */
@@ -54,24 +44,24 @@ export function captureSnapshot(
       camera.kind === 'orthographic'
         ? {
             kind: 'orthographic',
-            position: camera.position as Vec3Tuple,
-            target: camera.target as Vec3Tuple,
-            up: camera.up as Vec3Tuple,
+            position: camera.position,
+            target: camera.target,
+            up: camera.up,
             viewToWorldScale: camera.viewToWorldScale,
           }
         : {
             kind: 'perspective',
-            position: camera.position as Vec3Tuple,
-            target: camera.target as Vec3Tuple,
-            up: camera.up as Vec3Tuple,
+            position: camera.position,
+            target: camera.target,
+            up: camera.up,
             fieldOfView: camera.fieldOfView,
           };
   }
 
   if (categories.has('clipping')) {
     snapshot.clippingPlanes = scene.captureClipping().map((plane) => ({
-      location: plane.location as Vec3Tuple,
-      direction: plane.direction as Vec3Tuple,
+      location: plane.location,
+      direction: plane.direction,
     }));
   }
 
@@ -139,10 +129,7 @@ function resolveComponent(session: ModelSession, component: SavedViewComponent):
  * references are counted (never silently dropped as applied). Deterministic:
  * each category replaces the prior transient state for that category.
  */
-export function restoreSnapshot(
-  capabilities: ViewpointCapabilities,
-  snapshot: SavedViewSnapshot,
-): RestoreResult {
+export function restoreSnapshot(capabilities: ViewpointCapabilities, snapshot: SavedViewSnapshot): RestoreResult {
   const { scene, session, selection, exitWalkthrough } = capabilities;
   exitWalkthrough();
 

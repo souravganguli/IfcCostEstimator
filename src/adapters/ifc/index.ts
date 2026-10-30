@@ -1,6 +1,7 @@
 import wasmUrl from 'web-ifc/web-ifc.wasm?url';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Group, Mesh, MeshStandardMaterial } from 'three';
+import type { Material } from 'three';
 import type {
   ElementFilterCriterion,
   ElementIdentity,
@@ -12,7 +13,6 @@ import type {
   ModelHierarchy,
   PropertyQuery,
 } from '../../core/contracts';
-import type { FieldKey } from '../../core/predicate';
 import { evaluateCondition, type FieldValue } from '../../core/predicate';
 import type { ModelMetadata, ElementRecord, WorkerOutboundMessage } from './metadata';
 
@@ -21,8 +21,9 @@ import type { ModelMetadata, ElementRecord, WorkerOutboundMessage } from './meta
 export function disposeModel(group: Group): void {
   group.traverse((object) => {
     if (object instanceof Mesh) {
-      object.geometry.dispose();
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      const mesh = object as Mesh<import('three').BufferGeometry, Material | Material[]>;
+      mesh.geometry.dispose();
+      const materials: Material[] = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       materials.forEach((material) => material.dispose());
     }
   });
@@ -100,14 +101,22 @@ export function buildContracts(meta: ModelMetadata, modelId: number) {
         if (rec.name?.toLocaleLowerCase().includes(needle)) matched.push('name');
         if (rec.globalId?.toLocaleLowerCase().includes(needle)) matched.push('globalId');
         if (rec.ifcClass.toLocaleLowerCase().includes(needle)) matched.push('ifcClass');
-        if (!matched.includes('property') && [...fieldValues(expressId)].some(([key, value]) => {
-          if (key.toLocaleLowerCase().includes(needle)) return true;
-          if (value.kind === 'text' || value.kind === 'enum') return value.value.toLocaleLowerCase().includes(needle);
-          if (value.kind === 'number' || value.kind === 'boolean') return String(value.value).includes(needle);
-          return false;
-        })) matched.push('property');
+        if (
+          !matched.includes('property') &&
+          [...fieldValues(expressId)].some(([key, value]) => {
+            if (key.toLocaleLowerCase().includes(needle)) return true;
+            if (value.kind === 'text' || value.kind === 'enum') return value.value.toLocaleLowerCase().includes(needle);
+            if (value.kind === 'number' || value.kind === 'boolean') return String(value.value).includes(needle);
+            return false;
+          })
+        )
+          matched.push('property');
         if (matched.length) {
-          results.push({ identity: { modelId, expressId }, metadata: properties.getMetadata({ modelId, expressId })!, matchedFields: matched });
+          results.push({
+            identity: { modelId, expressId },
+            metadata: properties.getMetadata({ modelId, expressId })!,
+            matchedFields: matched,
+          });
         }
         if (results.length >= limit) break;
       }
@@ -121,9 +130,11 @@ export function buildContracts(meta: ModelMetadata, modelId: number) {
         .filter((identity) =>
           criteria.every((criterion) => {
             const values = fieldValues(identity.expressId);
-            const value = values.get(criterion.field as FieldKey);
-            return criterion.conditions.length > 0 &&
-              criterion.conditions.some((cond) => evaluateCondition(() => value, cond) === 'match');
+            const value = values.get(criterion.field);
+            return (
+              criterion.conditions.length > 0 &&
+              criterion.conditions.some((cond) => evaluateCondition(() => value, cond) === 'match')
+            );
           }),
         );
     },
@@ -169,8 +180,8 @@ function loadGlb(glb: ArrayBuffer): Promise<Group> {
 async function gunzip(data: ArrayBuffer): Promise<Uint8Array> {
   const ds = new DecompressionStream('gzip');
   const writer = ds.writable.getWriter();
-  writer.write(new Uint8Array(data));
-  writer.close();
+  void writer.write(new Uint8Array(data));
+  void writer.close();
   const chunks: Uint8Array[] = [];
   const reader = ds.readable.getReader();
   for (;;) {
@@ -181,7 +192,10 @@ async function gunzip(data: ArrayBuffer): Promise<Uint8Array> {
   const total = chunks.reduce((sum, c) => sum + c.byteLength, 0);
   const out = new Uint8Array(total);
   let offset = 0;
-  for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.byteLength; }
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
   return out;
 }
 
@@ -258,10 +272,7 @@ export class IfcAdapter {
       worker.addEventListener('error', onError);
 
       // Transfer the buffer to the worker — zero copy
-      worker.postMessage(
-        { type: 'load', id, bytes: bytes.buffer, wasmUrl: resolvedWasmUrl },
-        [bytes.buffer],
-      );
+      worker.postMessage({ type: 'load', id, bytes: bytes.buffer, wasmUrl: resolvedWasmUrl }, [bytes.buffer]);
     });
   }
 

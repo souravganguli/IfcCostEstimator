@@ -35,7 +35,15 @@ type Ref = { value?: number };
 
 function ref(value: unknown): number | undefined {
   return typeof value === 'object' && value !== null && typeof (value as Ref).value === 'number'
-    ? (value as Ref).value : undefined;
+    ? (value as Ref).value
+    : undefined;
+}
+
+/** Coerce an IFC GlobalId attribute value to a string, or undefined when empty. */
+function globalIdString(value: unknown): string | undefined {
+  if (typeof value === 'string') return value || undefined;
+  if (typeof value === 'number' || typeof value === 'bigint') return String(value);
+  return undefined;
 }
 
 function refs(value: unknown): number[] {
@@ -67,11 +75,21 @@ function scalar(value: unknown): FieldValue {
 function fieldName(line: Line): string | undefined {
   const n = line.Name;
   return typeof n === 'object' && n !== null && typeof (n as { value?: unknown }).value === 'string'
-    ? (n as { value: string }).value : undefined;
+    ? (n as { value: string }).value
+    : undefined;
 }
 
 function propertyValue(line: Line): FieldValue {
-  const ignored = new Set(['expressID', 'type', 'Name', 'Description', 'Unit', 'Formula', 'MethodOfMeasurement', 'GlobalId']);
+  const ignored = new Set([
+    'expressID',
+    'type',
+    'Name',
+    'Description',
+    'Unit',
+    'Formula',
+    'MethodOfMeasurement',
+    'GlobalId',
+  ]);
   for (const [key, value] of Object.entries(line)) {
     if (!ignored.has(key) && /Value$/.test(key)) return scalar(value);
   }
@@ -107,10 +125,10 @@ export function streamGeometry(api: IfcAPI, handle: number): MeshRecord[] {
         const normals = new Float32Array(vertexCount * 3);
 
         for (let v = 0; v < vertexCount; v++) {
-          positions[v * 3]     = vertices[v * 6];
+          positions[v * 3] = vertices[v * 6];
           positions[v * 3 + 1] = vertices[v * 6 + 1];
           positions[v * 3 + 2] = vertices[v * 6 + 2];
-          normals[v * 3]     = vertices[v * 6 + 3];
+          normals[v * 3] = vertices[v * 6 + 3];
           normals[v * 3 + 1] = vertices[v * 6 + 4];
           normals[v * 3 + 2] = vertices[v * 6 + 5];
         }
@@ -118,16 +136,20 @@ export function streamGeometry(api: IfcAPI, handle: number): MeshRecord[] {
         // Apply transformation matrix (column-major flatTransformation)
         const m = placed.flatTransformation;
         for (let v = 0; v < vertexCount; v++) {
-          const px = positions[v * 3], py = positions[v * 3 + 1], pz = positions[v * 3 + 2];
+          const px = positions[v * 3],
+            py = positions[v * 3 + 1],
+            pz = positions[v * 3 + 2];
           const w = m[3] * px + m[7] * py + m[11] * pz + m[15];
           const invW = w !== 0 ? 1 / w : 1;
-          positions[v * 3]     = (m[0] * px + m[4] * py + m[8]  * pz + m[12]) * invW;
-          positions[v * 3 + 1] = (m[1] * px + m[5] * py + m[9]  * pz + m[13]) * invW;
+          positions[v * 3] = (m[0] * px + m[4] * py + m[8] * pz + m[12]) * invW;
+          positions[v * 3 + 1] = (m[1] * px + m[5] * py + m[9] * pz + m[13]) * invW;
           positions[v * 3 + 2] = (m[2] * px + m[6] * py + m[10] * pz + m[14]) * invW;
 
-          const nx = normals[v * 3], ny = normals[v * 3 + 1], nz = normals[v * 3 + 2];
-          normals[v * 3]     = m[0] * nx + m[4] * ny + m[8]  * nz;
-          normals[v * 3 + 1] = m[1] * nx + m[5] * ny + m[9]  * nz;
+          const nx = normals[v * 3],
+            ny = normals[v * 3 + 1],
+            nz = normals[v * 3 + 2];
+          normals[v * 3] = m[0] * nx + m[4] * ny + m[8] * nz;
+          normals[v * 3 + 1] = m[1] * nx + m[5] * ny + m[9] * nz;
           normals[v * 3 + 2] = m[2] * nx + m[6] * ny + m[10] * nz;
         }
 
@@ -159,17 +181,32 @@ export function extractMetadata(
   geometryExpressIds?: ReadonlySet<number>,
 ): { elements: ElementRecord[]; hierarchy: HierarchyNode; schema: string } {
   const schema = api.GetModelSchema(handle);
-  const spatialTypes = new Set([IFCPROJECT, IFCSITE, IFCBUILDING, IFCBUILDINGSTOREY, IFCSPACE, IFCZONE, IFCSPATIALZONE]);
+  const spatialTypes = new Set([
+    IFCPROJECT,
+    IFCSITE,
+    IFCBUILDING,
+    IFCBUILDINGSTOREY,
+    IFCSPACE,
+    IFCZONE,
+    IFCSPATIALZONE,
+  ]);
 
   // Selectively cache only the relation/spatial lines we need — avoids loading
   // every IFC entity (the main performance fix vs GetAllLines).
   const lineCache = new Map<number, Line>();
 
   const relTypes = [
-    IFCPROJECT, IFCSITE, IFCBUILDING, IFCBUILDINGSTOREY,
-    IFCSPACE, IFCZONE, IFCSPATIALZONE,
-    IFCRELAGGREGATES, IFCRELCONTAINEDINSPATIALSTRUCTURE,
-    IFCRELDEFINESBYPROPERTIES, IFCRELDEFINESBYTYPE,
+    IFCPROJECT,
+    IFCSITE,
+    IFCBUILDING,
+    IFCBUILDINGSTOREY,
+    IFCSPACE,
+    IFCZONE,
+    IFCSPATIALZONE,
+    IFCRELAGGREGATES,
+    IFCRELCONTAINEDINSPATIALSTRUCTURE,
+    IFCRELDEFINESBYPROPERTIES,
+    IFCRELDEFINESBYTYPE,
   ];
   for (const type of relTypes) {
     for (const id of vectorValues(api.GetLineIDsWithType(handle, type))) {
@@ -178,15 +215,25 @@ export function extractMetadata(
     }
   }
 
-  const elementMetaRaw = new Map<number, {
-    ifcClass: string; name?: string; globalId?: string;
-    typeName?: string; storeyExpressId?: number; storeyName?: string;
-  }>();
+  const elementMetaRaw = new Map<
+    number,
+    {
+      ifcClass: string;
+      name?: string;
+      globalId?: string;
+      typeName?: string;
+      storeyExpressId?: number;
+      storeyName?: string;
+    }
+  >();
 
   const getLine = (id: number): Line | undefined => {
     if (lineCache.has(id)) return lineCache.get(id);
     const line = api.GetLine(handle, id, false) as Line;
-    if (line) { lineCache.set(id, line); return line; }
+    if (line) {
+      lineCache.set(id, line);
+      return line;
+    }
     return undefined;
   };
 
@@ -196,13 +243,20 @@ export function extractMetadata(
     if (!line) return;
     const name = api.GetNameFromTypeCode(line.type).toUpperCase();
     if (!name.startsWith('IFC') || line.type === IFCPROJECT) return;
-    if (/^(IFCREL|IFCPROPERTY|IFCQUANTITY|IFCUNIT|IFCCARTESIAN|IFCAXIS|IFCDIRECTION|IFCGEOMETRIC|IFCPRODUCTDEFINITIONS|IFCSHAPE|IFCPROFILE|IFCEXTRUDED|IFCOWNER|IFCAPPLICATION|IFCPERSON|IFCORGANIZATION|IFCCONTEXT|IFCLOCALPLACEMENT)/.test(name)) return;
+    if (
+      /^(IFCREL|IFCPROPERTY|IFCQUANTITY|IFCUNIT|IFCCARTESIAN|IFCAXIS|IFCDIRECTION|IFCGEOMETRIC|IFCPRODUCTDEFINITIONS|IFCSHAPE|IFCPROFILE|IFCEXTRUDED|IFCOWNER|IFCAPPLICATION|IFCPERSON|IFCORGANIZATION|IFCCONTEXT|IFCLOCALPLACEMENT)/.test(
+        name,
+      )
+    )
+      return;
     if (spatialTypes.has(line.type)) return;
     elementMetaRaw.set(id, {
       ifcClass: api.GetNameFromTypeCode(line.type) || `IFC_TYPE_${line.type}`,
       name: fieldName(line),
-      globalId: typeof line.GlobalId === 'object' && line.GlobalId !== null
-        ? String((line.GlobalId as { value?: unknown }).value ?? '') || undefined : undefined,
+      globalId:
+        typeof line.GlobalId === 'object' && line.GlobalId !== null
+          ? globalIdString((line.GlobalId as { value?: unknown }).value)
+          : undefined,
     });
   };
 
@@ -305,11 +359,19 @@ export function extractMetadata(
     const className = line ? entityTypeName(api, line.type) : 'IFC_UNASSIGNED';
     const isElement = elementMetaRaw.has(id);
     if (visiting.has(id)) {
-      return { expressId: id, ifcClass: className, label: `${labelForId(id, className)} (cycle)`, nodeKind: isElement ? 'element' : 'spatial', children: [] };
+      return {
+        expressId: id,
+        ifcClass: className,
+        label: `${labelForId(id, className)} (cycle)`,
+        nodeKind: isElement ? 'element' : 'spatial',
+        children: [],
+      };
     }
     const next = new Set(visiting).add(id);
     return {
-      expressId: id, ifcClass: className, label: labelForId(id, className),
+      expressId: id,
+      ifcClass: className,
+      label: labelForId(id, className),
       nodeKind: isElement ? 'element' : 'spatial',
       children: (children.get(id) ?? []).map((child) => buildNode(child, next)),
     };
@@ -322,14 +384,18 @@ export function extractMetadata(
   const unassigned = elementIds.filter((id) => !parent.has(id));
   if (unassigned.length) {
     roots.push({
-      expressId: -1, ifcClass: 'IFC_UNASSIGNED', label: 'Unassigned elements',
-      nodeKind: 'spatial', children: unassigned.map((id) => buildNode(id, new Set())),
+      expressId: -1,
+      ifcClass: 'IFC_UNASSIGNED',
+      label: 'Unassigned elements',
+      nodeKind: 'spatial',
+      children: unassigned.map((id) => buildNode(id, new Set())),
     });
   }
 
-  const hierarchy: HierarchyNode = roots.length === 1
-    ? roots[0]
-    : { expressId: -1, ifcClass: 'IFC_ROOT', label: 'Model', nodeKind: 'spatial', children: roots };
+  const hierarchy: HierarchyNode =
+    roots.length === 1
+      ? roots[0]
+      : { expressId: -1, ifcClass: 'IFC_ROOT', label: 'Model', nodeKind: 'spatial', children: roots };
 
   const elements: ElementRecord[] = [...elementMetaRaw.entries()].map(([expressId, meta]) => ({
     expressId,

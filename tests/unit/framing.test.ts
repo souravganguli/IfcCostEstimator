@@ -11,11 +11,13 @@ function box(offset: number): Group {
   return group;
 }
 afterEach(() => {
-  models.splice(0).forEach((group) => group.children.forEach((object) => {
-    const mesh = object as Mesh;
-    mesh.geometry.dispose();
-    (mesh.material as MeshBasicMaterial).dispose();
-  }));
+  models.splice(0).forEach((group) =>
+    group.children.forEach((object) => {
+      const mesh = object as Mesh;
+      mesh.geometry.dispose();
+      (mesh.material as MeshBasicMaterial).dispose();
+    }),
+  );
 });
 
 describe('visible-model camera framing', () => {

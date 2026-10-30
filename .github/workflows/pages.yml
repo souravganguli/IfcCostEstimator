@@ -31,9 +31,16 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
       - name: Install Chrome
         run: npx playwright install --with-deps chrome
-      - run: npm run test
+      - name: Unit tests with coverage
+        run: npm run test:coverage
       - run: npm run build
       - name: Test built site in Chrome
         env:

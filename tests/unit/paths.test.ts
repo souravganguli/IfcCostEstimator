@@ -8,7 +8,10 @@ describe('deployment base', () => {
     expect(deploymentBase('/IfcCostEstimator/')).toBe('/IfcCostEstimator/');
   });
 
-  it.each(['https://example.com/', '//example.com/', 'relative', '/?query', '/#hash', '/bad\\path'])('rejects unsafe base %s', (value) => {
-    expect(() => deploymentBase(value)).toThrow();
-  });
+  it.each(['https://example.com/', '//example.com/', 'relative', '/?query', '/#hash', '/bad\\path'])(
+    'rejects unsafe base %s',
+    (value) => {
+      expect(() => deploymentBase(value)).toThrow();
+    },
+  );
 });

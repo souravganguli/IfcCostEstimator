@@ -111,13 +111,22 @@ export function buildGlb(records: readonly MeshRecord[]): ArrayBuffer | null {
     binaryOffset += idxBytes;
 
     const posCount = rec.positions.length / 3;
-    let minX = Infinity, minY = Infinity, minZ = Infinity;
-    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+    let minX = Infinity,
+      minY = Infinity,
+      minZ = Infinity;
+    let maxX = -Infinity,
+      maxY = -Infinity,
+      maxZ = -Infinity;
     for (let i = 0; i < rec.positions.length; i += 3) {
-      const x = rec.positions[i], y = rec.positions[i + 1], z = rec.positions[i + 2];
-      if (x < minX) minX = x; if (x > maxX) maxX = x;
-      if (y < minY) minY = y; if (y > maxY) maxY = y;
-      if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+      const x = rec.positions[i],
+        y = rec.positions[i + 1],
+        z = rec.positions[i + 2];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+      if (z < minZ) minZ = z;
+      if (z > maxZ) maxZ = z;
     }
 
     accessors.push({
@@ -166,22 +175,37 @@ export function buildGlb(records: readonly MeshRecord[]): ArrayBuffer | null {
 
     // Accessors: VEC3 float positions, VEC3 float normals, SCALAR uint32 indices
     gltfAccessors.push({
-      bufferView: bvBase, byteOffset: 0, componentType: 5126, count: acc.posCount,
-      type: 'VEC3', min: acc.minXYZ, max: acc.maxXYZ,
+      bufferView: bvBase,
+      byteOffset: 0,
+      componentType: 5126,
+      count: acc.posCount,
+      type: 'VEC3',
+      min: acc.minXYZ,
+      max: acc.maxXYZ,
     });
     gltfAccessors.push({
-      bufferView: bvBase + 1, byteOffset: 0, componentType: 5126, count: acc.posCount, type: 'VEC3',
+      bufferView: bvBase + 1,
+      byteOffset: 0,
+      componentType: 5126,
+      count: acc.posCount,
+      type: 'VEC3',
     });
     gltfAccessors.push({
-      bufferView: bvBase + 2, byteOffset: 0, componentType: 5125, count: acc.idxCount, type: 'SCALAR',
+      bufferView: bvBase + 2,
+      byteOffset: 0,
+      componentType: 5125,
+      count: acc.idxCount,
+      type: 'SCALAR',
     });
 
     meshes.push({
-      primitives: [{
-        attributes: { POSITION: accBase, NORMAL: accBase + 1 },
-        indices: accBase + 2,
-        material: matIndex,
-      }],
+      primitives: [
+        {
+          attributes: { POSITION: accBase, NORMAL: accBase + 1 },
+          indices: accBase + 2,
+          material: matIndex,
+        },
+      ],
     });
 
     nodes.push({
@@ -234,19 +258,19 @@ export function buildGlb(records: readonly MeshRecord[]): ArrayBuffer | null {
   const view = new DataView(glb);
 
   // GLB header
-  view.setUint32(0, 0x46546C67, true);  // magic: 'glTF'
-  view.setUint32(4, 2, true);            // version: 2
+  view.setUint32(0, 0x46546c67, true); // magic: 'glTF'
+  view.setUint32(4, 2, true); // version: 2
   view.setUint32(8, totalLength, true);
 
   // JSON chunk
   view.setUint32(12, jsonChunkLength, true);
-  view.setUint32(16, 0x4E4F534A, true); // chunk type: 'JSON'
+  view.setUint32(16, 0x4e4f534a, true); // chunk type: 'JSON'
   new Uint8Array(glb, 20, jsonChunkLength).set(jsonChunk);
 
   // BIN chunk
   const binStart = 20 + jsonChunkLength;
   view.setUint32(binStart, binChunkLength, true);
-  view.setUint32(binStart + 4, 0x004E4942, true); // chunk type: 'BIN\0'
+  view.setUint32(binStart + 4, 0x004e4942, true); // chunk type: 'BIN\0'
   new Uint8Array(glb, binStart + 8, binChunkLength).set(binChunk);
 
   return glb;

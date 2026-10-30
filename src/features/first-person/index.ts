@@ -81,7 +81,7 @@ export function mountFirstPerson(
 
   toggle.addEventListener('click', () => setActive(!active));
   viewer.renderer.domElement.addEventListener('click', () => {
-    if (active) viewer.renderer.domElement.requestPointerLock?.();
+    if (active) void viewer.renderer.domElement.requestPointerLock?.();
   });
 
   toolbarHost.replaceChildren(toggle);

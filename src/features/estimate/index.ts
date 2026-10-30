@@ -5,7 +5,11 @@ import { buildEstimateWorkbook } from '../../core/estimate-xlsx';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
 import { createFilePickerButton } from '../../components/file-picker-button';
 
-export function mountEstimate(target: HTMLElement, session: ModelSession, notice: (message: string) => void): FeatureHandle {
+export function mountEstimate(
+  target: HTMLElement,
+  session: ModelSession,
+  notice: (message: string) => void,
+): FeatureHandle {
   const panel = document.createElement('section');
   panel.className = 'feature-panel estimate-panel';
 
@@ -60,7 +64,10 @@ export function mountEstimate(target: HTMLElement, session: ModelSession, notice
   });
 
   csv.addEventListener('click', () => {
-    const rows: (string | number)[][] = [['currency', currency.value], ['models', loadedModels().length]];
+    const rows: (string | number)[][] = [
+      ['currency', currency.value],
+      ['models', loadedModels().length],
+    ];
     download(new Blob([exportCsv(rows)], { type: 'text/csv' }), 'estimate.csv');
   });
 

@@ -62,52 +62,61 @@ describe('IFC processor benchmark', () => {
   });
 
   for (const fixture of baseline.fixtures) {
-    it(`processModel: ${fixture.name}`, { timeout: Math.ceil(fixture.baselineMs * baseline.toleranceMultiplier * RUNS * 2) + 10_000 }, () => {
-      const fixturePath = new URL(fixture.name, FIXTURE_DIR);
+    it(
+      `processModel: ${fixture.name}`,
+      { timeout: Math.ceil(fixture.baselineMs * baseline.toleranceMultiplier * RUNS * 2) + 10_000 },
+      () => {
+        const fixturePath = new URL(fixture.name, FIXTURE_DIR);
 
-      // Committed fixtures must exist — this is a hard failure, not a skip.
-      expect(existsSync(fixturePath), `Benchmark fixture missing: ${fixture.name} — ensure tests/fixtures/benchmarkmodels/ is populated`).toBe(true);
+        // Committed fixtures must exist — this is a hard failure, not a skip.
+        expect(
+          existsSync(fixturePath),
+          `Benchmark fixture missing: ${fixture.name} — ensure tests/fixtures/benchmarkmodels/ is populated`,
+        ).toBe(true);
 
-      const bytes = new Uint8Array(readFileSync(fixturePath));
-      const runMs: number[] = [];
+        const bytes = new Uint8Array(readFileSync(fixturePath));
+        const runMs: number[] = [];
 
-      for (let run = 0; run < RUNS; run++) {
-        const handle = api.OpenModel(bytes, {
-          COORDINATE_TO_ORIGIN: false,
-          ALLOW_INCOMPATIBLE_SCHEMA_ALIASES: false,
-        });
-        const start = performance.now();
-        const result = processModel(api, handle);
-        const elapsed = performance.now() - start;
-        api.CloseModel(handle);
+        for (let run = 0; run < RUNS; run++) {
+          const handle = api.OpenModel(bytes, {
+            COORDINATE_TO_ORIGIN: false,
+            ALLOW_INCOMPATIBLE_SCHEMA_ALIASES: false,
+          });
+          const start = performance.now();
+          const result = processModel(api, handle);
+          const elapsed = performance.now() - start;
+          api.CloseModel(handle);
 
-        runMs.push(elapsed);
+          runMs.push(elapsed);
 
-        // Smoke-check output correctness on every run.
-        expect(result.glb.byteLength, `${fixture.name}: GLB must be non-empty`).toBeGreaterThan(0);
-        expect(result.metadata.schema, `${fixture.name}: schema`).toBe(fixture.schema);
-        expect(result.metadata.elements.length, `${fixture.name}: element count`).toBe(fixture.elementCount);
-      }
+          // Smoke-check output correctness on every run.
+          expect(result.glb.byteLength, `${fixture.name}: GLB must be non-empty`).toBeGreaterThan(0);
+          expect(result.metadata.schema, `${fixture.name}: schema`).toBe(fixture.schema);
+          expect(result.metadata.elements.length, `${fixture.name}: element count`).toBe(fixture.elementCount);
+        }
 
-      const medianMs = median(runMs);
-      const ceilingMs = fixture.baselineMs * baseline.toleranceMultiplier;
+        const medianMs = median(runMs);
+        const ceilingMs = fixture.baselineMs * baseline.toleranceMultiplier;
 
-      if (UPDATE_MODE) {
-        // Print for manual baseline refresh — never auto-write.
-        console.log(`[BENCHMARK UPDATE] ${fixture.name}: median=${Math.round(medianMs)}ms (baseline=${fixture.baselineMs}ms)`);
-      }
+        if (UPDATE_MODE) {
+          // Print for manual baseline refresh — never auto-write.
+          console.log(
+            `[BENCHMARK UPDATE] ${fixture.name}: median=${Math.round(medianMs)}ms (baseline=${fixture.baselineMs}ms)`,
+          );
+        }
 
-      // Regression guard: median must not exceed baseline × tolerance.
-      expect(
-        medianMs,
-        [
-          `Regression: ${fixture.name} median ${Math.round(medianMs)}ms exceeds baseline`,
-          `${fixture.baselineMs}ms × ${baseline.toleranceMultiplier} = ${Math.round(ceilingMs)}ms ceiling.`,
-          `Runs: ${runMs.map((ms) => Math.round(ms)).join(', ')}ms.`,
-          `If this machine is genuinely slower, update the baseline intentionally`,
-          `(UPDATE_BENCHMARK_BASELINE=1) after reviewing the new values.`,
-        ].join(' '),
-      ).toBeLessThanOrEqual(ceilingMs);
-    });
+        // Regression guard: median must not exceed baseline × tolerance.
+        expect(
+          medianMs,
+          [
+            `Regression: ${fixture.name} median ${Math.round(medianMs)}ms exceeds baseline`,
+            `${fixture.baselineMs}ms × ${baseline.toleranceMultiplier} = ${Math.round(ceilingMs)}ms ceiling.`,
+            `Runs: ${runMs.map((ms) => Math.round(ms)).join(', ')}ms.`,
+            `If this machine is genuinely slower, update the baseline intentionally`,
+            `(UPDATE_BENCHMARK_BASELINE=1) after reviewing the new values.`,
+          ].join(' '),
+        ).toBeLessThanOrEqual(ceilingMs);
+      },
+    );
   }
 });

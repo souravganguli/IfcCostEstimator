@@ -1,14 +1,28 @@
-export interface Point3 { readonly x: number; readonly y: number; readonly z: number }
-export interface Point2 { readonly x: number; readonly y: number }
-export interface Triangle { readonly a: Point3; readonly b: Point3; readonly c: Point3; readonly elementId: number }
-export interface Segment2 { readonly start: Point2; readonly end: Point2; readonly elementId: number }
+export interface Point3 {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
+export interface Point2 {
+  readonly x: number;
+  readonly y: number;
+}
+export interface Triangle {
+  readonly a: Point3;
+  readonly b: Point3;
+  readonly c: Point3;
+  readonly elementId: number;
+}
+export interface Segment2 {
+  readonly start: Point2;
+  readonly end: Point2;
+  readonly elementId: number;
+}
 
 /** Project in-app triangles to a top-down architectural plan footprint. */
 export function projectPlan(triangles: readonly Triangle[], elevation?: number): readonly Triangle[] {
   if (elevation === undefined) return triangles;
-  return triangles.filter((t) =>
-    [t.a, t.b, t.c].some((p) => Math.abs(p.z - elevation) < 1e-6),
-  );
+  return triangles.filter((t) => [t.a, t.b, t.c].some((p) => Math.abs(p.z - elevation) < 1e-6));
 }
 
 /** Intersect an edge with a horizontal plane; returns the intersection point or undefined. */

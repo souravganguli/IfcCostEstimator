@@ -9,7 +9,9 @@ const source = readFileSync(new URL('../fixtures/box.ifc', import.meta.url), 'ut
 const modelFile = (offset = 0) => ({
   name: 'same.ifc',
   mimeType: 'application/octet-stream',
-  buffer: Buffer.from(source.replace('#19=IFCCARTESIANPOINT((0.,0.,0.));', `#19=IFCCARTESIANPOINT((${offset}.,0.,0.));`)),
+  buffer: Buffer.from(
+    source.replace('#19=IFCCARTESIANPOINT((0.,0.,0.));', `#19=IFCCARTESIANPOINT((${offset}.,0.,0.));`),
+  ),
 });
 
 function pixelDifference(first: Buffer, second: Buffer): number {
@@ -18,7 +20,13 @@ function pixelDifference(first: Buffer, second: Buffer): number {
   expect([left.width, left.height]).toEqual([right.width, right.height]);
   let changed = 0;
   for (let index = 0; index < left.data.length; index += 4) {
-    if (Math.abs(left.data[index] - right.data[index]) + Math.abs(left.data[index + 1] - right.data[index + 1]) + Math.abs(left.data[index + 2] - right.data[index + 2]) > 25) changed++;
+    if (
+      Math.abs(left.data[index] - right.data[index]) +
+        Math.abs(left.data[index + 1] - right.data[index + 1]) +
+        Math.abs(left.data[index + 2] - right.data[index + 2]) >
+      25
+    )
+      changed++;
   }
   return changed;
 }
@@ -58,9 +66,13 @@ test('shell renders under the project subpath without startup errors or external
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   const failed: string[] = [];
-  page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
+  page.on('response', (response) => {
+    if (response.status() >= 400) failed.push(response.url());
+  });
   const external: string[] = [];
-  page.on('request', (request) => { if (!request.url().startsWith('http://127.0.0.1:')) external.push(request.url()); });
+  page.on('request', (request) => {
+    if (!request.url().startsWith('http://127.0.0.1:')) external.push(request.url());
+  });
   await page.goto('./');
   await expect(page.getByRole('heading', { name: 'IFC Viewer' })).toBeVisible();
   await expect(page.getByRole('region', { name: '3D viewer' })).toBeVisible();
@@ -73,7 +85,9 @@ test('shell renders under the project subpath without startup errors or external
   // Visual hierarchy: the compact ribbon triggers are Caption 12 while the menu
   // actions they open are Body 14 (fluent2-design-system.md requirement 7), so
   // the dropdown items read larger than their trigger.
-  const triggerFontSize = await page.locator('[data-ribbon-menu="file"] summary').evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
+  const triggerFontSize = await page
+    .locator('[data-ribbon-menu="file"] summary')
+    .evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
   const openItemFontSize = await openButton.evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
   expect(triggerFontSize).toBe(12);
   expect(openItemFontSize).toBe(14);
@@ -105,8 +119,12 @@ test('shell renders under the project subpath without startup errors or external
   await page.getByLabel('Search and filter').click();
   await expect(page.getByRole('heading', { name: 'Search and filter' })).toBeVisible();
   await expect(page.getByLabel('Search loaded models')).toBeVisible();
-  expect(await page.getByLabel('Search loaded models').evaluate((element) => element.tagName.toLowerCase())).toBe('fluent-text-input');
-  await expect.poll(() => page.getByLabel('Search and filter').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(235, 243, 252)');
+  expect(await page.getByLabel('Search loaded models').evaluate((element) => element.tagName.toLowerCase())).toBe(
+    'fluent-text-input',
+  );
+  await expect
+    .poll(() => page.getByLabel('Search and filter').evaluate((element) => getComputedStyle(element).backgroundColor))
+    .toBe('rgb(235, 243, 252)');
   await expect(page.getByLabel('Search and filter')).toHaveAttribute('aria-pressed', 'true');
   await page.getByLabel('Cost estimate').focus();
   await page.keyboard.press('Enter');
@@ -209,7 +227,9 @@ test('ribbon menus open one at a time and close on outside click or Escape', asy
   await expect(fileMenu.locator('summary')).toBeFocused();
 });
 
-test('real IFC geometry renders, moves, and isolates repeated-name models with recoverable failures', async ({ page }) => {
+test('real IFC geometry renders, moves, and isolates repeated-name models with recoverable failures', async ({
+  page,
+}) => {
   const errors: string[] = [];
   const external: string[] = [];
   const uploads: string[] = [];
@@ -219,7 +239,9 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
     if (!request.url().startsWith('http://127.0.0.1:')) external.push(request.url());
     if (request.method() !== 'GET') uploads.push(request.url());
   });
-  page.on('response', (response) => { if (response.status() >= 400) failed.push(response.url()); });
+  page.on('response', (response) => {
+    if (response.status() >= 400) failed.push(response.url());
+  });
   await page.goto('./');
   await openSettings(page);
   await uncheckGrid(page);
@@ -241,9 +263,12 @@ test('real IFC geometry renders, moves, and isolates repeated-name models with r
   await page.mouse.up({ button: 'right' });
   await page.getByLabel('Fit visible models').click();
 
-  await page.getByLabel('Open IFC files').setInputFiles([
-    { name: 'broken.ifc', mimeType: 'application/octet-stream', buffer: Buffer.from('not IFC') }, modelFile(8),
-  ]);
+  await page
+    .getByLabel('Open IFC files')
+    .setInputFiles([
+      { name: 'broken.ifc', mimeType: 'application/octet-stream', buffer: Buffer.from('not IFC') },
+      modelFile(8),
+    ]);
   await expect(page.locator('[data-state=loaded]')).toHaveCount(2);
   await expect(page.locator('[data-state=failed]')).toHaveCount(1);
   await expect(page.getByRole('alert')).toContainText('Invalid IFC');
@@ -306,7 +331,11 @@ test('first person is a floating-toolbar toggle that shows the minimap only whil
 
 test('storage denial does not prevent rendering and in-memory preferences', async ({ page }) => {
   await page.addInitScript(() => {
-    Object.defineProperty(window, 'localStorage', { get: () => { throw new Error('Storage denied'); } });
+    Object.defineProperty(window, 'localStorage', {
+      get: () => {
+        throw new Error('Storage denied');
+      },
+    });
   });
   await page.goto('./');
   await openSettings(page);
@@ -340,7 +369,10 @@ test('graphics initialization failure produces a clear unavailable-viewer state'
   await page.goto('./');
   await expect(page.getByRole('alert')).toContainText('3D graphics are unavailable');
   await openFile(page);
-  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute('disabled', '');
+  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute(
+    'disabled',
+    '',
+  );
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
 });
 
@@ -351,7 +383,10 @@ test('compact chrome and collapsible models panel preserve models and resize the
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
 
-  for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }]) {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 1280, height: 720 },
+  ]) {
     await page.setViewportSize(viewport);
     expect((await page.locator('header').boundingBox())!.height).toBe(22);
     expect((await page.locator('footer').boundingBox())!.height).toBe(24);
@@ -367,12 +402,20 @@ test('compact chrome and collapsible models panel preserve models and resize the
     await expect(sidebar).toBeHidden();
     await expect(page.getByLabel('Hide model 1', { exact: true })).toBeHidden();
     await expect.poll(async () => (await canvas.boundingBox())!.width).toBeCloseTo(expandedWidth + sidebarWidth, 0);
-    await expect.poll(async () => canvas.evaluate((element) => (element as HTMLCanvasElement).width / element.clientWidth)).toBeCloseTo(Math.min(await page.evaluate(() => devicePixelRatio), 2), 1);
+    await expect
+      .poll(async () => canvas.evaluate((element) => (element as HTMLCanvasElement).width / element.clientWidth))
+      .toBeCloseTo(Math.min(await page.evaluate(() => devicePixelRatio), 2), 1);
     await page.getByLabel('Fit visible models').click();
     const image = PNG.sync.read(await canvas.screenshot());
     let nonBackground = 0;
     for (let index = 0; index < image.data.length; index += 4) {
-      if (Math.abs(image.data[index] - 234) + Math.abs(image.data[index + 1] - 240) + Math.abs(image.data[index + 2] - 237) > 40) nonBackground++;
+      if (
+        Math.abs(image.data[index] - 234) +
+          Math.abs(image.data[index + 1] - 240) +
+          Math.abs(image.data[index + 2] - 237) >
+        40
+      )
+        nonBackground++;
     }
     expect(nonBackground).toBeGreaterThan(500);
     await page.screenshot({ path: test.info().outputPath(`compact-collapsed-${viewport.width}.png`) });
@@ -429,7 +472,9 @@ test.describe('Duplex IFC2x3 benchmark models', () => {
     });
   }
 
-  test('federates all three local files and preserves models through collapse, removal, and reopening', async ({ page }) => {
+  test('federates all three local files and preserves models through collapse, removal, and reopening', async ({
+    page,
+  }) => {
     test.setTimeout(240000);
     let pageErrors = 0;
     let unexpectedRequests = 0;
@@ -481,7 +526,10 @@ test.describe('Duplex IFC2x3 benchmark models', () => {
     await page.getByLabel('Open IFC files').setInputFiles(paths[1]);
     await expect(page.locator('[data-state=loaded]')).toHaveCount(3, { timeout: 120000 });
     await expect(page.locator('[data-model-id="4"]')).toContainText('IFC2X3');
-    const keys = await page.evaluate(() => ({ local: Object.keys(localStorage), session: Object.keys(sessionStorage) }));
+    const keys = await page.evaluate(() => ({
+      local: Object.keys(localStorage),
+      session: Object.keys(sessionStorage),
+    }));
     expect(keys).toEqual({ local: ['ifccostestimator:settings:v1'], session: [] });
     expect(pageErrors).toBe(0);
     expect(unexpectedRequests).toBe(0);
@@ -491,16 +539,22 @@ test.describe('Duplex IFC2x3 benchmark models', () => {
     await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
     await diagnostics.send('HeapProfiler.collectGarbage');
     const removedHeap = await heapBytes();
-    const longTasks = await page.evaluate(() => (window as unknown as { localTestLongTasks: { count: number; maxMs: number } }).localTestLongTasks);
+    const longTasks = await page.evaluate(
+      () => (window as unknown as { localTestLongTasks: { count: number; maxMs: number } }).localTestLongTasks,
+    );
     const measurement = {
       server: process.env.TEST_SERVER === 'preview' ? 'production-preview' : 'development',
       browser: test.info().project.name,
-      combinedLoadMs, fitInteractionMs,
+      combinedLoadMs,
+      fitInteractionMs,
       jsHeapBytes: { baseline: baselineHeap, loaded: loadedHeap, removedAfterGc: removedHeap },
       longTasks,
       note: 'One local run of the supplied three-model workload; JS heap is not total browser, WASM, or GPU memory. Fit duration includes test-driver overhead.',
     };
-    await test.info().attach('local-resource-measurement', { body: JSON.stringify(measurement, null, 2), contentType: 'application/json' });
+    await test.info().attach('local-resource-measurement', {
+      body: JSON.stringify(measurement, null, 2),
+      contentType: 'application/json',
+    });
     console.log(JSON.stringify(measurement));
     await diagnostics.detach();
     await page.reload();
@@ -513,13 +567,18 @@ test('graphics context loss clears the session, stops the renderer, and requires
   await openSettings(page);
   await page.getByLabel('Open IFC files').setInputFiles(modelFile());
   await expect(page.locator('[data-state=loaded]')).toHaveCount(1);
-  await page.locator('canvas').evaluate((canvas) => canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true })));
+  await page
+    .locator('canvas')
+    .evaluate((canvas) => canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true })));
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
   await expect(page.getByRole('alert')).toContainText('Graphics context lost');
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-state=loaded]')).toHaveCount(0);
   await openFile(page);
-  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute('disabled', '');
+  await expect(page.locator('[data-ribbon-menu="file"] fluent-button', { hasText: 'Open IFC' })).toHaveAttribute(
+    'disabled',
+    '',
+  );
   await openSettings(page);
   await uncheckGrid(page);
   await expect(page.getByRole('status')).toHaveText('Viewer unavailable');
@@ -530,7 +589,9 @@ test('graphics context loss clears the session, stops the renderer, and requires
 
 test.describe('Levels and hierarchy pane', () => {
   const multistorey = fileURLToPath(new URL('../fixtures/1a/multistorey-ifc4.ifc', import.meta.url));
-  const duplexArchitecture = fileURLToPath(new URL('../fixtures/benchmarkmodels/Ifc2x3_Duplex_Architecture.ifc', import.meta.url));
+  const duplexArchitecture = fileURLToPath(
+    new URL('../fixtures/benchmarkmodels/Ifc2x3_Duplex_Architecture.ifc', import.meta.url),
+  );
 
   async function openHierarchy(page: Page): Promise<Locator> {
     await page.getByLabel('Open IFC files', { exact: false }).setInputFiles(multistorey);
@@ -607,21 +668,29 @@ test.describe('Levels and hierarchy pane', () => {
     await page.goto('./');
     const tree = await openHierarchy(page);
     const root = tree.locator('fluent-tree-item.hierarchy-model-root').first();
-    await root.evaluate((element) => { (element as unknown as { expanded: boolean }).expanded = true; element.dispatchEvent(new Event('toggle')); });
+    await root.evaluate((element) => {
+      (element as unknown as { expanded: boolean }).expanded = true;
+      element.dispatchEvent(new Event('toggle'));
+    });
 
     // Expand every spatial node until element rows surface (the spatial chain is
     // project → site → building → storey → element).
-    await expect.poll(async () => {
-      await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
-        for (const item of items) {
-          if (!(item as unknown as { expanded: boolean }).expanded) {
-            (item as unknown as { expanded: boolean }).expanded = true;
-            item.dispatchEvent(new Event('toggle'));
-          }
-        }
-      });
-      return tree.locator('fluent-tree-item[data-kind="element"]').count();
-    }, { timeout: 15000 }).toBeGreaterThan(0);
+    await expect
+      .poll(
+        async () => {
+          await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
+            for (const item of items) {
+              if (!(item as unknown as { expanded: boolean }).expanded) {
+                (item as unknown as { expanded: boolean }).expanded = true;
+                item.dispatchEvent(new Event('toggle'));
+              }
+            }
+          });
+          return tree.locator('fluent-tree-item[data-kind="element"]').count();
+        },
+        { timeout: 15000 },
+      )
+      .toBeGreaterThan(0);
     const element = tree.locator('fluent-tree-item[data-kind="element"]').first();
     await expect(element).toBeVisible();
 
@@ -641,15 +710,18 @@ test.describe('Levels and hierarchy pane', () => {
     const filter = page.getByLabel('Filter hierarchy by name or class');
     const label = await element.locator('.hierarchy-label').innerText();
     const term = label.slice(0, 4);
-    const setFilter = async (value: string) => filter.evaluate((host, text) => {
-      const input = (host as unknown as { value: string });
-      input.value = text;
-      host.dispatchEvent(new Event('input', { bubbles: true }));
-    }, value);
+    const setFilter = async (value: string) =>
+      filter.evaluate((host, text) => {
+        const input = host as unknown as { value: string };
+        input.value = text;
+        host.dispatchEvent(new Event('input', { bubbles: true }));
+      }, value);
     await setFilter(term);
     await expect(element).toBeVisible();
     // A non-matching sibling element should be filtered out.
-    await expect.poll(() => tree.locator('fluent-tree-item[data-kind="element"]:not([hidden])').count()).toBeGreaterThan(0);
+    await expect
+      .poll(() => tree.locator('fluent-tree-item[data-kind="element"]:not([hidden])').count())
+      .toBeGreaterThan(0);
     await setFilter('');
     await expect(root).toBeVisible();
 
@@ -670,23 +742,30 @@ test.describe('Levels and hierarchy pane', () => {
 
     // Expand the whole spatial structure (project → site → building → storey →
     // space) until IfcSpace rows are materialised.
-    await expect.poll(async () => {
-      await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
-        for (const item of items) {
-          if (!(item as unknown as { expanded: boolean }).expanded) {
-            (item as unknown as { expanded: boolean }).expanded = true;
-            item.dispatchEvent(new Event('toggle'));
-          }
-        }
-      });
-      return tree.locator('fluent-tree-item[data-ifc-class="IFCSPACE" i]').count();
-    }, { timeout: 20000 }).toBeGreaterThan(0);
+    await expect
+      .poll(
+        async () => {
+          await tree.locator('fluent-tree-item[data-kind="spatial"]').evaluateAll((items) => {
+            for (const item of items) {
+              if (!(item as unknown as { expanded: boolean }).expanded) {
+                (item as unknown as { expanded: boolean }).expanded = true;
+                item.dispatchEvent(new Event('toggle'));
+              }
+            }
+          });
+          return tree.locator('fluent-tree-item[data-ifc-class="IFCSPACE" i]').count();
+        },
+        { timeout: 20000 },
+      )
+      .toBeGreaterThan(0);
 
     // The space row's type icon is visually distinct from a storey's: the icon
     // SVGs differ in their vector content (iconFor maps IfcSpace to a dedicated
     // room icon, not the shared layers icon used for storeys/sites).
     const spaceIcon = tree.locator('fluent-tree-item[data-ifc-class="IFCSPACE" i] > .hierarchy-icon svg').first();
-    const storeyIcon = tree.locator('fluent-tree-item[data-ifc-class="IFCBUILDINGSTOREY" i] > .hierarchy-icon svg').first();
+    const storeyIcon = tree
+      .locator('fluent-tree-item[data-ifc-class="IFCBUILDINGSTOREY" i] > .hierarchy-icon svg')
+      .first();
     await expect(spaceIcon).toHaveCount(1);
     await expect(storeyIcon).toHaveCount(1);
     const spaceMarkup = await spaceIcon.evaluate((element) => element.innerHTML);

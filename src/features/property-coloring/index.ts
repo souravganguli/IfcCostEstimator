@@ -30,23 +30,30 @@ export function mountPropertyColoring(target: HTMLElement, session: ModelSession
   let rules: ColorRule[] = [];
 
   const apply = () => {
-    session.getModels().filter((model) => model.state === 'loaded').forEach((model) => {
-      const asset = session.getAsset(model.id);
-      asset?.elements?.getAll().forEach((identity) => {
-        const properties = asset.properties?.getProperties(identity);
-        const entries = new Map<string, FieldValue>([
-          ['IfcClass', { kind: 'text', value: properties?.metadata.ifcClass ?? '' }],
-          ['Name', { kind: 'text', value: properties?.metadata.name ?? '' }],
-          ['GlobalId', { kind: 'text', value: properties?.metadata.globalId ?? '' }],
-          ['TypeName', { kind: 'text', value: properties?.metadata.typeName ?? '' }],
-          ['Storey', { kind: 'text', value: properties?.metadata.storeyName ?? '' }],
-        ]);
-        properties?.groups.forEach((group) =>
-          group.entries.forEach((entry) => entries.set(`${group.name}.${entry.name}`, entry.value)),
-        );
-        viewer.setElementColor(model.id, identity.expressId, matchColorRule(rules, (key) => entries.get(key)) ?? null);
+    session
+      .getModels()
+      .filter((model) => model.state === 'loaded')
+      .forEach((model) => {
+        const asset = session.getAsset(model.id);
+        asset?.elements?.getAll().forEach((identity) => {
+          const properties = asset.properties?.getProperties(identity);
+          const entries = new Map<string, FieldValue>([
+            ['IfcClass', { kind: 'text', value: properties?.metadata.ifcClass ?? '' }],
+            ['Name', { kind: 'text', value: properties?.metadata.name ?? '' }],
+            ['GlobalId', { kind: 'text', value: properties?.metadata.globalId ?? '' }],
+            ['TypeName', { kind: 'text', value: properties?.metadata.typeName ?? '' }],
+            ['Storey', { kind: 'text', value: properties?.metadata.storeyName ?? '' }],
+          ]);
+          properties?.groups.forEach((group) =>
+            group.entries.forEach((entry) => entries.set(`${group.name}.${entry.name}`, entry.value)),
+          );
+          viewer.setElementColor(
+            model.id,
+            identity.expressId,
+            matchColorRule(rules, (key) => entries.get(key)) ?? null,
+          );
+        });
       });
-    });
   };
 
   const render = () => {

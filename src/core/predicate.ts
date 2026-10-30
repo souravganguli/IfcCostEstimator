@@ -44,8 +44,7 @@ export type FieldLookup = (field: FieldKey) => FieldValue | undefined;
 /** Case-insensitive, Unicode-aware contains test. */
 function containsText(haystack: string, needle: string): boolean {
   if (needle === '') return true;
-  const normalize = (text: string) =>
-    text.normalize('NFC').toLocaleLowerCase();
+  const normalize = (text: string) => text.normalize('NFC').toLocaleLowerCase();
   return normalize(haystack).includes(normalize(needle));
 }
 

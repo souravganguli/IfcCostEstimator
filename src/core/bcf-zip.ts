@@ -14,7 +14,6 @@ import type {
   ClippingPlaneSnapshot,
   SavedView,
   SavedViewComponent,
-  SavedViewLibrary,
   SavedViewSnapshot,
   Vec3Tuple,
   VisibilitySnapshot,
@@ -273,7 +272,10 @@ export function exportBcfZip(views: readonly SavedView[]): Uint8Array {
     entries.push({ name: `${guid}/viewpoint.bcfv`, data: encodeUtf8(visualizationInfoXml(view.snapshot, guid)) });
     // A sidecar JSON preserves lossless model-scoped ids and the thumbnail so a
     // round-trip through our own app is exact; other BCF tools ignore it.
-    entries.push({ name: `${guid}/_app.json`, data: encodeUtf8(JSON.stringify({ snapshot: view.snapshot, name: view.name, thumbnail: view.thumbnail })) });
+    entries.push({
+      name: `${guid}/_app.json`,
+      data: encodeUtf8(JSON.stringify({ snapshot: view.snapshot, name: view.name, thumbnail: view.thumbnail })),
+    });
     if (view.thumbnail) {
       const bytes = dataUrlToBytes(view.thumbnail);
       if (bytes) entries.push({ name: `${guid}/snapshot.png`, data: bytes });
@@ -374,17 +376,19 @@ export function parseVisualizationInfo(xml: string): SavedViewSnapshot | undefin
     const direction = parseVec(cameraBlock[1], 'CameraDirection');
     const up = parseVec(cameraBlock[1], 'CameraUpVector');
     if (position && direction && up) {
-      const target: Vec3Tuple = [
-        position[0] + direction[0],
-        position[1] + direction[1],
-        position[2] + direction[2],
-      ];
+      const target: Vec3Tuple = [position[0] + direction[0], position[1] + direction[1], position[2] + direction[2]];
       if (perspective) {
         const fov = /<FieldOfView>([-\d.eE+]+)<\/FieldOfView>/.exec(cameraBlock[1]);
         snapshot.camera = { kind: 'perspective', position, target, up, fieldOfView: fov ? Number(fov[1]) : 45 };
       } else {
         const scale = /<ViewToWorldScale>([-\d.eE+]+)<\/ViewToWorldScale>/.exec(cameraBlock[1]);
-        snapshot.camera = { kind: 'orthographic', position, target, up, viewToWorldScale: scale ? Number(scale[1]) : 20 };
+        snapshot.camera = {
+          kind: 'orthographic',
+          position,
+          target,
+          up,
+          viewToWorldScale: scale ? Number(scale[1]) : 20,
+        };
       }
     }
   }

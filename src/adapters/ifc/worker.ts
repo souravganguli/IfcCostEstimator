@@ -11,17 +11,23 @@
  */
 import { IfcAPI } from 'web-ifc';
 import { processModel } from './ifc-processor';
-import type {
-  WorkerInboundMessage,
-  WorkerOutboundMessage,
-  WorkerLoadRequest,
-} from './metadata';
+import type { WorkerInboundMessage, WorkerOutboundMessage, WorkerLoadRequest } from './metadata';
+
+// `self` inside a module worker is the DedicatedWorkerGlobalScope, but the
+// WebWorker lib is not enabled in tsconfig (the rest of the app targets the DOM
+// lib). Describe only the two members this worker uses so postMessage and
+// addEventListener are type-safe without pulling in the full worker lib.
+interface WorkerScope {
+  postMessage(message: unknown, transfer?: Transferable[]): void;
+  addEventListener(type: 'message', listener: (event: MessageEvent<WorkerInboundMessage>) => void): void;
+}
+const workerScope = self as unknown as WorkerScope;
 
 async function gzip(data: Uint8Array): Promise<ArrayBuffer> {
   const cs = new CompressionStream('gzip');
   const writer = cs.writable.getWriter();
-  writer.write(data as Uint8Array<ArrayBuffer>);
-  writer.close();
+  void writer.write(data as Uint8Array<ArrayBuffer>);
+  void writer.close();
   const chunks: Uint8Array[] = [];
   const reader = cs.readable.getReader();
   for (;;) {
@@ -32,14 +38,15 @@ async function gzip(data: Uint8Array): Promise<ArrayBuffer> {
   const total = chunks.reduce((sum, c) => sum + c.byteLength, 0);
   const out = new Uint8Array(total);
   let offset = 0;
-  for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.byteLength; }
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
   return out.buffer;
 }
 
 async function handleLoad(req: WorkerLoadRequest): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const post = (msg: WorkerOutboundMessage, transfer?: Transferable[]) =>
-    ((self as any).postMessage as (message: unknown, transfer?: Transferable[]) => void)(msg, transfer);
+  const post = (msg: WorkerOutboundMessage, transfer?: Transferable[]) => workerScope.postMessage(msg, transfer ?? []);
 
   const bytes = new Uint8Array(req.bytes);
 
@@ -75,20 +82,23 @@ async function handleLoad(req: WorkerLoadRequest): Promise<void> {
 
     post({ type: 'result', id: req.id, glb, metaGz, schema: metadata.schema }, [glb, metaGz]);
   } catch (error) {
-    post({ type: 'error', id: req.id, message: error instanceof Error ? error.message : 'Unknown error loading IFC file.' });
+    post({
+      type: 'error',
+      id: req.id,
+      message: error instanceof Error ? error.message : 'Unknown error loading IFC file.',
+    });
   } finally {
     if (handle !== undefined && handle >= 0) api.CloseModel(handle);
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const workerGlobal = self as any;
-workerGlobal.addEventListener('message', (event: MessageEvent<WorkerInboundMessage>) => {
+workerScope.addEventListener('message', (event: MessageEvent<WorkerInboundMessage>) => {
   if (event.data.type === 'load') {
-    handleLoad(event.data).catch((err) => {
-      workerGlobal.postMessage({
+    const request = event.data;
+    handleLoad(request).catch((err: unknown) => {
+      workerScope.postMessage({
         type: 'error',
-        id: event.data.id,
+        id: request.id,
         message: err instanceof Error ? err.message : String(err),
       } satisfies WorkerOutboundMessage);
     });

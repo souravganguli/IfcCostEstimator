@@ -1,12 +1,20 @@
 export const SETTINGS_KEY = 'ifccostestimator:settings:v1';
-export interface Settings { version: 1; showGrid: boolean }
+export interface Settings {
+  version: 1;
+  showGrid: boolean;
+}
 const defaults = (): Settings => ({ version: 1, showGrid: true });
 
 export function readSettings(storage: Pick<Storage, 'getItem'>): Settings {
   try {
-    const value = JSON.parse(storage.getItem(SETTINGS_KEY) ?? 'null');
-    return value?.version === 1 && typeof value.showGrid === 'boolean'
-      ? { version: 1, showGrid: value.showGrid } : defaults();
+    const value: unknown = JSON.parse(storage.getItem(SETTINGS_KEY) ?? 'null');
+    if (value && typeof value === 'object') {
+      const candidate = value as { version?: unknown; showGrid?: unknown };
+      if (candidate.version === 1 && typeof candidate.showGrid === 'boolean') {
+        return { version: 1, showGrid: candidate.showGrid };
+      }
+    }
+    return defaults();
   } catch {
     return defaults();
   }

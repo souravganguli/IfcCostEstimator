@@ -26,7 +26,23 @@ import { mountQuantityTakeoff } from '../features/quantity-takeoff';
 import { mountEstimate } from '../features/estimate';
 import { mountCostBreakdown } from '../features/cost-breakdown';
 import { mountDrawings } from '../features/drawings';
-import { createElement, PanelLeftClose, Boxes, Layers3, Bookmark, Search, Palette, ClipboardList, Calculator, LayoutPanelLeft, X, Ruler, Scissors, PanelRight, Eye } from 'lucide';
+import {
+  createElement,
+  PanelLeftClose,
+  Boxes,
+  Layers3,
+  Bookmark,
+  Search,
+  Palette,
+  ClipboardList,
+  Calculator,
+  LayoutPanelLeft,
+  X,
+  Ruler,
+  Scissors,
+  PanelRight,
+  Eye,
+} from 'lucide';
 import './fluent-bootstrap';
 import './fluent2.css';
 
@@ -113,10 +129,16 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   const viewport = root.querySelector<HTMLElement>('.viewport')!;
   const paneTitle = slot('pane-title');
   const paneLabels: Record<string, string> = {
-    models: 'Model browser', levels: 'Levels and hierarchy', viewpoints: 'Viewpoints',
-    search: 'Search and filter', appearance: 'Appearance', measure: 'Measurement',
-    clipping: 'Section clipping', takeoff: 'Quantity takeoff',
-    estimate: 'Cost estimate', drawings: 'Plan and section drawings',
+    models: 'Model browser',
+    levels: 'Levels and hierarchy',
+    viewpoints: 'Viewpoints',
+    search: 'Search and filter',
+    appearance: 'Appearance',
+    measure: 'Measurement',
+    clipping: 'Section clipping',
+    takeoff: 'Quantity takeoff',
+    estimate: 'Cost estimate',
+    drawings: 'Plan and section drawings',
   };
   const toolRailButtons = [...root.querySelectorAll<HTMLElement>('.tool-rail-item')];
   const ribbonPropertiesButton = root.querySelector<HTMLElement>('.ribbon-menu [data-action="toggle-properties"]')!;
@@ -149,9 +171,8 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     let startWidth = 0;
     const min = pane === 'tools' ? 240 : 260;
     const max = pane === 'tools' ? 520 : 560;
-    const width = () => pane === 'tools'
-      ? toolSidebar.getBoundingClientRect().width
-      : propertyDock.getBoundingClientRect().width;
+    const width = () =>
+      pane === 'tools' ? toolSidebar.getBoundingClientRect().width : propertyDock.getBoundingClientRect().width;
     const setWidth = (next: number) => {
       const bounded = Math.max(min, Math.min(max, Math.round(next)));
       workspace.style.setProperty(pane === 'tools' ? '--tool-sidebar-width' : '--property-pane-width', `${bounded}px`);
@@ -207,10 +228,14 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
   // up those expected menu behaviors here.
   const ribbonMenus = [...root.querySelectorAll<HTMLDetailsElement>('.ribbon-menu')];
   const closeRibbonMenus = (except?: HTMLDetailsElement) => {
-    ribbonMenus.forEach((menu) => { if (menu !== except) menu.open = false; });
+    ribbonMenus.forEach((menu) => {
+      if (menu !== except) menu.open = false;
+    });
   };
   ribbonMenus.forEach((menu) => {
-    const onToggle = () => { if (menu.open) closeRibbonMenus(menu); };
+    const onToggle = () => {
+      if (menu.open) closeRibbonMenus(menu);
+    };
     menu.addEventListener('toggle', onToggle);
     resizeCleanups.push(() => menu.removeEventListener('toggle', onToggle));
   });
@@ -244,11 +269,16 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     setPropertyDockVisible(false);
     floatingPropertiesButton.focus();
   });
+  // Assigned later (after features mount the models-toggle element) but read by
+  // the closure below, so it must remain `let` despite a single assignment.
+  // eslint-disable-next-line prefer-const
   let sidebarToggle: HTMLElement | undefined;
   const showPaneContent = (pane: string) => {
     const content = root.querySelector<HTMLElement>(`[data-tool-pane="${pane}"]`);
     if (!content) return;
-    root.querySelectorAll<HTMLElement>('.tool-pane').forEach((item) => { item.hidden = item !== content; });
+    root.querySelectorAll<HTMLElement>('.tool-pane').forEach((item) => {
+      item.hidden = item !== content;
+    });
     toolRailButtons.forEach((button) => {
       const active = button.dataset.pane === pane;
       button.classList.toggle('is-active', active);
@@ -268,24 +298,33 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     setPaneVisible(true);
     showPaneContent(pane);
   };
-  toolRailButtons.forEach((button) => button.addEventListener('click', () => {
-    const samePane = button.classList.contains('is-active') && !toolSidebar.hidden;
-    if (samePane) {
-      setPaneVisible(false);
-      button.setAttribute('aria-pressed', 'false');
-      button.classList.remove('is-active');
-    } else activatePane(button.dataset.pane ?? 'models');
-  }));
+  toolRailButtons.forEach((button) =>
+    button.addEventListener('click', () => {
+      const samePane = button.classList.contains('is-active') && !toolSidebar.hidden;
+      if (samePane) {
+        setPaneVisible(false);
+        button.setAttribute('aria-pressed', 'false');
+        button.classList.remove('is-active');
+      } else activatePane(button.dataset.pane ?? 'models');
+    }),
+  );
   root.querySelector<HTMLElement>('[data-action="close-pane"]')!.append(createElement(PanelLeftClose));
   root.querySelector<HTMLElement>('[data-action="close-pane"]')!.addEventListener('click', () => {
     const activeButton = toolRailButtons.find((button) => button.classList.contains('is-active'));
     setPaneVisible(false);
-    toolRailButtons.forEach((button) => { button.classList.remove('is-active'); button.setAttribute('aria-pressed', 'false'); });
+    toolRailButtons.forEach((button) => {
+      button.classList.remove('is-active');
+      button.setAttribute('aria-pressed', 'false');
+    });
     (activeButton ?? toolRailButtons[0])?.focus();
   });
   activatePane('models');
-  root.querySelector<HTMLElement>('[data-floating="measure"]')!.addEventListener('click', () => activatePane('measure'));
-  root.querySelector<HTMLElement>('[data-floating="clipping"]')!.addEventListener('click', () => activatePane('clipping'));
+  root
+    .querySelector<HTMLElement>('[data-floating="measure"]')!
+    .addEventListener('click', () => activatePane('measure'));
+  root
+    .querySelector<HTMLElement>('[data-floating="clipping"]')!
+    .addEventListener('click', () => activatePane('clipping'));
   const availability = new ViewerAvailability();
   const adapter = new IfcAdapter();
   let viewer: Viewer | undefined;
@@ -298,25 +337,42 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       disposeModel(result.group);
       throw new Error('Viewer session ended.');
     }
-    try { viewer.add(result.group); } catch (error) { disposeModel(result.group); throw error; }
+    try {
+      viewer.add(result.group);
+    } catch (error) {
+      disposeModel(result.group);
+      throw error;
+    }
     return {
       schema: result.schema,
       properties: result.properties,
       hierarchy: result.hierarchy,
       elements: result.elements,
-      get visible() { return result.group.visible; },
-      setVisible(value) { result.group.visible = value; },
-      dispose() { viewer?.remove(result.group); disposeModel(result.group); },
+      get visible() {
+        return result.group.visible;
+      },
+      setVisible(value) {
+        result.group.visible = value;
+      },
+      dispose() {
+        viewer?.remove(result.group);
+        disposeModel(result.group);
+      },
     };
   });
   try {
-    viewer = new Viewer(viewport, (message) => { session.dispose(); availability.fail(message); });
+    viewer = new Viewer(viewport, (message) => {
+      session.dispose();
+      availability.fail(message);
+    });
   } catch {
     availability.fail('3D graphics are unavailable. Enable hardware acceleration or try a supported desktop browser.');
   }
   const controls: ViewerControls = {
     fit: () => viewer?.fit(),
-    setGridVisible: (visible) => { if (viewer) viewer.grid.visible = visible; },
+    setGridVisible: (visible) => {
+      if (viewer) viewer.grid.visible = visible;
+    },
   };
   root.querySelector<HTMLElement>('[data-floating="show-all"]')!.addEventListener('click', () => viewer?.showAll());
   const feedback = mountFeedback(slot('feedback'), root.querySelector('footer')!, session, availability);
@@ -326,42 +382,55 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
     mountModelControls(panel, slot('models-toggle'), session, (collapsed) => {
       toolSidebar.hidden = collapsed;
       workspace.classList.toggle('pane-closed', collapsed);
-      if (collapsed) toolRailButtons.forEach((button) => { button.classList.remove('is-active'); button.setAttribute('aria-pressed', 'false'); });
+      if (collapsed)
+        toolRailButtons.forEach((button) => {
+          button.classList.remove('is-active');
+          button.setAttribute('aria-pressed', 'false');
+        });
       else showPaneContent('models');
     }),
     mountNavigation(slot('navigation'), session, availability, controls),
     mountSettings(slot('settings'), deploymentStorage(import.meta.env.BASE_URL), controls, feedback.notice),
-    mountElementSelection(viewport, selection, { pick: (x, y) => viewer?.pick(x, y) ?? null, highlight: (identity) => viewer?.highlight(identity) }),
+    mountElementSelection(viewport, selection, {
+      pick: (x, y) => viewer?.pick(x, y) ?? null,
+      highlight: (identity) => viewer?.highlight(identity),
+    }),
     mountElementProperties(slot('properties'), selection, session),
     mountModelHierarchy(slot('hierarchy'), session, selection, viewer),
     mountModelSearch(slot('search'), session, selection),
     mountModelFiltering(slot('filter'), session, selection),
-    ...(viewer ? [
-      mountDisplayControls(slot('display'), session, viewer),
-      mountSectionClipping(slot('clipping'), viewer),
-      mountModelMeasurement(slot('measurement'), {
-        pick: (x, y) => viewer!.pick(x, y),
-        highlight: (identity) => viewer!.highlight(identity),
-        getPoint: (x, y) => viewer!.getPoint(x, y),
-        renderer: viewer.renderer.domElement,
-      }, selection),
-      mountFirstPerson(slot('walkthrough'), viewport, viewer),
-      mountViewerViewpoints(
-        slot('viewpoints'),
-        {
-          scene: viewer,
-          session,
-          selection,
-          exitWalkthrough: () => viewer!.setFirstPerson(false),
-        },
-        { tabStripHost: slot('tab-strip'), notice: feedback.notice },
-      ),
-      mountPropertyColoring(slot('coloring'), session, viewer),
-      mountQuantityTakeoff(slot('takeoff'), session, selection),
-      mountEstimate(slot('estimate'), session, feedback.notice),
-      mountCostBreakdown(slot('cost-breakdown'), session, selection),
-      mountDrawings(slot('drawings'), session),
-    ] : []),
+    ...(viewer
+      ? [
+          mountDisplayControls(slot('display'), session, viewer),
+          mountSectionClipping(slot('clipping'), viewer),
+          mountModelMeasurement(
+            slot('measurement'),
+            {
+              pick: (x, y) => viewer.pick(x, y),
+              highlight: (identity) => viewer.highlight(identity),
+              getPoint: (x, y) => viewer.getPoint(x, y),
+              renderer: viewer.renderer.domElement,
+            },
+            selection,
+          ),
+          mountFirstPerson(slot('walkthrough'), viewport, viewer),
+          mountViewerViewpoints(
+            slot('viewpoints'),
+            {
+              scene: viewer,
+              session,
+              selection,
+              exitWalkthrough: () => viewer.setFirstPerson(false),
+            },
+            { tabStripHost: slot('tab-strip'), notice: feedback.notice },
+          ),
+          mountPropertyColoring(slot('coloring'), session, viewer),
+          mountQuantityTakeoff(slot('takeoff'), session, selection),
+          mountEstimate(slot('estimate'), session, feedback.notice),
+          mountCostBreakdown(slot('cost-breakdown'), session, selection),
+          mountDrawings(slot('drawings'), session),
+        ]
+      : []),
   ];
   sidebarToggle = slot('models-toggle').querySelector<HTMLElement>('button, fluent-button') ?? undefined;
   sidebarToggle?.setAttribute('aria-controls', 'tool-sidebar');
@@ -376,7 +445,10 @@ export function mountApplication(root: HTMLElement): FeatureHandle {
       if (disposed) return;
       disposed = true;
       unsubscribe();
-      features.slice().reverse().forEach((feature) => feature.dispose());
+      features
+        .slice()
+        .reverse()
+        .forEach((feature) => feature.dispose());
       resizeCleanups.forEach((cleanup) => cleanup());
       session.dispose();
       adapter.dispose();

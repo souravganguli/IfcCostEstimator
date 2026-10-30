@@ -27,9 +27,12 @@ export function mountDrawings(target: HTMLElement, session: ModelSession): Featu
 
   const render = (kind: 'plan' | 'section') => {
     const triangles: Triangle[] = [];
-    session.getModels().filter((model) => model.state === 'loaded').forEach((model) => {
-      session.getAsset(model.id)?.triangles?.forEach((triangle) => triangles.push(triangle));
-    });
+    session
+      .getModels()
+      .filter((model) => model.state === 'loaded')
+      .forEach((model) => {
+        session.getAsset(model.id)?.triangles?.forEach((triangle) => triangles.push(triangle));
+      });
 
     surface.clear();
     const geometry = kind === 'plan' ? projectPlan(triangles) : sectionSegments(triangles, Number(elevation.value));

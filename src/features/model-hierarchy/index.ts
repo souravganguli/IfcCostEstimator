@@ -1,5 +1,11 @@
 import { Box, Building2, createElement, DoorOpen, Eye, EyeOff, Folder, Layers3, ScanSearch } from 'lucide';
-import type { ElementVisibility, FeatureHandle, HierarchyNode, ModelSession, SelectionCapability } from '../../core/contracts';
+import type {
+  ElementVisibility,
+  FeatureHandle,
+  HierarchyNode,
+  ModelSession,
+  SelectionCapability,
+} from '../../core/contracts';
 import { fluentButton, fluentTextInput } from '../../core/fluent';
 import { iconButton } from '../../core/ui';
 import './style.css';
@@ -25,10 +31,7 @@ function iconFor(node: HierarchyNode): IconFactory {
 
 /** Flattens the express ids of every element at or under a node. */
 function elementDescendants(node: HierarchyNode): number[] {
-  return [
-    ...(node.nodeKind === 'element' ? [node.expressId] : []),
-    ...node.children.flatMap(elementDescendants),
-  ];
+  return [...(node.nodeKind === 'element' ? [node.expressId] : []), ...node.children.flatMap(elementDescendants)];
 }
 
 /**
@@ -38,7 +41,12 @@ function elementDescendants(node: HierarchyNode): number[] {
  * "Show all (n)" control. Children are built lazily on first expand so the DOM
  * stays bounded on large models.
  */
-export function mountModelHierarchy(target: HTMLElement, session: ModelSession, selection: SelectionCapability, visibility?: ElementVisibility): FeatureHandle {
+export function mountModelHierarchy(
+  target: HTMLElement,
+  session: ModelSession,
+  selection: SelectionCapability,
+  visibility?: ElementVisibility,
+): FeatureHandle {
   const panel = document.createElement('section');
   panel.className = 'feature-panel hierarchy-panel';
   panel.setAttribute('aria-label', 'Levels and hierarchy');
@@ -49,7 +57,11 @@ export function mountModelHierarchy(target: HTMLElement, session: ModelSession, 
   // Toolbar: filter box + Show all (n).
   const toolbar = document.createElement('div');
   toolbar.className = 'hierarchy-toolbar';
-  const filter = fluentTextInput({ placeholder: 'Filter tree…', ariaLabel: 'Filter hierarchy by name or class', type: 'search' });
+  const filter = fluentTextInput({
+    placeholder: 'Filter tree…',
+    ariaLabel: 'Filter hierarchy by name or class',
+    type: 'search',
+  });
   filter.classList.add('hierarchy-filter');
   const showAll = fluentButton('Show all', { appearance: 'subtle' });
   showAll.classList.add('hierarchy-show-all');
@@ -87,9 +99,11 @@ export function mountModelHierarchy(target: HTMLElement, session: ModelSession, 
   const hiddenOf = (modelId: number): ReadonlySet<number> => visibility?.hiddenOf(modelId) ?? new Set<number>();
 
   /** Live count of elements hidden by the hierarchy across all loaded models. */
-  const hiddenCount = (): number => session.getModels()
-    .filter((model) => model.state === 'loaded')
-    .reduce((total, model) => total + hiddenOf(model.id).size, 0);
+  const hiddenCount = (): number =>
+    session
+      .getModels()
+      .filter((model) => model.state === 'loaded')
+      .reduce((total, model) => total + hiddenOf(model.id).size, 0);
 
   const updateShowAll = () => {
     const count = hiddenCount();
@@ -277,7 +291,9 @@ export function mountModelHierarchy(target: HTMLElement, session: ModelSession, 
   const applyFilter = () => {
     const term = filterText.trim().toLowerCase();
     if (!term) {
-      rows.forEach((record) => { record.item.hidden = false; });
+      rows.forEach((record) => {
+        record.item.hidden = false;
+      });
       return;
     }
     filtering = true;
@@ -367,15 +383,21 @@ export function mountModelHierarchy(target: HTMLElement, session: ModelSession, 
   const syncSelection = (identity: ReturnType<SelectionCapability['current']>) => {
     suppressSelectionSync = true;
     rows.forEach((record) => {
-      const active = identity !== null && record.modelId === identity.modelId
-        && record.node.nodeKind === 'element' && record.node.expressId === identity.expressId;
+      const active =
+        identity !== null &&
+        record.modelId === identity.modelId &&
+        record.node.nodeKind === 'element' &&
+        record.node.expressId === identity.expressId;
       (record.item as unknown as { selected: boolean }).selected = active;
     });
     if (identity) revealSelection(identity.modelId, identity.expressId);
     suppressSelectionSync = false;
   };
 
-  const unsubscribeSession = session.subscribe(() => { render(); syncSelection(selection.current()); });
+  const unsubscribeSession = session.subscribe(() => {
+    render();
+    syncSelection(selection.current());
+  });
   const unsubscribeSelection = selection.subscribe(syncSelection);
   const unsubscribeVisibility = visibility?.subscribe(refreshAllRows) ?? (() => {});
 

@@ -20,7 +20,9 @@ function loadFixture(api: IfcAPI, bytes: Uint8Array, modelId = 0) {
 
 describe('Phase 1A_01 synthetic fixtures', () => {
   const api = new IfcAPI();
-  beforeAll(async () => { await api.Init(undefined, true); });
+  beforeAll(async () => {
+    await api.Init(undefined, true);
+  });
   afterAll(() => api.Dispose());
 
   it('produces a valid GLB for the duplicate-ids-a fixture', () => {
@@ -49,17 +51,28 @@ describe('Phase 1A_01 synthetic fixtures', () => {
     const wall = ifc4.properties.getProperties({ modelId: 0, expressId: 57 });
     expect(wall?.metadata.name).toBe('Wall L0');
     expect(wall?.metadata.storeyName).toBe('Level 0');
-    expect(wall?.groups.map((g) => g.name)).toEqual(expect.arrayContaining(['Pset_WallCommon', 'Qto_WallBaseQuantities']));
-    expect(wall?.groups.find((g) => g.kind === 'qto')?.entries.find((e) => e.name === 'Length')?.value)
-      .toEqual({ kind: 'number', value: 4 });
+    expect(wall?.groups.map((g) => g.name)).toEqual(
+      expect.arrayContaining(['Pset_WallCommon', 'Qto_WallBaseQuantities']),
+    );
+    expect(wall?.groups.find((g) => g.kind === 'qto')?.entries.find((e) => e.name === 'Length')?.value).toEqual({
+      kind: 'number',
+      value: 4,
+    });
     const hierarchy = ifc4.hierarchy.getHierarchy(0);
     expect(hierarchy?.elementIds).toEqual(expect.arrayContaining([57, 67]));
-    expect(hierarchy?.root.label === 'Multi-storey project' ||
-      hierarchy?.root.children.some((node) => node.label === 'Multi-storey project')).toBe(true);
+    expect(
+      hierarchy?.root.label === 'Multi-storey project' ||
+        hierarchy?.root.children.some((node) => node.label === 'Multi-storey project'),
+    ).toBe(true);
   });
 
   it('parses unit, spatial, and aggregate edge-case fixtures', () => {
-    for (const name of ['units-millimetre.ifc', 'units-unknown.ifc', 'malformed-spatial.ifc', 'aggregate-parent-child.ifc']) {
+    for (const name of [
+      'units-millimetre.ifc',
+      'units-unknown.ifc',
+      'malformed-spatial.ifc',
+      'aggregate-parent-child.ifc',
+    ]) {
       const result = loadFixture(api, fixture(name));
       expect(result.glb.byteLength).toBeGreaterThan(0);
     }

@@ -64,9 +64,13 @@ export function fluentSwitch(
 }
 
 /** Creates a `<fluent-slider>`. The returned element exposes `.value`. */
-export function fluentSlider(
-  options: { ariaLabel?: string; min: number; max: number; step: number; value: number },
-): HTMLInputElement {
+export function fluentSlider(options: {
+  ariaLabel?: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+}): HTMLInputElement {
   const slider = document.createElement('fluent-slider') as unknown as HTMLInputElement;
   slider.setAttribute('min', String(options.min));
   slider.setAttribute('max', String(options.max));

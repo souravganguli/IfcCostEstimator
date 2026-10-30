@@ -38,8 +38,14 @@ describe('matchColorRule', () => {
         ],
       },
     ];
-    const interior = new Map<FieldKey, FieldValue>([['IfcClass', text('IfcWall')], ['Name', text('Interior')]]);
-    const exterior = new Map<FieldKey, FieldValue>([['IfcClass', text('IfcWall')], ['Name', text('External')]]);
+    const interior = new Map<FieldKey, FieldValue>([
+      ['IfcClass', text('IfcWall')],
+      ['Name', text('Interior')],
+    ]);
+    const exterior = new Map<FieldKey, FieldValue>([
+      ['IfcClass', text('IfcWall')],
+      ['Name', text('External')],
+    ]);
     expect(matchColorRule(andRule, fieldsFromEntries(interior))).toBeUndefined();
     expect(matchColorRule(andRule, fieldsFromEntries(exterior))).toBe('#abcdef');
   });

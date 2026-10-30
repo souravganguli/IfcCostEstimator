@@ -48,14 +48,16 @@ describe('Fluent 2 type ramp compliance', () => {
     const violations: string[] = [];
     for (const file of files) {
       const name = relativeName(file);
-      readFileSync(file, 'utf8').split('\n').forEach((line, index) => {
-        if (tokenDefinition.test(line)) return; // the token definitions are allowed to carry literals
-        const location = `${name}:${index + 1}`;
-        if (/font-size\s*:\s*\d/.test(line)) violations.push(`${location} raw font-size: ${line.trim()}`);
-        if (/font-weight\s*:\s*\d/.test(line)) violations.push(`${location} raw font-weight: ${line.trim()}`);
-        // Numeric line-heights (px or unitless) are off-ramp; tokens use var().
-        if (/line-height\s*:\s*[\d.]/.test(line)) violations.push(`${location} raw line-height: ${line.trim()}`);
-      });
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .forEach((line, index) => {
+          if (tokenDefinition.test(line)) return; // the token definitions are allowed to carry literals
+          const location = `${name}:${index + 1}`;
+          if (/font-size\s*:\s*\d/.test(line)) violations.push(`${location} raw font-size: ${line.trim()}`);
+          if (/font-weight\s*:\s*\d/.test(line)) violations.push(`${location} raw font-weight: ${line.trim()}`);
+          // Numeric line-heights (px or unitless) are off-ramp; tokens use var().
+          if (/line-height\s*:\s*[\d.]/.test(line)) violations.push(`${location} raw line-height: ${line.trim()}`);
+        });
     }
     expect(violations).toEqual([]);
   });

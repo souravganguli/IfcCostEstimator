@@ -65,13 +65,13 @@ Legend for "In this app": ✅ implemented · ◑ partial · ❌ absent.
 | WebXR AR (app-free) | Sketchfab, Google model-viewer, Vectary, Emersya | ❌ |
 | VR headset viewing | Sketchfab | ❌ |
 | Georeferenced 3D map mode | ifcvieweronline | ❌ |
-| OPFS / geometry caching for fast reloads | ifcvieweronline | ❌ (by policy; see ADR-0005) |
+| OPFS / geometry caching for fast reloads | ifcvieweronline | ❌ (permitted candidate, not yet built; see ADR-0005 rev 2) |
 | Post-processing (SSAO / edge / bloom) | ifcvieweronline, Sketchfab, model-viewer | ❌ |
 | 3D-PDF publish | Open IFC Viewer | ❌ |
 | Product configurators / commerce | Sketchfab, Vectary, Emersya, Threekit | ❌ (out of scope) |
 | Annotations / markups / comments / issues | Sketchfab, OpenProject, BIMcollab, Trimble | ◑ (viewpoints) |
 
-> Note: several Priority 4 items (OPFS caching, cloud sharing, accounts, telemetry, configurators) conflict with this application's deliberate boundaries (browser-only, no upload, settings-only storage, no telemetry). They are listed for completeness, not as recommendations.
+> Note: several Priority 4 items (cloud sharing, accounts, telemetry, configurators) conflict with this application's deliberate boundaries (browser-only, no upload off the device, no telemetry). They are listed for completeness, not as recommendations. OPFS/local caching is **not** boundary-conflicting under the local-only data boundary ([ADR-0005](../architecture/adr/0005-local-only-data-boundary.md)); it is a permitted-but-unbuilt optimization.
 
 ---
 
@@ -124,7 +124,7 @@ Evidence supports these workflow families; it does not prove each is essential t
 | AI / MCP | Open IFC Viewer (ODA MCP) | Absent |
 | AR (WebXR) / VR | Sketchfab, model-viewer, Vectary, Emersya | Absent |
 | Georeferenced map | ifcvieweronline | Absent |
-| OPFS geometry cache | ifcvieweronline | Absent (by policy) |
+| OPFS geometry cache | ifcvieweronline | Absent (permitted; not yet built) |
 
 ## Product and Architecture Implications
 
@@ -132,7 +132,7 @@ Evidence supports these workflow families; it does not prove each is essential t
 - **The differentiator is real.** No surveyed viewer offers the full quantity-takeoff → cost-breakdown → unit-rates → Excel chain. `ifcvieweronline` stops at QTO aggregation; BIMvision exports takeoff to Excel but is a native plugin, not a cost estimator. This product's cost workflow is a genuine, defensible differentiator and aligns with [phase-1c-cost-estimation-market-research.md](phase-1c-cost-estimation-market-research.md).
 - **The clearest research/coverage gap is validation.** Validation + Health Score + IDS is a headline feature for several direct competitors and was entirely absent from the prior viewer research. It is the strongest candidate to evaluate next for viewer parity, subject to feasibility against the local IFC adapter and the browser-only boundary.
 - **Cheap parity wins.** X-ray/ghost mode and a by-IFC-class tree tab are near-universal, low-complexity given the existing hierarchy and visibility features.
-- **Boundary-conflicting features.** OPFS caching, cloud sharing/accounts, telemetry, and configurators recur across the market but conflict with this app's deliberate boundaries. They should remain out of scope unless a boundary is deliberately revisited ([ADR-0005](../architecture/adr/0005-settings-only-web-storage.md)).
+- **Boundary-conflicting features.** Cloud sharing/accounts, telemetry, and configurators recur across the market but conflict with this app's deliberate boundaries and should remain out of scope. OPFS/local caching is **not** in this group: under the local-only data boundary ([ADR-0005](../architecture/adr/0005-local-only-data-boundary.md)) it is a permitted, as-yet-unbuilt optimization.
 - **Emerging signal.** AI/MCP integration (Open IFC Viewer) and app-free WebXR AR (model-viewer, Vectary) are rising expectations; MCP is especially notable given this project's own tooling context. Both are Priority 4 candidates, not commitments.
 
 ## Evidence Gaps and Follow-up

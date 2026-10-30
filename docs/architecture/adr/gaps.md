@@ -66,7 +66,17 @@ locally. Deferred in ADR-0009.
 - **Resolution path:** decide whether to add a pre-commit hook (e.g. Husky + lint-staged) or
   rely on CI; record the decision.
 
+## Resolved
+
+- **Storage boundary / local disk caching (incl. OPFS)** — *Resolved 2026-10-30.* The boundary
+  was clarified from persistence-based to transmission-based: data must not leave the device, but
+  local persistence (localStorage/IndexedDB/OPFS/Cache Storage) is permitted. Recorded in
+  [ADR-0005 revision 2](0005-local-only-data-boundary.md). The app remains memory-only in
+  practice; OPFS/IndexedDB caching and session recovery are now permitted *candidates*, not
+  blocked by policy.
+
 ---
 
-Resolving a gap: write the ADR, update `architecture.md` to the new current state, and remove or
-mark the gap here.
+Resolving a gap: rewrite the relevant ADR in place (bump its Revision and append to its Change
+history), update `architecture.md` to the new current state, and move the item to **Resolved**
+here. Do not create a separate superseding ADR.

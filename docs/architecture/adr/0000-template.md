@@ -1,6 +1,7 @@
 # ADR-XXXX: <short decision title>
 
-- **Status:** Proposed | Accepted | Superseded by ADR-XXXX | Deprecated
+- **Status:** Proposed | Accepted | Deprecated
+- **Revision:** 1
 - **Date:** YYYY-MM-DD
 - **Deciders:** <who>
 
@@ -23,3 +24,11 @@ harder, what new obligations it creates, and how it is verified or enforced.
 
 - **<Option A>** — why it was rejected.
 - **<Option B>** — why it was rejected.
+
+## Change history
+
+- **Revision 1 (YYYY-MM-DD):** Initial decision.
+<!-- On any later change, REWRITE this ADR in place (keep the same ADR number and
+     filename stem), bump Revision, and append a dated entry here summarizing what
+     changed and why. Do NOT create a separate superseding ADR and do NOT leave a
+     stale "Superseded" record: there must be exactly one current text per ADR. -->

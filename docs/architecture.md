@@ -14,10 +14,10 @@ The _reasoning and history_ behind each decision — context, alternatives, and 
 | File access          | Users explicitly choose local files through browser file APIs; opening a file is not a network upload.              |
 | Runtime dependencies | All JavaScript, CSS, WASM, workers, and other runtime assets are served from the application's GitHub Pages origin. |
 | External services    | No runtime third-party CDNs, external APIs, analytics, or telemetry.                                                |
-| Model data           | Held in browser memory only; users must reopen files after a reload or new session.                                 |
-| Persistence          | Settings only, using Web Storage as described below.                                                                |
+| Model data           | Must never leave the user's device. May be held in memory or cached locally; today it is memory-only, so users reopen files after a reload. |
+| Persistence          | Local-only. Any data may be stored locally provided it is never transmitted; see Settings and Storage below.        |
 
-Static asset requests will still reach GitHub Pages. The privacy boundary is that IFC contents and model-derived data must not be transmitted, not that the application makes no network requests.
+Static asset requests will still reach GitHub Pages. The privacy boundary is **local-only data**: IFC contents and model-derived data must not be transmitted off the user's device. It is not a persistence rule — local storage of model data is permitted; the application simply makes no transmission of it. See [ADR-0005](architecture/adr/0005-local-only-data-boundary.md).
 
 ## Technology Stack
 
@@ -93,13 +93,16 @@ Prefer injected services, typed callbacks, and narrow commands/read-only state v
 
 ## Settings and Storage
 
-- Use `localStorage` for small, versioned viewer preferences. `sessionStorage` is permitted for tab-scoped settings if needed.
-- Namespace storage keys to this application because GitHub Pages projects on the same origin share Web Storage. Isolate non-sensitive review preferences by deployment subpath; this is not a security boundary.
-- Do not persist IFC binaries, geometry, model properties, quantities, filenames, local paths, file handles, or project records in application-managed storage. Phase 1C estimate data (CBS, rules, rates, workbooks) leaves the app only as user-initiated local file downloads and re-enters only through user-selected file imports; there is no upload and no app persistence.
-- Do not introduce IndexedDB, OPFS, filesystem-backed persistence, or application-managed Cache Storage. Ordinary browser HTTP caching of static assets is separate from application data storage.
-- Treat storage as optional: denied access, corrupt values, incompatible versions, or quota errors must fall back to safe in-memory defaults without preventing viewing.
+The boundary is **local-only data, not transmission**: see [ADR-0005](architecture/adr/0005-local-only-data-boundary.md).
 
-Web Storage is suitable for small preferences, not model storage. Browser memory and GPU limits will bound the size and number of models that can be viewed together.
+- **Never transmit** IFC contents or model-derived data (geometry, properties, quantities, estimates, filenames, paths) off the user's device. No upload, no backend, no external API, no third-party runtime CDN, no analytics, and no telemetry on model content.
+- **Local persistence is permitted.** The application may store any data — including model geometry, properties, quantities, and Phase 1C estimate data (CBS, rules, rates, workbooks) — using `localStorage`, `sessionStorage`, IndexedDB, OPFS, or application-managed Cache Storage, provided the data never leaves the device. This is a permission, not a requirement.
+- **Current practice is memory-only.** No local persistence of model or estimate data is implemented yet; models require reopening after a reload, and Phase 1C estimate data moves only through user-initiated local file downloads/imports. Any caching or session-recovery feature must be deliberately specified, tested, and disclosed to users before it ships.
+- Namespace local keys/stores to this application; GitHub Pages projects on the same origin share Web Storage, so isolation by deployment subpath is for review convenience, not a security boundary.
+- Treat storage as optional: denied access, corrupt values, incompatible versions, or quota errors must fall back to safe in-memory defaults without preventing viewing.
+- Shared-device at-rest data is out of scope: the boundary guards transmission, not another user of the same device reading locally cached data.
+
+Browser memory and GPU limits will bound the size and number of models that can be viewed together.
 
 ## GitHub Pages Deployment
 

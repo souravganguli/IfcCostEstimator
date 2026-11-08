@@ -18,12 +18,13 @@ Local branch: `dev`. Nothing was pushed or deployed.
 | Model filtering | [model-filtering.md](feature/model-filtering.md) | `c2a6609` | Research, requirements, product screenshots, video frames, and transcript. Current local UI does not yet cover all specified behavior. |
 | Model hierarchy | [model-hierarchy.md](feature/model-hierarchy.md) | `3fe5bd2` | Research and evidence committed. Duplicate model-name disambiguation and keyboard-focus action reveal remain unverified; one earlier hierarchy E2E timed out before loading a model. |
 | Model measurement | [model-measurement.md](feature/model-measurement.md) | `69cc957` | Research, videos, transcripts, captures, wireframe, and requirements committed. User decision: models with missing or unsupported length units are not measurable. Only the pure distance helper has focused unit-test evidence; viewer interaction remains unverified. |
+| Section clipping | [section-clipping.md](feature/section-clipping.md) | `52593bc` | Research, requirements, Solibri video frames/transcript, and capture script committed. No clipping behavior or cap-generation acceptance tests exist yet. |
 
 Documentation structure and relative links were checked for these studies; model-search video frames were additionally checked for nonblank pixels, and model-filtering images/transcript timestamps were validated. These are documentation checks, not feature acceptance or phase closure.
 
-## Current Work: Section Clipping
+## Current Work: Viewer Navigation
 
-[section-clipping.md](feature/section-clipping.md) is the next capability in Phase 1 order. Its existing document is a requirements draft, and `src/features/section-clipping/` contains an initial UI slice; no feature-specific research assets are present yet. Research the approved single adjustable plane, cap-face behavior, clip-aware picking, resource cleanup, and limitations for open/non-manifold geometry without changing the agreed scope. Preserve the plan's separation between clipping and generated plan/section drawings.
+[viewer-navigation.md](feature/viewer-navigation.md) is the next capability in Phase 1 order. Start from its existing specification, inspect current controls and tests, then research comparable navigation tools while preserving the approved camera/view conventions and local-only boundaries.
 
 ## Next Steps
 

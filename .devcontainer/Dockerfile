@@ -18,9 +18,14 @@ RUN set -eux; \
         echo "cafile=/etc/ssl/certs/ca-certificates.crt" >> /etc/npmrc; \
     fi; \
     rm -rf /tmp/ca
+# UV_NATIVE_TLS makes uv use the system trust store (which holds the Zscaler
+# CA when present) instead of its bundled roots; without it uv's Python and
+# package downloads fail behind the proxy.
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
-    GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt
+    GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    UV_NATIVE_TLS=1
 
 # --- System packages: ffmpeg (media processing) ---
 RUN set -eux; \
@@ -37,10 +42,16 @@ RUN set -eux; \
 
 # --- Python virtual environment with required packages ---
 # Created at /opt/venv and owned by `node` so the dev user can modify it.
-ENV VIRTUAL_ENV=/opt/venv
+# The uv-managed interpreter goes to /opt/uv-python (world-readable); the
+# default /root/.local/share/uv is unreadable by `node`, which breaks the venv.
+# yt-dlp is used with ffmpeg by the capture-feature-media skill; pillow checks
+# captured screenshots/stills (size, nonblank pixels).
+ENV VIRTUAL_ENV=/opt/venv \
+    UV_PYTHON_INSTALL_DIR=/opt/uv-python
 RUN set -eux; \
     uv venv "$VIRTUAL_ENV" --python 3.12; \
-    VIRTUAL_ENV="$VIRTUAL_ENV" uv pip install pandas; \
+    VIRTUAL_ENV="$VIRTUAL_ENV" uv pip install pandas yt-dlp pillow; \
+    chmod -R a+rX "$UV_PYTHON_INSTALL_DIR"; \
     chown -R node:node "$VIRTUAL_ENV"
 # Put the venv first on PATH so `python` and installed tools resolve to it.
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"

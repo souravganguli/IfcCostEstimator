@@ -43,6 +43,52 @@ a multiple-choice questionnaire to the user (see phase 8).
   may emit it as a table.
 - **Follow the discovery process strictly and in order.** Do not skip a phase.
   If a phase yields nothing, record that explicitly and continue.
+- **One feature per turn.** When asked to research several features, finish,
+  validate, and commit one feature, then stop and report; continue with the next
+  feature in a fresh turn. Keep terminal output small (`head`, `cut -c1-200`,
+  targeted `grep`) and view only the images you need to cite. If a subagent
+  returns no result, inspect the files and `git status` before continuing; never
+  assume its work was done.
+
+## Environment notes (verified in this dev container)
+
+- **Video:** use `/opt/venv/bin/yt-dlp` as the primary path (the VS Code
+  built-in browser's embedded YouTube player fails with Error 153). Find
+  candidates with `yt-dlp --print "%(id)s|%(title)s|%(channel)s|%(duration_string)s" "ytsearch5:<query>"`;
+  download with `-f "bv*[height<=720]+ba/b[height<=720]" --merge-output-format mp4 --write-auto-subs --sub-langs en --sub-format vtt`.
+  An "impersonation" warning is harmless. Extract stills with `ffmpeg` at
+  transcript-identified timestamps, then delete the full video; keep the `.vtt`
+  transcript, stills, and the capture script in the assets folder.
+- **Screenshots of help pages:** use Chrome via Playwright with an
+  `ignoreHTTPSErrors` context (Zscaler intercepts TLS). See
+  `docs/feature/model-hierarchy/assets/_capture.mjs`.
+- **Image checks:** Pillow is installed in `/opt/venv`. Verify an image is
+  readable and not blank, e.g.
+  `python -c "from PIL import Image,ImageStat;im=Image.open('f.png').convert('L');print(im.size,ImageStat.Stat(im).stddev[0])"`
+  (stddev near 0 means blank). A Pillow decode error on a file `file` reports
+  as PNG indicates a corrupt image: recapture it. `ffmpeg ... signalstats`
+  (YMIN vs YMAX) is a fallback.
+- `yt-dlp --list-subs` can misreport captions; attempt the download and inspect
+  the VTT before concluding captions are unavailable.
+
+## Evidence and commit discipline
+
+- Use [`docs/feature/model-hierarchy.md`](../../docs/feature/model-hierarchy.md)
+  as the format reference: sources as `- **[S#]** Title — URL. What it showed
+  (dates, authors, timestamps)`, inline `[S#]` citations, `[A1]` for approved app
+  decisions or local implementation, a final capture-commands source entry, and
+  a trailing `# Research` table mapping each image to the finding it supports.
+- Every inline `[S#]` must have a matching source entry, and every source must
+  have actually loaded; do not cite pages that failed to load.
+- View each still and read the transcript around its timestamp before
+  describing what a video shows. Quote captions with timestamps.
+- Check an acceptance criterion only when a test or E2E run proves it; annotate
+  partial or code-reasoning evidence, and leave unverified criteria unchecked.
+- Before committing, remove duplicated or stale prose and resolve only the open
+  questions already answered by existing requirements or decisions.
+- Stage only `docs/feature/<slug>.md` and `docs/feature/<slug>/assets/`; never
+  `git add -A`. Review `git diff --cached --stat`, commit
+  `docs: research and specify <feature>`, and never push.
 
 ## Discovery process (strict, in order)
 
@@ -219,7 +265,9 @@ Who uses this and in what context.
 - ...
 
 ## Sources
-1. Product / page title — URL (what it showed; video timestamp if relevant)
+- **[S1]** Product / page title — URL. What it showed (date, author, video timestamp if relevant).
+- **[A1]** Approved app decisions or local implementation (not external evidence).
+- **[S#]** Capture commands — scripts in `<slug>/assets/`; note the full video was deleted after extraction.
 
 ---
 

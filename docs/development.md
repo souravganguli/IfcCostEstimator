@@ -16,9 +16,9 @@ Prerequisites:
 
 For the best file-system performance, clone the repository **inside the WSL file system** (for example `\\wsl$\\Ubuntu\\home\\<user>\\IfcCostEstimator`), not on a Windows drive mounted at `/mnt/c`.
 
-Open the folder, then run **Dev Containers: Reopen in Container**. On first create, `postCreateCommand` runs `npm ci` and `npx playwright install --with-deps chrome`, so unit and browser tests work without extra setup. The container is based on Node 22 and forwards the Vite dev port `5173` (auto-opens a preview) plus the Playwright test ports `5174` (dev) and `4174` (preview).
+Open the folder, then run **Dev Containers: Reopen in Container**. On first create, `postCreateCommand` runs `npm ci` and `npx playwright install --with-deps chrome`, so unit and browser tests work without extra setup. The image also provides `ffmpeg` and a Python 3.12 virtual environment at `/opt/venv` (first on `PATH`, managed with `uv`) containing `pandas`, `yt-dlp`, and `pillow` for research and media-capture scripts; `postCreateCommand` prints their versions as a smoke check. The container is based on Node 22 and forwards the Vite dev port `5173` (auto-opens a preview) plus the Playwright test ports `5174` (dev) and `4174` (preview).
 
-Corporate TLS proxy (optional): if you are behind a Zscaler-style proxy, place its CA at `.devcontainer/zscaler.crt`. That file is **local-only and git-ignored** — it is never committed to this public repo. When present the container build trusts it so `npm ci` and the Playwright browser download succeed; when absent the build still works for contributors who are not behind such a proxy. See [`.devcontainer/Dockerfile`](../.devcontainer/Dockerfile).
+Corporate TLS proxy (optional): if you are behind a Zscaler-style proxy, place its CA at `.devcontainer/zscaler.crt`. That file is **local-only and git-ignored** — it is never committed to this public repo. When present the container build adds it to the system trust store, and `UV_NATIVE_TLS=1` makes `uv` use that store, so `npm ci`, the Playwright browser download, and Python/package downloads succeed; when absent the build still works for contributors who are not behind such a proxy. See [`.devcontainer/Dockerfile`](../.devcontainer/Dockerfile).
 
 Inside the container the standard scripts apply unchanged:
 

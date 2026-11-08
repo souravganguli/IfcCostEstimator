@@ -1,0 +1,128 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:02.080 --> 00:00:04.150 align:start position:0%
+ 
+Let's<00:00:02.480><c> create</c><00:00:02.639><c> a</c><00:00:02.879><c> smart</c><00:00:03.200><c> view</c><00:00:03.439><c> to</c><00:00:03.679><c> visualize</c>
+
+00:00:04.150 --> 00:00:04.160 align:start position:0%
+Let's create a smart view to visualize
+ 
+
+00:00:04.160 --> 00:00:05.670 align:start position:0%
+Let's create a smart view to visualize
+the<00:00:04.400><c> different</c><00:00:04.640><c> materials</c><00:00:05.200><c> used</c><00:00:05.359><c> in</c><00:00:05.600><c> the</c>
+
+00:00:05.670 --> 00:00:05.680 align:start position:0%
+the different materials used in the
+ 
+
+00:00:05.680 --> 00:00:08.629 align:start position:0%
+the different materials used in the
+model.
+
+00:00:08.629 --> 00:00:08.639 align:start position:0%
+model.
+ 
+
+00:00:08.639 --> 00:00:10.230 align:start position:0%
+model.
+Start<00:00:08.880><c> by</c><00:00:09.120><c> adding</c><00:00:09.440><c> a</c><00:00:09.599><c> rule</c><00:00:09.840><c> where</c><00:00:10.080><c> the</c>
+
+00:00:10.230 --> 00:00:10.240 align:start position:0%
+Start by adding a rule where the
+ 
+
+00:00:10.240 --> 00:00:12.870 align:start position:0%
+Start by adding a rule where the
+material<00:00:10.639><c> name</c><00:00:10.880><c> is</c><00:00:11.120><c> defined.</c><00:00:12.080><c> This</c><00:00:12.320><c> adds</c><00:00:12.639><c> all</c>
+
+00:00:12.870 --> 00:00:12.880 align:start position:0%
+material name is defined. This adds all
+ 
+
+00:00:12.880 --> 00:00:14.390 align:start position:0%
+material name is defined. This adds all
+elements<00:00:13.200><c> that</c><00:00:13.440><c> have</c><00:00:13.519><c> a</c><00:00:13.759><c> material</c><00:00:14.160><c> name</c>
+
+00:00:14.390 --> 00:00:14.400 align:start position:0%
+elements that have a material name
+ 
+
+00:00:14.400 --> 00:00:19.510 align:start position:0%
+elements that have a material name
+assigned.
+
+00:00:19.510 --> 00:00:19.520 align:start position:0%
+ 
+ 
+
+00:00:19.520 --> 00:00:21.269 align:start position:0%
+ 
+Duplicate<00:00:20.080><c> this</c><00:00:20.320><c> rule</c><00:00:20.640><c> and</c><00:00:20.880><c> change</c><00:00:21.119><c> the</c>
+
+00:00:21.269 --> 00:00:21.279 align:start position:0%
+Duplicate this rule and change the
+ 
+
+00:00:21.279 --> 00:00:24.230 align:start position:0%
+Duplicate this rule and change the
+action<00:00:21.600><c> to</c><00:00:21.840><c> auto</c><00:00:22.160><c> color.</c><00:00:23.039><c> BIM</c><00:00:23.439><c> Collab</c><00:00:23.840><c> Zoom</c>
+
+00:00:24.230 --> 00:00:24.240 align:start position:0%
+action to auto color. BIM Collab Zoom
+ 
+
+00:00:24.240 --> 00:00:26.310 align:start position:0%
+action to auto color. BIM Collab Zoom
+will<00:00:24.480><c> automatically</c><00:00:25.119><c> assign</c><00:00:25.439><c> a</c><00:00:25.680><c> unique</c><00:00:26.000><c> color</c>
+
+00:00:26.310 --> 00:00:26.320 align:start position:0%
+will automatically assign a unique color
+ 
+
+00:00:26.320 --> 00:00:29.109 align:start position:0%
+will automatically assign a unique color
+to<00:00:26.560><c> each</c><00:00:26.800><c> material,</c><00:00:28.000><c> making</c><00:00:28.320><c> it</c><00:00:28.480><c> easy</c><00:00:28.720><c> to</c><00:00:28.880><c> see</c>
+
+00:00:29.109 --> 00:00:29.119 align:start position:0%
+to each material, making it easy to see
+ 
+
+00:00:29.119 --> 00:00:31.830 align:start position:0%
+to each material, making it easy to see
+which<00:00:29.359><c> materials</c><00:00:29.840><c> are</c><00:00:30.000><c> used</c><00:00:30.240><c> where</c><00:00:31.439><c> when</c><00:00:31.679><c> you</c>
+
+00:00:31.830 --> 00:00:31.840 align:start position:0%
+which materials are used where when you
+ 
+
+00:00:31.840 --> 00:00:33.750 align:start position:0%
+which materials are used where when you
+activate<00:00:32.239><c> the</c><00:00:32.399><c> smart</c><00:00:32.719><c> view.</c><00:00:33.040><c> Also,</c><00:00:33.360><c> check</c><00:00:33.520><c> the</c>
+
+00:00:33.750 --> 00:00:33.760 align:start position:0%
+activate the smart view. Also, check the
+ 
+
+00:00:33.760 --> 00:00:36.229 align:start position:0%
+activate the smart view. Also, check the
+autocolor<00:00:34.320><c> property</c><00:00:34.719><c> listing</c><00:00:35.040><c> on</c><00:00:35.200><c> the</c><00:00:35.280><c> left.</c>
+
+00:00:36.229 --> 00:00:36.239 align:start position:0%
+autocolor property listing on the left.
+ 
+
+00:00:36.239 --> 00:00:37.910 align:start position:0%
+autocolor property listing on the left.
+It<00:00:36.399><c> gives</c><00:00:36.640><c> you</c><00:00:36.719><c> an</c><00:00:36.960><c> overview</c><00:00:37.360><c> of</c><00:00:37.520><c> all</c><00:00:37.680><c> the</c>
+
+00:00:37.910 --> 00:00:37.920 align:start position:0%
+It gives you an overview of all the
+ 
+
+00:00:37.920 --> 00:00:42.200 align:start position:0%
+It gives you an overview of all the
+materials<00:00:38.399><c> and</c><00:00:38.559><c> their</c><00:00:38.800><c> assigned</c><00:00:39.200><c> colors.</c>
+

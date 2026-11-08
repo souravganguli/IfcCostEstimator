@@ -1,0 +1,600 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.240 --> 00:00:02.990 align:start position:0%
+ 
+hello<00:00:00.599><c> and</c><00:00:00.799><c> welcome</c><00:00:01.079><c> to</c><00:00:01.280><c> today's</c><00:00:01.800><c> video</c><00:00:02.800><c> in</c>
+
+00:00:02.990 --> 00:00:03.000 align:start position:0%
+hello and welcome to today's video in
+ 
+
+00:00:03.000 --> 00:00:05.070 align:start position:0%
+hello and welcome to today's video in
+this<00:00:03.199><c> tutorial</c><00:00:04.000><c> we</c><00:00:04.120><c> will</c><00:00:04.319><c> learn</c><00:00:04.720><c> together</c><00:00:05.000><c> how</c>
+
+00:00:05.070 --> 00:00:05.080 align:start position:0%
+this tutorial we will learn together how
+ 
+
+00:00:05.080 --> 00:00:07.830 align:start position:0%
+this tutorial we will learn together how
+to<00:00:05.200><c> use</c><00:00:05.440><c> view</c><00:00:05.720><c> range</c><00:00:06.040><c> in</c><00:00:06.200><c> Revit</c><00:00:06.759><c> so</c><00:00:06.919><c> let's</c><00:00:07.200><c> get</c>
+
+00:00:07.830 --> 00:00:07.840 align:start position:0%
+to use view range in Revit so let's get
+ 
+
+00:00:07.840 --> 00:00:10.509 align:start position:0%
+to use view range in Revit so let's get
+started<00:00:08.840><c> Revit</c><00:00:09.200><c> view</c><00:00:09.480><c> range</c><00:00:09.840><c> is</c><00:00:09.960><c> a</c><00:00:10.080><c> tool</c><00:00:10.400><c> that</c>
+
+00:00:10.509 --> 00:00:10.519 align:start position:0%
+started Revit view range is a tool that
+ 
+
+00:00:10.519 --> 00:00:12.190 align:start position:0%
+started Revit view range is a tool that
+allows<00:00:10.800><c> you</c><00:00:10.920><c> to</c><00:00:11.160><c> specify</c><00:00:11.639><c> the</c><00:00:11.799><c> height</c><00:00:12.000><c> and</c>
+
+00:00:12.190 --> 00:00:12.200 align:start position:0%
+allows you to specify the height and
+ 
+
+00:00:12.200 --> 00:00:14.390 align:start position:0%
+allows you to specify the height and
+depth<00:00:12.440><c> of</c><00:00:12.559><c> the</c><00:00:12.719><c> visible</c><00:00:13.080><c> portion</c><00:00:13.360><c> of</c><00:00:13.480><c> a</c><00:00:13.639><c> view</c>
+
+00:00:14.390 --> 00:00:14.400 align:start position:0%
+depth of the visible portion of a view
+ 
+
+00:00:14.400 --> 00:00:16.029 align:start position:0%
+depth of the visible portion of a view
+as<00:00:14.519><c> well</c><00:00:14.719><c> as</c><00:00:14.879><c> how</c><00:00:15.080><c> elements</c><00:00:15.519><c> beyond</c><00:00:15.839><c> that</c>
+
+00:00:16.029 --> 00:00:16.039 align:start position:0%
+as well as how elements beyond that
+ 
+
+00:00:16.039 --> 00:00:19.150 align:start position:0%
+as well as how elements beyond that
+range<00:00:16.320><c> are</c><00:00:17.000><c> displayed</c><00:00:18.000><c> to</c><00:00:18.199><c> open</c><00:00:18.520><c> view</c><00:00:18.840><c> range</c>
+
+00:00:19.150 --> 00:00:19.160 align:start position:0%
+range are displayed to open view range
+ 
+
+00:00:19.160 --> 00:00:21.310 align:start position:0%
+range are displayed to open view range
+settings<00:00:19.800><c> select</c><00:00:20.160><c> the</c><00:00:20.279><c> floor</c><00:00:20.600><c> plan</c><00:00:20.960><c> and</c><00:00:21.119><c> click</c>
+
+00:00:21.310 --> 00:00:21.320 align:start position:0%
+settings select the floor plan and click
+ 
+
+00:00:21.320 --> 00:00:22.710 align:start position:0%
+settings select the floor plan and click
+on<00:00:21.439><c> The</c><00:00:21.519><c> View</c><00:00:21.760><c> range</c><00:00:22.119><c> button</c><00:00:22.400><c> on</c><00:00:22.560><c> the</c>
+
+00:00:22.710 --> 00:00:22.720 align:start position:0%
+on The View range button on the
+ 
+
+00:00:22.720 --> 00:00:25.589 align:start position:0%
+on The View range button on the
+properties<00:00:23.560><c> panel</c><00:00:24.560><c> remember</c><00:00:25.000><c> that</c><00:00:25.119><c> if</c><00:00:25.240><c> a</c><00:00:25.359><c> view</c>
+
+00:00:25.589 --> 00:00:25.599 align:start position:0%
+properties panel remember that if a view
+ 
+
+00:00:25.599 --> 00:00:27.790 align:start position:0%
+properties panel remember that if a view
+template<00:00:26.000><c> is</c><00:00:26.119><c> applied</c><00:00:26.800><c> view</c><00:00:27.039><c> range</c><00:00:27.400><c> can</c><00:00:27.560><c> also</c>
+
+00:00:27.790 --> 00:00:27.800 align:start position:0%
+template is applied view range can also
+ 
+
+00:00:27.800 --> 00:00:30.080 align:start position:0%
+template is applied view range can also
+be<00:00:27.960><c> set</c><00:00:28.160><c> up</c><00:00:28.320><c> on</c><00:00:28.480><c> view</c><00:00:28.960><c> templates</c>
+
+00:00:30.080 --> 00:00:30.090 align:start position:0%
+be set up on view templates
+ 
+
+00:00:30.090 --> 00:00:40.830 align:start position:0%
+be set up on view templates
+[Music]
+
+00:00:40.830 --> 00:00:40.840 align:start position:0%
+[Music]
+ 
+
+00:00:40.840 --> 00:00:42.790 align:start position:0%
+[Music]
+The<00:00:40.960><c> View</c><00:00:41.239><c> range</c><00:00:41.559><c> settings</c><00:00:41.960><c> are</c><00:00:42.160><c> defined</c><00:00:42.600><c> by</c>
+
+00:00:42.790 --> 00:00:42.800 align:start position:0%
+The View range settings are defined by
+ 
+
+00:00:42.800 --> 00:00:45.350 align:start position:0%
+The View range settings are defined by
+three<00:00:43.079><c> horizontal</c><00:00:43.640><c> planes</c><00:00:44.360><c> the</c><00:00:44.520><c> top</c><00:00:44.800><c> plane</c>
+
+00:00:45.350 --> 00:00:45.360 align:start position:0%
+three horizontal planes the top plane
+ 
+
+00:00:45.360 --> 00:00:48.350 align:start position:0%
+three horizontal planes the top plane
+the<00:00:45.520><c> cut</c><00:00:45.719><c> plane</c><00:00:46.280><c> and</c><00:00:46.399><c> the</c><00:00:46.520><c> bottom</c><00:00:47.239><c> plane</c><00:00:48.239><c> there</c>
+
+00:00:48.350 --> 00:00:48.360 align:start position:0%
+the cut plane and the bottom plane there
+ 
+
+00:00:48.360 --> 00:00:50.189 align:start position:0%
+the cut plane and the bottom plane there
+is<00:00:48.600><c> also</c><00:00:48.840><c> an</c><00:00:49.039><c> additional</c><00:00:49.559><c> property</c><00:00:49.960><c> called</c>
+
+00:00:50.189 --> 00:00:50.199 align:start position:0%
+is also an additional property called
+ 
+
+00:00:50.199 --> 00:00:53.229 align:start position:0%
+is also an additional property called
+view<00:00:50.559><c> depth</c><00:00:51.559><c> in</c><00:00:51.760><c> this</c><00:00:52.000><c> dialogue</c><00:00:52.520><c> box</c><00:00:53.000><c> you</c><00:00:53.079><c> can</c>
+
+00:00:53.229 --> 00:00:53.239 align:start position:0%
+view depth in this dialogue box you can
+ 
+
+00:00:53.239 --> 00:00:56.349 align:start position:0%
+view depth in this dialogue box you can
+set<00:00:53.480><c> the</c><00:00:53.600><c> height</c><00:00:53.800><c> of</c><00:00:54.000><c> each</c><00:00:54.640><c> plane</c><00:00:55.640><c> here's</c><00:00:55.879><c> the</c>
+
+00:00:56.349 --> 00:00:56.359 align:start position:0%
+set the height of each plane here's the
+ 
+
+00:00:56.359 --> 00:00:58.630 align:start position:0%
+set the height of each plane here's the
+explanation<00:00:57.359><c> cut</c><00:00:57.600><c> plane</c><00:00:57.879><c> and</c><00:00:58.079><c> bottom</c><00:00:58.399><c> are</c><00:00:58.519><c> the</c>
+
+00:00:58.630 --> 00:00:58.640 align:start position:0%
+explanation cut plane and bottom are the
+ 
+
+00:00:58.640 --> 00:01:00.750 align:start position:0%
+explanation cut plane and bottom are the
+main<00:00:58.879><c> planes</c><00:00:59.280><c> to</c><00:00:59.440><c> define</c><00:00:59.760><c> the</c><00:00:59.920><c> the</c><00:01:00.039><c> visible</c>
+
+00:01:00.750 --> 00:01:00.760 align:start position:0%
+main planes to define the the visible
+ 
+
+00:01:00.760 --> 00:01:03.349 align:start position:0%
+main planes to define the the visible
+scope<00:01:01.760><c> the</c><00:01:01.920><c> cut</c><00:01:02.160><c> plane</c><00:01:02.480><c> determines</c><00:01:02.960><c> the</c><00:01:03.120><c> depth</c>
+
+00:01:03.349 --> 00:01:03.359 align:start position:0%
+scope the cut plane determines the depth
+ 
+
+00:01:03.359 --> 00:01:05.189 align:start position:0%
+scope the cut plane determines the depth
+range<00:01:03.640><c> of</c><00:01:03.760><c> the</c><00:01:03.879><c> view</c><00:01:04.199><c> and</c><00:01:04.400><c> controls</c><00:01:04.920><c> which</c>
+
+00:01:05.189 --> 00:01:05.199 align:start position:0%
+range of the view and controls which
+ 
+
+00:01:05.199 --> 00:01:08.420 align:start position:0%
+range of the view and controls which
+objects<00:01:05.519><c> are</c><00:01:05.720><c> displayed</c><00:01:06.159><c> as</c><00:01:06.360><c> cut</c><00:01:06.600><c> or</c>
+
+00:01:08.420 --> 00:01:08.430 align:start position:0%
+objects are displayed as cut or
+ 
+
+00:01:08.430 --> 00:01:10.590 align:start position:0%
+objects are displayed as cut or
+[Music]
+
+00:01:10.590 --> 00:01:10.600 align:start position:0%
+[Music]
+ 
+
+00:01:10.600 --> 00:01:12.910 align:start position:0%
+[Music]
+sectioned<00:01:11.600><c> if</c><00:01:11.759><c> an</c><00:01:12.000><c> object</c><00:01:12.320><c> is</c><00:01:12.520><c> higher</c><00:01:12.799><c> than</c>
+
+00:01:12.910 --> 00:01:12.920 align:start position:0%
+sectioned if an object is higher than
+ 
+
+00:01:12.920 --> 00:01:15.950 align:start position:0%
+sectioned if an object is higher than
+the<00:01:13.080><c> cut</c><00:01:13.280><c> plane</c><00:01:13.720><c> it</c><00:01:13.840><c> will</c><00:01:14.000><c> not</c><00:01:14.200><c> be</c>
+
+00:01:15.950 --> 00:01:15.960 align:start position:0%
+the cut plane it will not be
+ 
+
+00:01:15.960 --> 00:01:18.310 align:start position:0%
+the cut plane it will not be
+visible<00:01:16.960><c> objects</c><00:01:17.360><c> that</c><00:01:17.520><c> intersect</c><00:01:18.040><c> with</c><00:01:18.159><c> the</c>
+
+00:01:18.310 --> 00:01:18.320 align:start position:0%
+visible objects that intersect with the
+ 
+
+00:01:18.320 --> 00:01:20.149 align:start position:0%
+visible objects that intersect with the
+cut<00:01:18.520><c> plane</c><00:01:18.759><c> are</c><00:01:18.960><c> displayed</c><00:01:19.439><c> as</c><00:01:19.600><c> sectioned</c><00:01:20.000><c> or</c>
+
+00:01:20.149 --> 00:01:20.159 align:start position:0%
+cut plane are displayed as sectioned or
+ 
+
+00:01:20.159 --> 00:01:23.120 align:start position:0%
+cut plane are displayed as sectioned or
+cut<00:01:20.400><c> in</c><00:01:20.520><c> the</c>
+
+00:01:23.120 --> 00:01:23.130 align:start position:0%
+ 
+ 
+
+00:01:23.130 --> 00:01:25.230 align:start position:0%
+ 
+[Music]
+
+00:01:25.230 --> 00:01:25.240 align:start position:0%
+[Music]
+ 
+
+00:01:25.240 --> 00:01:27.830 align:start position:0%
+[Music]
+view<00:01:26.240><c> if</c><00:01:26.439><c> the</c><00:01:26.640><c> object</c><00:01:27.000><c> appears</c><00:01:27.400><c> between</c><00:01:27.680><c> the</c>
+
+00:01:27.830 --> 00:01:27.840 align:start position:0%
+view if the object appears between the
+ 
+
+00:01:27.840 --> 00:01:29.390 align:start position:0%
+view if the object appears between the
+cut<00:01:28.040><c> plane</c><00:01:28.320><c> and</c><00:01:28.520><c> bottom</c><00:01:28.880><c> but</c><00:01:29.040><c> does</c><00:01:29.200><c> not</c>
+
+00:01:29.390 --> 00:01:29.400 align:start position:0%
+cut plane and bottom but does not
+ 
+
+00:01:29.400 --> 00:01:31.710 align:start position:0%
+cut plane and bottom but does not
+intersect<00:01:29.960><c> with</c><00:01:30.079><c> the</c><00:01:30.200><c> cut</c><00:01:30.400><c> plane</c><00:01:31.079><c> it</c><00:01:31.240><c> displays</c>
+
+00:01:31.710 --> 00:01:31.720 align:start position:0%
+intersect with the cut plane it displays
+ 
+
+00:01:31.720 --> 00:01:37.950 align:start position:0%
+intersect with the cut plane it displays
+as<00:01:31.880><c> a</c><00:01:32.000><c> Thinline</c><00:01:32.600><c> object</c><00:01:33.040><c> without</c>
+
+00:01:37.950 --> 00:01:37.960 align:start position:0%
+ 
+ 
+
+00:01:37.960 --> 00:01:40.030 align:start position:0%
+ 
+sectioning<00:01:38.960><c> objects</c><00:01:39.360><c> that</c><00:01:39.479><c> are</c><00:01:39.640><c> below</c><00:01:39.920><c> the</c>
+
+00:01:40.030 --> 00:01:40.040 align:start position:0%
+sectioning objects that are below the
+ 
+
+00:01:40.040 --> 00:01:42.950 align:start position:0%
+sectioning objects that are below the
+bottom<00:01:40.360><c> plane</c><00:01:40.600><c> are</c><00:01:40.799><c> not</c><00:01:41.040><c> visible</c><00:01:41.399><c> in</c><00:01:41.520><c> the</c><00:01:41.960><c> view</c>
+
+00:01:42.950 --> 00:01:42.960 align:start position:0%
+bottom plane are not visible in the view
+ 
+
+00:01:42.960 --> 00:01:44.789 align:start position:0%
+bottom plane are not visible in the view
+view<00:01:43.280><c> depth</c><00:01:43.600><c> gives</c><00:01:43.840><c> the</c><00:01:44.000><c> additional</c><00:01:44.399><c> range</c>
+
+00:01:44.789 --> 00:01:44.799 align:start position:0%
+view depth gives the additional range
+ 
+
+00:01:44.799 --> 00:01:48.749 align:start position:0%
+view depth gives the additional range
+below<00:01:45.119><c> the</c><00:01:45.240><c> bottom</c>
+
+00:01:48.749 --> 00:01:48.759 align:start position:0%
+ 
+ 
+
+00:01:48.759 --> 00:01:50.990 align:start position:0%
+ 
+plane<00:01:49.759><c> objects</c><00:01:50.159><c> that</c><00:01:50.320><c> appear</c><00:01:50.600><c> below</c><00:01:50.880><c> the</c>
+
+00:01:50.990 --> 00:01:51.000 align:start position:0%
+plane objects that appear below the
+ 
+
+00:01:51.000 --> 00:01:52.870 align:start position:0%
+plane objects that appear below the
+bottom<00:01:51.320><c> plane</c><00:01:51.719><c> but</c><00:01:51.880><c> still</c><00:01:52.119><c> in</c><00:01:52.240><c> the</c><00:01:52.360><c> view</c><00:01:52.640><c> depth</c>
+
+00:01:52.870 --> 00:01:52.880 align:start position:0%
+bottom plane but still in the view depth
+ 
+
+00:01:52.880 --> 00:01:55.789 align:start position:0%
+bottom plane but still in the view depth
+zone<00:01:53.119><c> are</c><00:01:53.759><c> visible</c><00:01:54.759><c> furthermore</c><00:01:55.520><c> you</c><00:01:55.600><c> can</c>
+
+00:01:55.789 --> 00:01:55.799 align:start position:0%
+zone are visible furthermore you can
+ 
+
+00:01:55.799 --> 00:01:57.830 align:start position:0%
+zone are visible furthermore you can
+adjust<00:01:56.200><c> line</c><00:01:56.479><c> styles</c><00:01:56.920><c> for</c><00:01:57.240><c> objects</c><00:01:57.600><c> that</c><00:01:57.719><c> are</c>
+
+00:01:57.830 --> 00:01:57.840 align:start position:0%
+adjust line styles for objects that are
+ 
+
+00:01:57.840 --> 00:02:00.870 align:start position:0%
+adjust line styles for objects that are
+below<00:01:58.159><c> the</c><00:01:58.280><c> bottom</c><00:01:58.840><c> plane</c><00:02:00.000><c> go</c><00:02:00.200><c> to</c><00:02:00.320><c> the</c><00:02:00.439><c> manage</c>
+
+00:02:00.870 --> 00:02:00.880 align:start position:0%
+below the bottom plane go to the manage
+ 
+
+00:02:00.880 --> 00:02:02.950 align:start position:0%
+below the bottom plane go to the manage
+tab<00:02:01.399><c> click</c><00:02:01.600><c> on</c><00:02:01.799><c> additional</c><00:02:02.240><c> settings</c><00:02:02.799><c> and</c>
+
+00:02:02.950 --> 00:02:02.960 align:start position:0%
+tab click on additional settings and
+ 
+
+00:02:02.960 --> 00:02:04.389 align:start position:0%
+tab click on additional settings and
+select<00:02:03.360><c> line</c>
+
+00:02:04.389 --> 00:02:04.399 align:start position:0%
+select line
+ 
+
+00:02:04.399 --> 00:02:11.150 align:start position:0%
+select line
+Styles<00:02:05.399><c> then</c><00:02:05.600><c> change</c><00:02:06.039><c> the</c><00:02:06.200><c> Beyond</c><00:02:06.640><c> line</c>
+
+00:02:11.150 --> 00:02:11.160 align:start position:0%
+ 
+ 
+
+00:02:11.160 --> 00:02:14.270 align:start position:0%
+ 
+Styles<00:02:12.160><c> ceiling</c><00:02:12.640><c> plans</c><00:02:13.520><c> view</c><00:02:13.800><c> range</c><00:02:14.120><c> for</c>
+
+00:02:14.270 --> 00:02:14.280 align:start position:0%
+Styles ceiling plans view range for
+ 
+
+00:02:14.280 --> 00:02:16.309 align:start position:0%
+Styles ceiling plans view range for
+ceiling<00:02:14.640><c> plans</c><00:02:15.040><c> in</c><00:02:15.160><c> revvit</c><00:02:15.519><c> Works</c><00:02:15.879><c> similarly</c>
+
+00:02:16.309 --> 00:02:16.319 align:start position:0%
+ceiling plans in revvit Works similarly
+ 
+
+00:02:16.319 --> 00:02:18.589 align:start position:0%
+ceiling plans in revvit Works similarly
+to<00:02:16.440><c> floor</c><00:02:16.760><c> plans</c><00:02:17.200><c> but</c><00:02:17.319><c> with</c><00:02:17.400><c> a</c><00:02:17.519><c> few</c><00:02:17.800><c> key</c>
+
+00:02:18.589 --> 00:02:18.599 align:start position:0%
+to floor plans but with a few key
+ 
+
+00:02:18.599 --> 00:02:21.270 align:start position:0%
+to floor plans but with a few key
+differences<00:02:19.599><c> in</c><00:02:19.720><c> a</c><00:02:19.879><c> ceiling</c><00:02:20.319><c> plan</c><00:02:20.640><c> view</c><00:02:21.160><c> the</c>
+
+00:02:21.270 --> 00:02:21.280 align:start position:0%
+differences in a ceiling plan view the
+ 
+
+00:02:21.280 --> 00:02:22.869 align:start position:0%
+differences in a ceiling plan view the
+point<00:02:21.480><c> of</c><00:02:21.640><c> view</c><00:02:21.920><c> is</c><00:02:22.080><c> directed</c><00:02:22.480><c> up</c><00:02:22.640><c> to</c><00:02:22.800><c> the</c>
+
+00:02:22.869 --> 00:02:22.879 align:start position:0%
+point of view is directed up to the
+ 
+
+00:02:22.879 --> 00:02:25.110 align:start position:0%
+point of view is directed up to the
+ceiling<00:02:23.280><c> from</c><00:02:23.480><c> below</c><00:02:24.120><c> so</c><00:02:24.319><c> the</c><00:02:24.440><c> view</c><00:02:24.720><c> depth</c><00:02:24.959><c> is</c>
+
+00:02:25.110 --> 00:02:25.120 align:start position:0%
+ceiling from below so the view depth is
+ 
+
+00:02:25.120 --> 00:02:27.949 align:start position:0%
+ceiling from below so the view depth is
+above<00:02:25.400><c> the</c><00:02:25.560><c> top</c>
+
+00:02:27.949 --> 00:02:27.959 align:start position:0%
+ 
+ 
+
+00:02:27.959 --> 00:02:30.470 align:start position:0%
+ 
+plane<00:02:28.959><c> however</c><00:02:29.440><c> since</c><00:02:29.879><c> the</c><00:02:29.959><c> focus</c><00:02:30.239><c> of</c><00:02:30.360><c> the</c>
+
+00:02:30.470 --> 00:02:30.480 align:start position:0%
+plane however since the focus of the
+ 
+
+00:02:30.480 --> 00:02:32.430 align:start position:0%
+plane however since the focus of the
+view<00:02:30.760><c> is</c><00:02:30.879><c> on</c><00:02:31.000><c> the</c><00:02:31.120><c> ceiling</c><00:02:31.720><c> we</c><00:02:31.840><c> can</c><00:02:32.000><c> only</c><00:02:32.200><c> see</c>
+
+00:02:32.430 --> 00:02:32.440 align:start position:0%
+view is on the ceiling we can only see
+ 
+
+00:02:32.440 --> 00:02:33.750 align:start position:0%
+view is on the ceiling we can only see
+the<00:02:32.519><c> needed</c><00:02:32.879><c> equipment</c><00:02:33.280><c> or</c><00:02:33.440><c> lighting</c>
+
+00:02:33.750 --> 00:02:33.760 align:start position:0%
+the needed equipment or lighting
+ 
+
+00:02:33.760 --> 00:02:35.110 align:start position:0%
+the needed equipment or lighting
+fixtures<00:02:34.239><c> on</c><00:02:34.360><c> the</c>
+
+00:02:35.110 --> 00:02:35.120 align:start position:0%
+fixtures on the
+ 
+
+00:02:35.120 --> 00:02:38.150 align:start position:0%
+fixtures on the
+ceiling<00:02:36.120><c> plan</c><00:02:36.440><c> region</c><00:02:37.319><c> Revit</c><00:02:37.800><c> offers</c>
+
+00:02:38.150 --> 00:02:38.160 align:start position:0%
+ceiling plan region Revit offers
+ 
+
+00:02:38.160 --> 00:02:39.990 align:start position:0%
+ceiling plan region Revit offers
+features<00:02:38.599><c> for</c><00:02:38.760><c> setting</c><00:02:39.040><c> up</c><00:02:39.159><c> a</c><00:02:39.360><c> specific</c><00:02:39.760><c> view</c>
+
+00:02:39.990 --> 00:02:40.000 align:start position:0%
+features for setting up a specific view
+ 
+
+00:02:40.000 --> 00:02:43.270 align:start position:0%
+features for setting up a specific view
+range<00:02:40.280><c> for</c><00:02:40.519><c> particular</c><00:02:41.000><c> areas</c><00:02:41.400><c> on</c><00:02:41.560><c> plan</c><00:02:42.280><c> views</c>
+
+00:02:43.270 --> 00:02:43.280 align:start position:0%
+range for particular areas on plan views
+ 
+
+00:02:43.280 --> 00:02:45.149 align:start position:0%
+range for particular areas on plan views
+to<00:02:43.440><c> set</c><00:02:43.640><c> up</c><00:02:43.800><c> a</c><00:02:43.959><c> specific</c><00:02:44.360><c> view</c><00:02:44.640><c> range</c><00:02:44.920><c> for</c>
+
+00:02:45.149 --> 00:02:45.159 align:start position:0%
+to set up a specific view range for
+ 
+
+00:02:45.159 --> 00:02:47.710 align:start position:0%
+to set up a specific view range for
+separate<00:02:45.480><c> areas</c><00:02:46.120><c> go</c><00:02:46.239><c> to</c><00:02:46.360><c> the</c><00:02:46.480><c> view</c><00:02:46.760><c> tab</c><00:02:47.280><c> select</c>
+
+00:02:47.710 --> 00:02:47.720 align:start position:0%
+separate areas go to the view tab select
+ 
+
+00:02:47.720 --> 00:02:51.110 align:start position:0%
+separate areas go to the view tab select
+plan<00:02:48.000><c> views</c><00:02:48.599><c> and</c><00:02:48.720><c> choose</c><00:02:49.120><c> plan</c><00:02:49.840><c> region</c><00:02:50.840><c> draw</c>
+
+00:02:51.110 --> 00:02:51.120 align:start position:0%
+plan views and choose plan region draw
+ 
+
+00:02:51.120 --> 00:02:52.869 align:start position:0%
+plan views and choose plan region draw
+the<00:02:51.239><c> boundary</c><00:02:51.760><c> and</c><00:02:51.920><c> set</c><00:02:52.080><c> up</c><00:02:52.200><c> the</c><00:02:52.319><c> view</c><00:02:52.560><c> range</c>
+
+00:02:52.869 --> 00:02:52.879 align:start position:0%
+the boundary and set up the view range
+ 
+
+00:02:52.879 --> 00:02:56.580 align:start position:0%
+the boundary and set up the view range
+on<00:02:53.040><c> the</c><00:02:53.200><c> properties</c>
+
+00:02:56.580 --> 00:02:56.590 align:start position:0%
+ 
+ 
+
+00:02:56.590 --> 00:02:58.750 align:start position:0%
+ 
+[Music]
+
+00:02:58.750 --> 00:02:58.760 align:start position:0%
+[Music]
+ 
+
+00:02:58.760 --> 00:03:01.730 align:start position:0%
+[Music]
+tab
+
+00:03:01.730 --> 00:03:01.740 align:start position:0%
+tab
+ 
+
+00:03:01.740 --> 00:03:16.910 align:start position:0%
+tab
+[Music]
+
+00:03:16.910 --> 00:03:16.920 align:start position:0%
+ 
+ 
+
+00:03:16.920 --> 00:03:19.309 align:start position:0%
+ 
+that's<00:03:17.159><c> it</c><00:03:17.920><c> if</c><00:03:18.040><c> you</c><00:03:18.159><c> like</c><00:03:18.480><c> this</c><00:03:18.720><c> video</c>
+
+00:03:19.309 --> 00:03:19.319 align:start position:0%
+that's it if you like this video
+ 
+
+00:03:19.319 --> 00:03:20.750 align:start position:0%
+that's it if you like this video
+subscribe<00:03:19.799><c> to</c><00:03:19.920><c> our</c><00:03:20.120><c> channel</c><00:03:20.440><c> to</c><00:03:20.599><c> keep</c>
+
+00:03:20.750 --> 00:03:20.760 align:start position:0%
+subscribe to our channel to keep
+ 
+
+00:03:20.760 --> 00:03:22.750 align:start position:0%
+subscribe to our channel to keep
+learning<00:03:21.120><c> new</c><00:03:21.319><c> Revit</c><00:03:21.720><c> tutorials</c><00:03:22.319><c> with</c><00:03:22.480><c> beam</c>
+
+00:03:22.750 --> 00:03:22.760 align:start position:0%
+learning new Revit tutorials with beam
+ 
+
+00:03:22.760 --> 00:03:26.309 align:start position:0%
+learning new Revit tutorials with beam
+and<00:03:23.239><c> beam</c><00:03:24.239><c> thanks</c><00:03:24.480><c> for</c>
+
+00:03:26.309 --> 00:03:26.319 align:start position:0%
+and beam thanks for
+ 
+
+00:03:26.319 --> 00:03:29.319 align:start position:0%
+and beam thanks for
+watching
+

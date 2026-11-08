@@ -28,12 +28,21 @@ Local branch: `dev`. Nothing was pushed or deployed.
 | Plan view | [plan-view.md](feature/plan-view.md) | `b239bfb` | Revit view-range and BIMcollab automatic-floor-plan frames/transcripts. Prototype flattens all triangles; storey/cut/projection/visibility unimplemented. 4 drawing unit tests pass. |
 | Plan section views | [plan-section-views.md](feature/plan-section-views.md) | `84c495a` | Revit sections frames/transcript. Prototype is a horizontal slice only; markers, direction, depth, and links unimplemented. No feature-specific forum thread found. |
 | Large-model performance | [large-model-performance.md](feature/large-model-performance.md) | `f3a94b5` | No product video applies (internal harness). Node guard: 3 tests pass. Browser metrics are recorded but not guarded, and fit timing does not measure the next paint. |
+| Quantity takeoff | [quantity-takeoff.md](feature/quantity-takeoff.md) | `01db511` | Solibri ITO frames/transcript; buildingSMART forum evidence on missing base quantities. 7 unit tests pass. Missing-quantity lists, unknown-unit counts, and multi-element selection are unimplemented. |
+| Cost breakdown mapping | [cost-breakdown-mapping.md](feature/cost-breakdown-mapping.md) | `0d7e82b` | Vico Cost Planner frames/transcripts. Current UI is a flat list with one CBS item per element and quantity 1; hierarchy, rules, linked quantities, and location breakdown are unimplemented. 5 unit tests pass. |
+| Unit rates and costing | [unit-rates-costing.md](feature/unit-rates-costing.md) | `a0828b8` | Vico assemblies frames/transcript. Verified defect: floating-point rounding returns 1,234,567.00 for 1,234,567.005; the approved decimal requirement is unmet. |
+| Estimate Excel export | [estimate-excel-export.md](feature/estimate-excel-export.md) | `5088041` | No new video (Solibri ITO reused); caption requests rate-limited. Formula cells cache 0 and the estimate sheet is a placeholder. |
+| Estimate data files | [estimate-data-files.md](feature/estimate-data-files.md) | `de69649` | No new video (Navisworks profiler reused). Import applies only the currency; size check reads first; no schema or prototype-key validation; no `beforeunload` guard. |
 
 Documentation structure and relative links were checked for these studies; model-search video frames were additionally checked for nonblank pixels, and model-filtering images/transcript timestamps were validated. These are documentation checks, not feature acceptance or phase closure.
 
-## Current Work: Phase 1C Cost Features
+## Current Work: Research Complete
 
-Phase 1A and 1B feature research is complete. Next in order: [quantity-takeoff.md](feature/quantity-takeoff.md), [cost-breakdown-mapping.md](feature/cost-breakdown-mapping.md), [unit-rates-costing.md](feature/unit-rates-costing.md), [estimate-excel-export.md](feature/estimate-excel-export.md), and [estimate-data-files.md](feature/estimate-data-files.md). Use [Phase 1C market research](research/phase-1c-cost-estimation-market-research.md) and preserve the approved file-export-only persistence boundary.
+All Phase 1A, 1B, and 1C feature specifications have been researched and committed locally. Outstanding items for the user:
+
+1. **Decision needed — viewpoints scope.** [viewer-viewpoints.md](feature/viewer-viewpoints.md) and its implementation persist a full-scene saved-view library, while [Phase 1 MVP](plans/Phase_1_MVP.md) gate 1A_07 and its boundaries specify session-local, camera-only viewpoints. The plan or the spec must be reconciled.
+2. **Implementation defects recorded in specs** (not fixed, research only): float rounding in costing; Excel formula cells caching 0; estimate import applying only the currency; display controls overwriting authored opacity; property-colouring clean-up on disposal.
+3. **Evidence limits.** In-tool image viewing was unavailable throughout; all stills were matched to caption timestamps and checked for nonblank pixels. YouTube rate-limited caption downloads (HTTP 429) late in the run.
 
 ## Next Steps
 

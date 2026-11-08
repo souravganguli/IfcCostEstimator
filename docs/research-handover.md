@@ -21,12 +21,16 @@ Local branch: `dev`. Nothing was pushed or deployed.
 | Section clipping | [section-clipping.md](feature/section-clipping.md) | `52593bc` | Research, requirements, Solibri video frames/transcript, and capture script committed. No clipping behavior or cap-generation acceptance tests exist yet. |
 | Viewer navigation | [viewer-navigation.md](feature/viewer-navigation.md) | `9cb0328` | Research, requirements, Solibri and Navisworks video frames/transcripts, and capture script committed. User approved a custom view-cube component (2026-11-08). Only the framing unit tests (3) pass; view cube, standard views, projection toggle, zoom window, and Home are unimplemented. Frames were matched to captions; in-tool image viewing was unavailable. |
 | First-person walkthrough | [first-person-walkthrough.md](feature/first-person-walkthrough.md) | `fa8a074` | Research, requirements, Navisworks and Revizto video frames/transcripts, and capture script committed. Movement-math unit tests (5) pass; exit-restore, eye-height floor placement, pitch, time-based speed, focus/pointer-lock-loss handling, and the limitation hint are unimplemented. Frames were matched to captions; in-tool image viewing was unavailable. |
+| First-person minimap | [first-person-minimap.md](feature/first-person-minimap.md) | `f5e9a77` | Solibri navigation-map frames/transcript and xeokit storey-map evidence. Footprint, storey detection, and honest unavailable states are unimplemented; only visibility toggling is E2E-covered. |
+| Display controls | [display-controls.md](feature/display-controls.md) | `07aaeb1` | Solibri and Navisworks transparency frames/transcripts. Found that the adapter overwrites authored opacity; spec requires a multiplicative factor and exact reset. 2 unit tests pass. |
+| Property coloring | [property-coloring.md](feature/property-coloring.md) | `ae458e2` | Navisworks Appearance Profiler and BIMcollab Smart View frames/transcripts. UI is single-condition `equals`; enable/disable, counts, cap, and clean-up on disposal are unimplemented. 4 unit tests pass. |
+| Viewer viewpoints | [viewer-viewpoints.md](feature/viewer-viewpoints.md) | `1a355a9` | Added Navisworks saved-viewpoints video evidence; 39 related unit tests pass. Recorded an unresolved conflict: the spec/implementation persist a full-scene library while the Phase 1 plan specifies session-local camera-only viewpoints. Needs a user decision. |
 
 Documentation structure and relative links were checked for these studies; model-search video frames were additionally checked for nonblank pixels, and model-filtering images/transcript timestamps were validated. These are documentation checks, not feature acceptance or phase closure.
 
-## Current Work: First-Person Minimap
+## Current Work: Phase 1B Plan View
 
-[first-person-minimap.md](feature/first-person-minimap.md) is the next capability in Phase 1 order. Start from its existing specification and the walkthrough's read-only pose contract, inspect the current marker implementation and tests, then research comparable minimap tools while preserving the approved independent, display-only storey-footprint baseline and local-only boundaries.
+Phase 1A feature research is complete. [plan-view.md](feature/plan-view.md) is next in Phase 1 order, followed by [plan-section-views.md](feature/plan-section-views.md) and [large-model-performance.md](feature/large-model-performance.md), then the Phase 1C cost features. Preserve the approved in-app drawing go decision and local-only boundaries.
 
 ## Next Steps
 

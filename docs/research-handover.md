@@ -25,12 +25,15 @@ Local branch: `dev`. Nothing was pushed or deployed.
 | Display controls | [display-controls.md](feature/display-controls.md) | `07aaeb1` | Solibri and Navisworks transparency frames/transcripts. Found that the adapter overwrites authored opacity; spec requires a multiplicative factor and exact reset. 2 unit tests pass. |
 | Property coloring | [property-coloring.md](feature/property-coloring.md) | `ae458e2` | Navisworks Appearance Profiler and BIMcollab Smart View frames/transcripts. UI is single-condition `equals`; enable/disable, counts, cap, and clean-up on disposal are unimplemented. 4 unit tests pass. |
 | Viewer viewpoints | [viewer-viewpoints.md](feature/viewer-viewpoints.md) | `1a355a9` | Added Navisworks saved-viewpoints video evidence; 39 related unit tests pass. Recorded an unresolved conflict: the spec/implementation persist a full-scene library while the Phase 1 plan specifies session-local camera-only viewpoints. Needs a user decision. |
+| Plan view | [plan-view.md](feature/plan-view.md) | `b239bfb` | Revit view-range and BIMcollab automatic-floor-plan frames/transcripts. Prototype flattens all triangles; storey/cut/projection/visibility unimplemented. 4 drawing unit tests pass. |
+| Plan section views | [plan-section-views.md](feature/plan-section-views.md) | `84c495a` | Revit sections frames/transcript. Prototype is a horizontal slice only; markers, direction, depth, and links unimplemented. No feature-specific forum thread found. |
+| Large-model performance | [large-model-performance.md](feature/large-model-performance.md) | `f3a94b5` | No product video applies (internal harness). Node guard: 3 tests pass. Browser metrics are recorded but not guarded, and fit timing does not measure the next paint. |
 
 Documentation structure and relative links were checked for these studies; model-search video frames were additionally checked for nonblank pixels, and model-filtering images/transcript timestamps were validated. These are documentation checks, not feature acceptance or phase closure.
 
-## Current Work: Phase 1B Plan View
+## Current Work: Phase 1C Cost Features
 
-Phase 1A feature research is complete. [plan-view.md](feature/plan-view.md) is next in Phase 1 order, followed by [plan-section-views.md](feature/plan-section-views.md) and [large-model-performance.md](feature/large-model-performance.md), then the Phase 1C cost features. Preserve the approved in-app drawing go decision and local-only boundaries.
+Phase 1A and 1B feature research is complete. Next in order: [quantity-takeoff.md](feature/quantity-takeoff.md), [cost-breakdown-mapping.md](feature/cost-breakdown-mapping.md), [unit-rates-costing.md](feature/unit-rates-costing.md), [estimate-excel-export.md](feature/estimate-excel-export.md), and [estimate-data-files.md](feature/estimate-data-files.md). Use [Phase 1C market research](research/phase-1c-cost-estimation-market-research.md) and preserve the approved file-export-only persistence boundary.
 
 ## Next Steps
 

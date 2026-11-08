@@ -171,6 +171,7 @@ Verified by local unit tests (`tests/unit/saved-views.test.ts`, `bcf-zip.test.ts
 
 ## Open Questions
 
+- **Plan conflict (needs a recorded decision).** [Phase 1 MVP](../plans/Phase_1_MVP.md) still lists this capability as "Temporary viewpoints … session-local camera-only" (gate 1A_07) and its boundaries exclude application-managed persistence of viewpoints. This specification and the local implementation persist a full-scene library in local storage. The plan, the cross-cutting "50 viewpoints per session" default, and this spec must be reconciled by an explicit user decision; this research pass did not change either scope. Until then, gate 1A_07 cannot be marked complete against the plan's wording.
 - Export format priority: ship BCF-ZIP first, or JSON first with BCF-ZIP as a fast-follow? (Recommendation: JSON internally for local storage; BCF-ZIP for export.)
 - Maximum saved-view count and thumbnail resolution defaults (propose reuse of the 50-item convention and ≤1500px BCF snapshot cap, downscaled for storage).
 - Whether open tabs persist across reload or only the library does (Recommendation: persist both; restore last-active tab).
@@ -183,6 +184,8 @@ Verified by local unit tests (`tests/unit/saved-views.test.ts`, `bcf-zip.test.ts
 4. Navisworks Help — Saved Viewpoints (save/recall/edit/delete, organise into folders, export viewpoints; per-viewpoint Hide/Required and Override Material) — https://help.autodesk.com/view/NAV/2024/ENU/?query=saved+viewpoints
 5. Navisworks — "Set the Default View Attributes" / "Hidden elements reappear and overrides reset when switching between viewpoints" (restore-of-overrides pain point) — Autodesk Community / Autodesk Help (via search).
 6. McNeel Discourse — "Problem with named views & snapshots" and "Clipping plane active settings lost when adjusting named view camera" (clipping/display not restored) — https://discourse.mcneel.com
+7. The BIM Coordinator — "Navisworks Saved Viewpoints" — https://www.youtube.com/watch?v=WT4pwvFl9EY. Published 2019-03-21, 18:18. Captions: 01:44–01:57 Viewpoint tab, Save Viewpoint, list of viewpoints; 02:33–03:25 Viewpoint Defaults "save hide required, override appearance" may cause performance issues on complex models; 06:16–06:54 an override saved only in a viewpoint ("it's not pushing anything back, it's just in this view point"); 10:58–11:07 folders for meeting views.
+8. Capture commands — `viewer-viewpoints/assets/_capture_video.py`; runs `yt-dlp` (720p cap, English auto-captions) and `ffmpeg` frame extraction at 01:53, 03:08, 06:23, and 11:03 for source 7. The full MP4 was held in a temporary directory and deleted; the VTT transcript and stills are retained. Frames were checked for nonblank pixels with Pillow and matched to caption timestamps (research pass 2026-11-08); in-tool image viewing was unavailable.
 
 ---
 
@@ -210,6 +213,12 @@ Verified by local unit tests (`tests/unit/saved-views.test.ts`, `bcf-zip.test.ts
 ## Autodesk Navisworks — Saved Viewpoints
 
 ![Navisworks saved viewpoints help search results](viewer-viewpoints/assets/navisworks-saved-viewpoints-help.svg)
+![Navisworks Saved Viewpoints panel at 01:53](viewer-viewpoints/assets/navisworks-saved-viewpoints-panel.png)
+![Navisworks Viewpoint Defaults options at 03:08](viewer-viewpoints/assets/navisworks-viewpoint-defaults-options.png)
+![Navisworks viewpoint with override appearance at 06:23](viewer-viewpoints/assets/navisworks-viewpoint-override-appearance.png)
+![Navisworks viewpoint folders at 11:03](viewer-viewpoints/assets/navisworks-saved-viewpoints-folders.png)
+
+- Video (source 7) confirms the library panel, the Viewpoint Defaults capture toggles and their stated performance cost (02:33–03:25), view-local overrides (06:16–06:54), and folders (10:58–11:07). Transcript: [navisworks-saved-viewpoints-transcript.en.vtt](viewer-viewpoints/assets/navisworks-saved-viewpoints-transcript.en.vtt).
 
 - Saved Viewpoints window is a **library** separate from the active view; viewpoints can be **organised into folders**, recalled, edited, renamed, and deleted; the current sectioned view can be saved from the Sectioning Tools tab.
 - Per-viewpoint **Saved Attributes** control whether **Hide/Required attributes** and **Override Material** are captured (Options → Interface → Viewpoint Defaults, or per-viewpoint Edit). This is the direct analogue of our "choose what to capture" and the root of the most common complaint when left off.

@@ -19,12 +19,13 @@ Local branch: `dev`. Nothing was pushed or deployed.
 | Model hierarchy | [model-hierarchy.md](feature/model-hierarchy.md) | `3fe5bd2` | Research and evidence committed. Duplicate model-name disambiguation and keyboard-focus action reveal remain unverified; one earlier hierarchy E2E timed out before loading a model. |
 | Model measurement | [model-measurement.md](feature/model-measurement.md) | `69cc957` | Research, videos, transcripts, captures, wireframe, and requirements committed. User decision: models with missing or unsupported length units are not measurable. Only the pure distance helper has focused unit-test evidence; viewer interaction remains unverified. |
 | Section clipping | [section-clipping.md](feature/section-clipping.md) | `52593bc` | Research, requirements, Solibri video frames/transcript, and capture script committed. No clipping behavior or cap-generation acceptance tests exist yet. |
+| Viewer navigation | [viewer-navigation.md](feature/viewer-navigation.md) | `9cb0328` | Research, requirements, Solibri and Navisworks video frames/transcripts, and capture script committed. User approved a custom view-cube component (2026-11-08). Only the framing unit tests (3) pass; view cube, standard views, projection toggle, zoom window, and Home are unimplemented. Frames were matched to captions; in-tool image viewing was unavailable. |
 
 Documentation structure and relative links were checked for these studies; model-search video frames were additionally checked for nonblank pixels, and model-filtering images/transcript timestamps were validated. These are documentation checks, not feature acceptance or phase closure.
 
-## Current Work: Viewer Navigation
+## Current Work: First-Person Walkthrough
 
-[viewer-navigation.md](feature/viewer-navigation.md) is the next capability in Phase 1 order. Start from its existing specification, inspect current controls and tests, then research comparable navigation tools while preserving the approved camera/view conventions and local-only boundaries.
+[first-person-walkthrough.md](feature/first-person-walkthrough.md) is the next capability in Phase 1 order. Start from its existing specification, inspect current controls and tests, then research comparable walkthrough tools while preserving the approved no-collision-guarantee baseline, navigation mode exclusivity, and local-only boundaries.
 
 ## Next Steps
 

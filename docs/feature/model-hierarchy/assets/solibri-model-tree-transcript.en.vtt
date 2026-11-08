@@ -1,0 +1,343 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.001 --> 00:00:04.800
+In the Model tree you see the structure of the model.
+
+00:00:04.800 --> 00:00:09.200
+The structure of the model can be shown in different ways and the first one is the containment
+
+00:00:09.200 --> 00:00:10.200
+hierarchy.
+
+00:00:10.200 --> 00:00:15.200
+The containment hierarchy shows the spatial structure of the model starting from the top
+
+00:00:15.200 --> 00:00:23.600
+which is the file level, going to the project, project sites, building and within the building
+
+00:00:23.600 --> 00:00:27.500
+you have the building stories and within the stories you would have different groups of
+
+00:00:27.500 --> 00:00:29.960
+objects and then the individual objects.
+
+00:00:29.960 --> 00:00:35.000
+So all the way from the top, the project level up to the level of the individual element
+
+00:00:35.000 --> 00:00:39.060
+or component as the Solibri calls these things.
+
+00:00:39.060 --> 00:00:45.680
+Whatever you select either in the model tree or using the info tool in the 3D view will
+
+00:00:45.680 --> 00:00:52.520
+be displayed in the info panel and in the info panel you get a lot of information about
+
+00:00:52.520 --> 00:00:56.640
+whatever you have selected.
+
+00:00:56.640 --> 00:01:01.460
+If you would switch to a different hierarchy, in this case a component hierarchy, it works
+
+00:01:01.460 --> 00:01:03.440
+exactly the same way.
+
+00:01:03.440 --> 00:01:07.680
+You can navigate through the hierarchy but in this case the hierarchy is grouped based
+
+00:01:07.680 --> 00:01:14.280
+on types of components and the main categories or classes, for instance all the types of
+
+00:01:14.280 --> 00:01:20.200
+doors and then individual types and underneath all the individual occurrences or instances
+
+00:01:20.200 --> 00:01:21.600
+of that door type.
+
+00:01:21.600 --> 00:01:29.040
+In this case you have a "Door 18", you may have a metal door and there are four instances
+
+00:01:29.040 --> 00:01:31.600
+of that metal door.
+
+00:01:31.600 --> 00:01:38.520
+Also notice that Solibri automatically assigns a basic name based on the class of the object,
+
+00:01:38.520 --> 00:01:44.160
+the building story and an index number.
+
+00:01:44.160 --> 00:01:51.760
+The third way to display the hierarchy is a so called layer view.
+
+00:01:51.760 --> 00:01:56.160
+In the layer hierarchy use the layers which are the representation layers from the IFC
+
+00:01:56.160 --> 00:01:57.160
+file.
+
+00:01:57.160 --> 00:02:01.800
+Depending on the software in which you made the model, this group of layers might be different.
+
+00:02:01.800 --> 00:02:09.280
+In this case the model was grouped in walls, furniture, columns, slabs, so this layer structure
+
+00:02:09.280 --> 00:02:15.560
+was very close to the class hierarchy but in other models or other software or if you use
+
+00:02:15.560 --> 00:02:18.680
+a different configuration it can be totally different.
+
+00:02:18.680 --> 00:02:23.960
+The navigation is exactly the same, you see the layer, you see the different classes and
+
+00:02:23.960 --> 00:02:28.760
+then the individual items on that layer.
+
+00:02:28.760 --> 00:02:33.800
+Finally you get a federated floor hierarchy which solubly derives from the building story
+
+00:02:33.800 --> 00:02:34.800
+information.
+
+00:02:34.800 --> 00:02:40.280
+In this case we have one building file with only four floors and they are shown again
+
+00:02:40.280 --> 00:02:46.600
+as a group of objects, classes and then the individual items on that group, from that
+
+00:02:46.600 --> 00:02:48.000
+group.
+
+00:02:48.000 --> 00:02:51.320
+For now we continue to work in the containment hierarchy.
+
+00:02:51.320 --> 00:02:59.200
+In relation to that hierarchy everything you select will be displayed in the info panel
+
+00:02:59.200 --> 00:03:04.560
+and the info panel dynamically displays whatever information is attached to that object.
+
+00:03:04.560 --> 00:03:09.680
+It is typically grouped in BIM data, standard or other properties, in this case only other
+
+00:03:09.680 --> 00:03:15.640
+properties are available and favorites where you can pre-select certain properties you always
+
+00:03:15.640 --> 00:03:18.320
+want to see.
+
+00:03:18.320 --> 00:03:24.680
+Let's for instance select in the viewport one of the walls in the facade.
+
+00:03:24.680 --> 00:03:30.920
+Here you see the BIM data which is the information that solubly collects about that object.
+
+00:03:30.920 --> 00:03:35.680
+Identification is a whole set of properties and attributes which identify the object.
+
+00:03:35.680 --> 00:03:41.800
+We won't go through all of them individually but you can see that this is a way of summarizing
+
+00:03:41.800 --> 00:03:44.880
+whatever is available for that object.
+
+00:03:44.880 --> 00:03:50.920
+For instance we can see in this case the entity uses IFC wall standard case and has a wall
+
+00:03:50.920 --> 00:04:00.160
+type, it is derived from a file in the IFC2x3 format and there is no predefined type.
+
+00:04:00.160 --> 00:04:10.400
+You also see that the object has a name, type and a type name and it has a unique identifier.
+
+00:04:10.400 --> 00:04:14.640
+If you click on another object in the hierarchy, for instance we click on project, we would
+
+00:04:14.640 --> 00:04:15.640
+get a different structure.
+
+00:04:15.640 --> 00:04:22.280
+In this case this entity is an IFC project, it has a name, in this case face is one of
+
+00:04:22.280 --> 00:04:29.520
+the attributes available and it has other information attached to it.
+
+00:04:29.520 --> 00:04:33.360
+Back to one of the wall objects.
+
+00:04:33.360 --> 00:04:37.040
+Apart from identification we get location information where is that object positioned
+
+00:04:37.040 --> 00:04:43.520
+in the model and Solibri collects a series of elevations, coordinates and also the hierarchy
+
+00:04:43.520 --> 00:04:47.280
+is part of the containment or spatial hierarchy.
+
+00:04:47.280 --> 00:04:52.320
+Quantities which Solibri derives from the geometry and all types of information collected from
+
+00:04:52.320 --> 00:04:55.220
+different places.
+
+00:04:55.220 --> 00:05:00.160
+Information about the materials, in this case we see that the object is set up as a material
+
+00:05:00.160 --> 00:05:04.400
+layer set and we can find information about the different layers.
+
+00:05:04.400 --> 00:05:13.260
+If a layer set, if a material layer, that layer has a thickness and the material itself
+
+00:05:13.260 --> 00:05:18.640
+is a material in this case with just a basic name.
+
+00:05:18.640 --> 00:05:23.120
+Profile, in this case it's a rectangular object so it's created from a profile so that object
+
+00:05:23.120 --> 00:05:24.440
+also has profile information.
+
+00:05:24.440 --> 00:05:30.840
+You find other relations defined in the IFC schema and classifications which can be defined
+
+00:05:30.840 --> 00:05:38.040
+either from an IFC file or within solubly and we will use them later on to further validate
+
+00:05:38.040 --> 00:05:41.000
+and check and verify the model.
+
+00:05:41.000 --> 00:05:49.320
+The standard properties are defined by building smart and they depend on the object, class
+
+00:05:49.320 --> 00:05:51.320
+or the entity.
+
+00:05:51.320 --> 00:05:58.480
+In this case for walls it's common to have a property set wall common which are a set
+
+00:05:58.480 --> 00:06:03.560
+of standard defined or default defined properties for walls.
+
+00:06:03.560 --> 00:06:08.020
+Whenever you see a property set starting with the name "Pset" you should be aware that this
+
+00:06:08.020 --> 00:06:11.400
+is a predefined property set by building smart.
+
+00:06:11.400 --> 00:06:17.000
+In this case only one property has been used, the is external property.
+
+00:06:17.000 --> 00:06:22.680
+You can see its value, in this case its value is true which means this wall is part, is
+
+00:06:22.680 --> 00:06:26.320
+in contact with the exterior environment, is part of the building envelope.
+
+00:06:26.320 --> 00:06:32.080
+And you also see the type, the Boolean value which means it can have a value of yes or
+
+00:06:32.080 --> 00:06:34.920
+true or false.
+
+00:06:34.920 --> 00:06:38.560
+Other properties can also be available and in this case these are not the standard properties
+
+00:06:38.560 --> 00:06:43.480
+by buildingSMART but the properties managed within the software.
+
+00:06:43.480 --> 00:06:48.120
+Here we see for instance the "BaseQuantities" which is a set of quantities exported from
+
+00:06:48.120 --> 00:06:55.200
+the software, component properties, in this case the model itself contains information
+
+00:06:55.200 --> 00:07:00.360
+for instance about the embodied carbon and energy but their values are still set at zero.
+
+00:07:00.360 --> 00:07:06.120
+You have the quantities of the components, you will see that there is the thickness of
+
+00:07:06.120 --> 00:07:13.840
+one of the components, the mass, the area, the volume, information about the material
+
+00:07:13.840 --> 00:07:18.480
+attached to the object and then a set of property sets.
+
+00:07:18.480 --> 00:07:23.160
+In this case the properties have a certain naming convention and that depends on the
+
+00:07:23.160 --> 00:07:24.160
+software.
+
+00:07:24.160 --> 00:07:28.180
+In these cases the model has been created in Archicad and sometimes you even see this
+
+00:07:28.180 --> 00:07:34.560
+in the property names, you see different property sets and every time each property set may
+
+00:07:34.560 --> 00:07:40.360
+have one or more properties, again property, value and value type.
+
+00:07:40.360 --> 00:07:45.040
+And if you are familiar with Archicad you might recognize some of these properties.
+
+00:07:45.040 --> 00:07:51.440
+In this case all the default properties from Archicad are also available but they don't
+
+00:07:51.440 --> 00:07:57.900
+have a direct impact on the geometry, they are just there to give you the potential use
+
+00:07:57.900 --> 00:08:04.160
+for collecting information, for finding something, for filtering and also the quantities which
+
+00:08:04.160 --> 00:08:10.280
+are created by Archicad which is quite an extensive list.
+
+00:08:10.280 --> 00:08:15.400
+At the top level, at the highest level in this case the Solibri building, this is not
+
+00:08:15.400 --> 00:08:20.440
+an IFC entity but this is the project file itself and here you can find information about
+
+00:08:20.440 --> 00:08:26.920
+the metadata which is attached to in the header of the file, for instance many of the settings
+
+00:08:26.920 --> 00:08:31.480
+which are used when converting the file but that depends on how the software exports your
+
+00:08:31.480 --> 00:08:32.480
+IFC file.
+
+00:08:32.480 --> 00:08:38.000
+You see all the file name, you see a time stamp so we know that this particular file
+
+00:08:38.000 --> 00:08:42.640
+has been exported on the 10th of November in 2021.
+
+00:08:42.640 --> 00:08:48.280
+And you can also see originally this file was created in Graphisoft Archicad version
+
+00:08:48.280 --> 00:08:53.920
+2022, you see you can see that's created from a Windows system.
+
+00:08:53.920 --> 00:09:01.440
+Also, sometimes important, the version of the IFC schema is IFC2x3.
+
+00:09:01.440 --> 00:09:11.160
+If we return to the main 3D view and we can select all the objects, we can also take a
+
+00:09:11.160 --> 00:09:16.040
+quick look at the other views, other tabs but they are not functional in the Anywhere
+
+00:09:16.040 --> 00:09:17.040
+version of the software.
+
+00:09:17.040 --> 00:09:22.480
+Solibri Anywhere is a viewer, it's not a model checker and the checking interface, the results
+
+00:09:22.480 --> 00:09:28.080
+interface are available can be shown but they are not active.
+
